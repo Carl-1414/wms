@@ -1,0 +1,143 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: #ffffff;
+  color: #2d3748;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  border-right: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.open {
+  width: 260px;
+}
+
+.sidebar.closed {
+  width: 64px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid #f7fafc;
+  min-height: 72px;
+  background: #f8fafc;
+}
+
+.sidebar.closed .sidebar-header {
+  justify-content: center;
+  padding: 1.25rem 0.5rem;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a202c;
+  letter-spacing: -0.025em;
+}
+
+.toggle-btn {
+  background: #4299e1;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-btn:hover {
+  background: #3182ce;
+  transform: none;
+}
+
+.sidebar-nav {
+  padding: 1rem 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  color: #4a5568;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin: 0.125rem 0.75rem;
+  border-radius: 8px;
+  position: relative;
+  font-weight: 500;
+}
+
+.sidebar.closed .nav-item {
+  padding: 0.875rem;
+  justify-content: center;
+  margin: 0.125rem 0.25rem;
+}
+
+.nav-item:hover {
+  background: #edf2f7;
+  color: #2d3748;
+  transform: none;
+}
+
+.nav-item.active {
+  background: #4299e1;
+  color: white;
+}
+
+.nav-item.active:hover {
+  background: #3182ce;
+  color: white;
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+  min-width: 20px;
+  text-align: center;
+}
+
+.sidebar.closed .nav-icon {
+  margin-right: 0;
+  font-size: 1.25rem;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.sidebar.closed .nav-label {
+  display: none;
+}
+
+/* Remove unnecessary styling */
+.nav-item::before {
+  display: none;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+    width: 280px;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  }
+}
