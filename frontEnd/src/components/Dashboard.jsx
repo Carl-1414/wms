@@ -1,6 +1,7 @@
 import React from 'react';
 import './Dashboard.css';
 
+
 const Dashboard = () => {
   const metrics = [
     { title: 'Total SKUs', value: '2,847', unit: 'products', trend: '+12.5%' },
@@ -123,5 +124,6 @@ const Dashboard = () => {
     </div>
   );
 };
+
 
 export default Dashboard;

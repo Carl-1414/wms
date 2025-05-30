@@ -1,9 +1,13 @@
 .dashboard {
   padding: 2rem;
-  max-width: 1200px;
+  width: 100%;
   background: #f7fafc;
   min-height: 100vh;
+  margin: 0;
+  box-sizing: border-box;
+  display: block;
 }
+
 
 .dashboard-header {
   display: flex;

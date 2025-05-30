@@ -22,7 +22,7 @@ const Sidebar = ({ isOpen, onToggle, onPageChange, currentPage }) => {
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
       <div className="sidebar-header">
-        {isOpen && <h2>WMS</h2>}
+        {isOpen && <h2>Inventory Innovations</h2>}
         <button className="toggle-btn" onClick={onToggle}>
           {isOpen ? '◀' : '▶'}
         </button>
