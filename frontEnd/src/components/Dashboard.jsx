@@ -1,7 +1,6 @@
 import React from 'react';
 import './Dashboard.css';
 
-
 const Dashboard = () => {
   const metrics = [
     { title: 'Total SKUs', value: '2,847', unit: 'products', trend: '+12.5%' },
@@ -11,15 +10,22 @@ const Dashboard = () => {
   ];
 
   const incomingShipments = [
-    { id: 'INC-001', supplier: 'TechCorp Industries', status: 'In Transit', eta: '2 hours', items: 145 },
-    { id: 'INC-002', supplier: 'Global Supplies Ltd', status: 'Arrived', eta: 'Now', items: 89 },
-    { id: 'INC-003', supplier: 'MegaParts Co', status: 'Processing', eta: '30 mins', items: 267 },
+    { id: 'INC-001', supplier: 'TechCorp Industries', status: 'In Transit', eta: '2 hours' },
+    { id: 'INC-002', supplier: 'Global Supplies Ltd', status: 'Arrived', eta: 'Now' },
+    { id: 'INC-003', supplier: 'MegaParts Co', status: 'Processing', eta: '30 mins' },
+    { id: 'INC-004', supplier: 'LogiTek Distribution', status: 'Processing', eta: '45 mins' },
+    { id: 'INC-005', supplier: 'FastFreight Inc', status: 'In Transit', eta: '3 hours' },
+    { id: 'INC-006', supplier: 'WareHouseOne', status: 'Delayed', eta: '5 hours' },
+    { id: 'INC-007', supplier: 'NextGen Parts', status: 'Arrived', eta: 'Now' },
+    { id: 'INC-008', supplier: 'Unified Logistics', status: 'In Transit', eta: '1 hour' },
+    { id: 'INC-009', supplier: 'ShipNow Solutions', status: 'Processing', eta: '20 mins' },
+    { id: 'INC-010', supplier: 'Global Supplies Ltd', status: 'Arrived', eta: 'Now' },
   ];
 
   const outgoingShipments = [
-    { id: 'OUT-001', customer: 'Retail Chain A', status: 'Ready', departure: '1 hour', items: 156 },
-    { id: 'OUT-002', customer: 'E-commerce Hub', status: 'Loading', departure: 'Now', items: 78 },
-    { id: 'OUT-003', customer: 'Distribution Center', status: 'Scheduled', departure: '3 hours', items: 203 },
+    { id: 'OUT-001', customer: 'Retail Chain A', status: 'Ready', departure: '1 hour' },
+    { id: 'OUT-002', customer: 'E-commerce Hub', status: 'Loading', departure: 'Now' },
+    { id: 'OUT-003', customer: 'Distribution Center', status: 'Scheduled', departure: '3 hours' },
   ];
 
   const warehouseZones = [
@@ -30,9 +36,9 @@ const Dashboard = () => {
   ];
 
   const recentAudits = [
-    { zone: 'A1', date: '2024-01-15', discrepancies: 3, status: 'Resolved' },
-    { zone: 'B2', date: '2024-01-14', discrepancies: 0, status: 'Clean' },
-    { zone: 'C3', date: '2024-01-13', discrepancies: 7, status: 'Pending' },
+    { zone: 'Zone A1', date: '2024-01-15', discrepancies: 3, status: 'Resolved' },
+    { zone: 'Zone B2', date: '2024-01-14', discrepancies: 0, status: 'Clean' },
+    { zone: 'Zone C3', date: '2024-01-13', discrepancies: 7, status: 'Pending' },
   ];
 
   return (
@@ -56,15 +62,15 @@ const Dashboard = () => {
         ))}
       </div>
 
-      <div className="dashboard-grid">
+      <div className="horizontal-widgets">
         <div className="widget">
           <h3>Incoming Shipments</h3>
-          <div className="shipments-list">
+          <div className="list horizontal-list">
             {incomingShipments.map((shipment, index) => (
               <div key={index} className="shipment-item">
                 <div className="shipment-id">{shipment.id}</div>
                 <div className="shipment-supplier">{shipment.supplier}</div>
-                <div className={`shipment-status ${shipment.status.toLowerCase().replace(' ', '-')}`}>
+                <div className={`shipment-status ${shipment.status.toLowerCase().replace(/\s+/g, '-')}`}>
                   {shipment.status}
                 </div>
                 <div className="shipment-eta">{shipment.eta}</div>
@@ -75,12 +81,12 @@ const Dashboard = () => {
 
         <div className="widget">
           <h3>Outgoing Shipments</h3>
-          <div className="shipments-list">
+          <div className="list horizontal-list">
             {outgoingShipments.map((shipment, index) => (
               <div key={index} className="shipment-item">
                 <div className="shipment-id">{shipment.id}</div>
                 <div className="shipment-customer">{shipment.customer}</div>
-                <div className={`shipment-status ${shipment.status.toLowerCase()}`}>
+                <div className={`shipment-status ${shipment.status.toLowerCase().replace(/\s+/g, '-')}`}>
                   {shipment.status}
                 </div>
                 <div className="shipment-departure">{shipment.departure}</div>
@@ -91,7 +97,7 @@ const Dashboard = () => {
 
         <div className="widget">
           <h3>Warehouse Zones Status</h3>
-          <div className="zones-list">
+          <div className="list horizontal-list">
             {warehouseZones.map((zone, index) => (
               <div key={index} className="zone-item">
                 <div className="zone-name">{zone.zone}</div>
@@ -107,10 +113,10 @@ const Dashboard = () => {
 
         <div className="widget">
           <h3>Recent Audits</h3>
-          <div className="audits-list">
+          <div className="list horizontal-list">
             {recentAudits.map((audit, index) => (
               <div key={index} className="audit-item">
-                <div className="audit-zone">Zone {audit.zone}</div>
+                <div className="audit-zone">{audit.zone}</div>
                 <div className="audit-date">{audit.date}</div>
                 <div className="audit-discrepancies">{audit.discrepancies} issues</div>
                 <div className={`audit-status ${audit.status.toLowerCase()}`}>
@@ -125,5 +131,5 @@ const Dashboard = () => {
   );
 };
 
-
 export default Dashboard;
+

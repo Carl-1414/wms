@@ -95,47 +95,47 @@ const ProductStorage = () => {
         </div>
       </div>
 
-      <div className="products-table">
-        <div className="table-header">
-          <div>SKU</div>
-          <div>Product Name</div>
-          <div>Category</div>
-          <div>Location</div>
-          <div>Stock Level</div>
-          <div>Status</div>
-          <div>Last Updated</div>
-        </div>
-        {filteredProducts.map(product => (
-          <div key={product.id} className="table-row">
-            <div className="sku">{product.id}</div>
-            <div className="product-name">{product.name}</div>
-            <div className="category">
-              <span className={`category-badge ${product.category.toLowerCase()}`}>
-                {product.category}
-              </span>
-            </div>
-            <div className="location">
-              Zone {product.zone} - {product.shelf}
-            </div>
-            <div className="stock-level">
-              <div className="stock-info">
-                <span className="current">{product.quantity}</span>
-                <span className="range">({product.minStock}-{product.maxStock})</span>
-              </div>
-              <div className="stock-bar">
-                <div 
-                  className={`stock-fill ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}
-                  style={{ width: `${Math.min((product.quantity / product.maxStock) * 100, 100)}%` }}
-                ></div>
-              </div>
-            </div>
-            <div className={`status ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}>
-              {getStockStatus(product.quantity, product.minStock, product.maxStock).toUpperCase()}
-            </div>
-            <div className="last-updated">{product.lastUpdated}</div>
-          </div>
-        ))}
+<div className="products-table">
+  <div className="table-header table-grid">
+    <div>SKU</div>
+    <div>Product Name</div>
+    <div>Category</div>
+    <div>Location</div>
+    <div>Stock Level</div>
+    <div>Status</div>
+    <div>Last Updated</div>
+  </div>
+  {filteredProducts.map(product => (
+    <div key={product.id} className="table-row table-grid">
+      <div className="sku">{product.id}</div>
+      <div className="product-name">{product.name}</div>
+      <div className="category">
+        <span className={`category-badge ${product.category.toLowerCase()}`}>
+          {product.category}
+        </span>
       </div>
+      <div className="location">
+        Zone {product.zone} - {product.shelf}
+      </div>
+      <div className="stock-level">
+        <div className="stock-info">
+          <span className="current">{product.quantity}</span>
+          <span className="range">({product.minStock}-{product.maxStock})</span>
+        </div>
+        <div className="stock-bar">
+          <div
+            className={`stock-fill ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}
+            style={{ width: `${Math.min((product.quantity / product.maxStock) * 100, 100)}%` }}
+          ></div>
+        </div>
+      </div>
+      <div className={`status ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}>
+        {getStockStatus(product.quantity, product.minStock, product.maxStock).toUpperCase()}
+      </div>
+      <div className="last-updated">{product.lastUpdated}</div>
+    </div>
+  ))}
+</div>
     </div>
   );
 };

@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './WarehouseZones.css';
 
-const WarehouseZones = () => {
-  const [zones, setZones] = useState([
-    { id: 'A1', name: 'Electronics Storage', capacity: 85, maxCapacity: 100, temperature: 20, humidity: 45, status: 'Normal', products: 156 },
-    { id: 'B2', name: 'Fragile Items', capacity: 67, maxCapacity: 80, temperature: 18, humidity: 40, status: 'Normal', products: 89 },
-    { id: 'C3', name: 'Bulk Storage', capacity: 94, maxCapacity: 120, temperature: 22, humidity: 50, status: 'Critical', products: 234 },
-    { id: 'D4', name: 'Cold Storage', capacity: 71, maxCapacity: 90, temperature: 4, humidity: 60, status: 'Normal', products: 78 },
-    { id: 'E5', name: 'Hazardous Materials', capacity: 45, maxCapacity: 60, temperature: 15, humidity: 35, status: 'Normal', products: 23 },
-    { id: 'F6', name: 'Returns Processing', capacity: 23, maxCapacity: 50, temperature: 20, humidity: 45, status: 'Normal', products: 67 },
-  ]);
+
+
+  const WarehouseZones = () => {
+    const [zones, setZones] = useState([
+      { id: 'A1', name: 'Electronics Storage', capacity: 85, maxCapacity: 100, temperature: 20, humidity: 45, status: 'Normal', products: 156 },
+      { id: 'B2', name: 'Fragile Items', capacity: 67, maxCapacity: 80, temperature: 18, humidity: 40, status: 'Normal', products: 89 },
+      { id: 'C3', name: 'Bulk Storage', capacity: 94, maxCapacity: 120, temperature: 22, humidity: 50, status: 'Critical', products: 234 },
+      { id: 'D4', name: 'Cold Storage', capacity: 71, maxCapacity: 90, temperature: 4, humidity: 60, status: 'Normal', products: 78 },
+      { id: 'E5', name: 'Hazardous Materials', capacity: 45, maxCapacity: 60, temperature: 15, humidity: 35, status: 'Normal', products: 23 },
+      { id: 'F6', name: 'Returns Processing', capacity: 23, maxCapacity: 50, temperature: 20, humidity: 45, status: 'Normal', products: 67 },
+    ]);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newZone, setNewZone] = useState({

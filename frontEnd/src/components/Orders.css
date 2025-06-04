@@ -159,13 +159,19 @@
 }
 
 .priority {
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 2px 4px;             /* Less horizontal padding */
+  border-radius: 7px;
+  font-size: 0.80rem;            /* Slightly smaller font */
   font-weight: 600;
   text-transform: uppercase;
+  display: inline-block;
   text-align: center;
+  max-width: 100px;              /* Optional: prevent stretching */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
+
 
 .priority.high {
   background: #feb2b2;
@@ -195,8 +201,11 @@
 
 .actions {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: row; /* ensures buttons are side by side */
+  align-items: center;
+  gap: 0.10rem; /* horizontal spacing between buttons */
 }
+
 
 .action-btn {
   padding: 0.25rem 0.75rem;
@@ -206,6 +215,7 @@
   cursor: pointer;
   transition: all 0.2s;
   border: none;
+  
 }
 
 .action-btn.view {
@@ -238,3 +248,34 @@
     flex-direction: column;
   }
 }
+
+.orders-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10; 
+}
+
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1.5fr 1fr 1.5fr 1.5fr 2fr;
+  column-gap: 13rem; 
+  align-items: center;
+  padding: 0.75rem 1rem;
+}
+
+.table-header {
+  font-weight: bold;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table-row {
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table-row:nth-child(even) {
+  background-color: #f9fafb;
+}
+
