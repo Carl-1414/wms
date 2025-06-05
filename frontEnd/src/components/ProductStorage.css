@@ -272,3 +272,174 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
+/* ProductStorage.css (or Modal.css if created) */
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top of other content */
+}
+
+/* Modal Content Box */
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 30px; /* Increased padding for better spacing */
+  width: 90%; /* Responsive width */
+  max-width: 550px; /* Max width, slightly wider than the zone modal for more fields */
+  animation: fadeInScale 0.3s ease-out forwards; /* Simple animation for appearance */
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px; /* Space below header */
+}
+
+.modal-header h2 {
+  font-size: 1.8em; /* Larger title */
+  color: #333;
+  margin: 0;
+}
+
+/* Close Button (X icon) */
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2em; /* Larger 'x' */
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+/* Form Group (Label + Input/Select) */
+.form-group {
+  margin-bottom: 15px; /* Spacing between form fields */
+}
+
+.form-group label {
+  display: block; /* Make label appear above input */
+  font-weight: bold;
+  margin-bottom: 8px; /* Space between label and input */
+  color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  width: 100%;
+  padding: 12px; /* Comfortable padding */
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 6px; /* Slightly rounded corners */
+  font-size: 1em;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group select:focus {
+  border-color: #007bff; /* Highlight on focus */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Subtle glow on focus */
+}
+
+/* Modal Actions (Buttons) */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 10px; /* Space between buttons */
+  margin-top: 25px; /* Space above buttons */
+}
+
+.modal-actions button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease;
+  min-width: 100px; /* Ensure buttons have a minimum width */
+}
+
+.cancel-button {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.cancel-button:hover {
+  background-color: #d3d3d3;
+}
+
+.add-button {
+  background-color: #007bff; /* Blue color for add button */
+  color: white;
+}
+
+.add-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.add-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Animation for modal appearance */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .modal-content {
+    margin: 15px; /* Add some margin on small screens */
+    padding: 20px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.5em;
+  }
+
+  .form-group label {
+    font-size: 0.9em;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 10px;
+    font-size: 0.95em;
+  }
+
+  .modal-actions {
+    flex-direction: column; /* Stack buttons on small screens */
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    width: 100%; /* Full width for stacked buttons */
+  }
+}

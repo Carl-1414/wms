@@ -1,7 +1,15 @@
+/* Orders.css */
+
 .orders {
   padding: 2rem;
-  background: #f7fafc;
+  /* Updated background and added shadow/border for the main orders container */
+  background: #ffffff; /* White background for the Orders Management section*/
   min-height: 100vh;
+  border-radius: 12px; /* Rounded corners for the container*/
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow*/
+  margin: 20px; /* Margin to create space from the global body background/sidebar*/
+  min-height: calc(100vh - 40px); /* Adjust min-height to account for margin */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .page-header {
@@ -68,6 +76,7 @@
   border-radius: 12px;
   margin-bottom: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0; /* Added border for consistency with overview cards */
 }
 
 .filters {
@@ -88,29 +97,46 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0; /* Added border for consistency */
+}
+
+/* Removed redundant flex-direction and gap for orders-table as it's a grid container */
+/* .orders-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10;
+} */
+
+.table-header,
+.table-row {
+  display: grid;
+  /* Adjusted grid-template-columns for better visual spacing based on images*/
+  grid-template-columns: 100px 1.5fr 120px 100px 80px 120px 120px 150px;
+  /* Removed large column-gap; it's better to manage column widths */
+  /* column-gap: 13rem; */
+  align-items: center;
+  padding: 0.75rem 1rem;
 }
 
 .table-header {
-  display: grid;
-  grid-template-columns: 100px 1fr 120px 100px 80px 120px 120px 150px;
-  background: #f8fafc;
-  padding: 1rem;
-  font-weight: 600;
-  color: #2d3748;
-  border-bottom: 1px solid #e2e8f0;
+  font-weight: bold;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e0e0e0;
+  color: #2d3748; /* Ensuring header text color */
 }
 
 .table-row {
-  display: grid;
-  grid-template-columns: 100px 1fr 120px 100px 80px 120px 120px 150px;
-  padding: 1rem;
-  border-bottom: 1px solid #f7fafc;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
   transition: background 0.2s;
-  align-items: center;
+}
+
+.table-row:nth-child(even) {
+  background-color: #f9fafb;
 }
 
 .table-row:hover {
-  background: #f8fafc;
+  background: #f0f2f5;
 }
 
 .order-id {
@@ -159,19 +185,15 @@
 }
 
 .priority {
-  padding: 2px 4px;             /* Less horizontal padding */
-  border-radius: 7px;
-  font-size: 0.80rem;            /* Slightly smaller font */
+  padding: 0.25rem 0.5rem; /* Adjusted padding to be consistent with status */
+  border-radius: 4px; /* Adjusted border-radius to be consistent with status */
+  font-size: 0.75rem; /* Adjusted font-size to be consistent with status */
   font-weight: 600;
   text-transform: uppercase;
   display: inline-block;
   text-align: center;
-  max-width: 100px;              /* Optional: prevent stretching */
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  /* Removed max-width, overflow, white-space, text-overflow unless needed for specific truncation */
 }
-
 
 .priority.high {
   background: #feb2b2;
@@ -201,11 +223,10 @@
 
 .actions {
   display: flex;
-  flex-direction: row; /* ensures buttons are side by side */
+  flex-direction: row;
   align-items: center;
-  gap: 0.10rem; /* horizontal spacing between buttons */
+  gap: 0.5rem; /* Increased gap for better button separation */
 }
-
 
 .action-btn {
   padding: 0.25rem 0.75rem;
@@ -215,7 +236,6 @@
   cursor: pointer;
   transition: all 0.2s;
   border: none;
-  
 }
 
 .action-btn.view {
@@ -237,45 +257,156 @@
   background: #e2e8f0;
 }
 
+/* Modal specific styles */
+.modal-overlay {
+  position: fixed; /* Positions the overlay relative to the viewport */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background for the overlay*/
+  display: flex;
+  justify-content: center; /* Centers the modal horizontally */
+  align-items: center; /* Centers the modal vertically */
+  z-index: 1000; /* Ensures the modal is on top of other content */
+}
+
+.modal-content {
+  background: white; /* White background for the modal itself*/
+  padding: 2rem; /* Padding inside the modal */
+  border-radius: 12px; /* Rounded corners for the modal*/
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Soft shadow for depth*/
+  width: 90%; /* Take up 90% of the overlay width */
+  max-width: 500px; /* Maximum width for the modal */
+  animation: fadeIn 0.3s ease-out; /* Optional: add a fade-in animation */
+  box-sizing: border-box; /* Include padding in the width calculation */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #1a202c;
+  font-size: 1.75rem; /* Slightly larger heading for the modal*/
+  text-align: center; /* Center the title */
+}
+
+.form-group {
+  margin-bottom: 1rem; /* Space between form fields */
+}
+
+.form-group label {
+  display: block; /* Make labels take full width */
+  margin-bottom: 0.5rem; /* Space between label and input */
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select {
+  width: 100%; /* Make inputs take full width of their container */
+  padding: 0.75rem 1rem; /* Padding inside inputs*/
+  border: 1px solid #e2e8f0; /* Light border*/
+  border-radius: 6px; /* Rounded corners for inputs*/
+  font-size: 1rem;
+  color: #2d3748;
+  box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group input[type="date"]:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #4299e1; /* Blue border on focus*/
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Blue shadow on focus */
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right*/
+  gap: 1rem; /* Space between buttons */
+  margin-top: 2rem; /* Space above buttons */
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  background: #4299e1; /* Blue background for primary button*/
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #3182ce;
+}
+
+.btn-secondary {
+  background: #edf2f7; /* Light gray background for secondary button*/
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
 @media (max-width: 1200px) {
   .table-header,
   .table-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 0.5rem;
   }
-  
   .filters {
     flex-direction: column;
   }
 }
 
-.orders-table {
-  display: flex;
-  flex-direction: column;
-  gap: 10; 
+@media (max-width: 768px) {
+  .orders {
+    padding: 1rem;
+    margin: 10px;
+  }
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  .add-btn {
+    padding: 0.5rem 1rem;
+  }
+  .orders-overview {
+    grid-template-columns: 1fr;
+  }
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+  }
+  .table-header div, .table-row div {
+    text-align: left;
+    padding: 0.25rem 0;
+  }
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
 }
 
-.table-header,
-.table-row {
-  display: grid;
-  grid-template-columns: 1.5fr 2fr 1.5fr 1.5fr 1fr 1.5fr 1.5fr 2fr;
-  column-gap: 13rem; 
-  align-items: center;
-  padding: 0.75rem 1rem;
-}
-
-.table-header {
-  font-weight: bold;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.table-row {
-  background-color: white;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.table-row:nth-child(even) {
-  background-color: #f9fafb;
-}
 

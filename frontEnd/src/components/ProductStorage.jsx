@@ -1,30 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ProductStorage.css';
+// You might also want to import a dedicated CSS for modals if you create one
+// import './Modal.css'; // Example
 
 const ProductStorage = () => {
-  const [products, setProducts] = useState([
-    { id: 'SKU-001', name: 'Laptop Computer', category: 'Electronics', zone: 'A1', shelf: 'A1-001', quantity: 45, minStock: 20, maxStock: 100, lastUpdated: '2024-01-15' },
-    { id: 'SKU-002', name: 'Wireless Mouse', category: 'Electronics', zone: 'A1', shelf: 'A1-025', quantity: 156, minStock: 50, maxStock: 200, lastUpdated: '2024-01-14' },
-    { id: 'SKU-003', name: 'Glass Vase', category: 'Fragile', zone: 'B2', shelf: 'B2-010', quantity: 12, minStock: 15, maxStock: 50, lastUpdated: '2024-01-13' },
-    { id: 'SKU-004', name: 'Industrial Cable', category: 'Bulk', zone: 'C3', shelf: 'C3-045', quantity: 234, minStock: 100, maxStock: 500, lastUpdated: '2024-01-12' },
-    { id: 'SKU-005', name: 'Frozen Food Items', category: 'Perishable', zone: 'D4', shelf: 'D4-008', quantity: 78, minStock: 30, maxStock: 150, lastUpdated: '2024-01-11' },
-  ]);
-
+  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterZone, setFilterZone] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [availableZones, setAvailableZones] = useState([]);
+  const [loadingZones, setLoadingZones] = useState(true);
+  const [error, setError] = useState(null);
 
   const categories = ['Electronics', 'Fragile', 'Bulk', 'Perishable', 'Hazardous'];
-  const zones = ['A1', 'B2', 'C3', 'D4', 'E5', 'F6'];
+
+  const fetchProducts = async () => {
+    setError(null);
+    try {
+      const response = await fetch('http://localhost:3000/api/products');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      setError("Failed to load products from the server.");
+    }
+  };
+
+  const fetchZones = async () => {
+    setLoadingZones(true);
+    setError(null);
+    try {
+      const response = await fetch('http://localhost:3000/api/warehouse-zones');
+      if (!response.ok) {
+        throw new Error('Network response for zones was not ok');
+      }
+      const data = await response.json();
+      setAvailableZones(data.map(zone => zone.id));
+    } catch (error) {
+      console.error("Failed to fetch zones:", error);
+      setError("Failed to load available zones from the server.");
+    } finally {
+      setLoadingZones(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchZones();
+  }, []);
 
   const filteredProducts = products.filter(product => {
     return (
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.id.toLowerCase().includes(searchTerm.toLowerCase())
-    ) &&
-    (filterCategory === '' || product.category === filterCategory) &&
-    (filterZone === '' || product.zone === filterZone);
+      (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.id.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (filterCategory === '' || product.category === filterCategory) &&
+      (filterZone === '' || product.zone === filterZone)
+    );
   });
 
   const getStockStatus = (quantity, minStock, maxStock) => {
@@ -36,14 +71,54 @@ const ProductStorage = () => {
   const lowStockCount = products.filter(p => p.quantity <= p.minStock).length;
   const totalValue = products.reduce((acc, p) => acc + p.quantity, 0);
 
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    const newProduct = {
+      id: e.target.elements.id.value,
+      name: e.target.elements.name.value,
+      category: e.target.elements.category.value,
+      zone: e.target.elements.zone.value,
+      shelf: e.target.elements.shelf.value,
+      quantity: Number(e.target.elements.quantity.value),
+      minStock: Number(e.target.elements.minStock.value),
+      maxStock: Number(e.target.elements.maxStock.value),
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newProduct)
+      });
+
+      if (response.ok) {
+        setShowAddForm(false);
+        fetchProducts();
+        alert('Product added successfully!');
+      } else {
+        const errorData = await response.json();
+        alert('Failed to add product: ' + (errorData.message || 'Unknown error'));
+        setError('Failed to add product: ' + (errorData.message || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Error connecting to the backend:', err);
+      alert('Error connecting to the backend: ' + err.message);
+      setError('Error connecting to the backend: ' + err.message);
+    }
+  };
+
   return (
     <div className="product-storage">
       <div className="page-header">
         <h1>Product Storage</h1>
-        <button className="add-btn" onClick={() => setShowAddForm(true)}>
-          + Add Product
-        </button>
+        <button className="add-btn" onClick={() => setShowAddForm(true)}>+ Add Product</button>
       </div>
+
+      {error && <div className="error-message" style={{ color: 'red', textAlign: 'center', margin: '1rem 0' }}>{error}</div>}
 
       <div className="storage-overview">
         <div className="overview-card">
@@ -74,68 +149,143 @@ const ProductStorage = () => {
           />
         </div>
         <div className="filters">
-          <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
+          <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
             <option value="">All Categories</option>
             {categories.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
-          <select
-            value={filterZone}
-            onChange={(e) => setFilterZone(e.target.value)}
-          >
+          <select value={filterZone} onChange={(e) => setFilterZone(e.target.value)}>
             <option value="">All Zones</option>
-            {zones.map(zone => (
-              <option key={zone} value={zone}>Zone {zone}</option>
-            ))}
+            {loadingZones ? (
+              <option disabled>Loading Zones...</option>
+            ) : (
+              availableZones.map(zoneId => (
+                <option key={zoneId} value={zoneId}>Zone {zoneId}</option>
+              ))
+            )}
           </select>
         </div>
       </div>
 
-<div className="products-table">
-  <div className="table-header table-grid">
-    <div>SKU</div>
-    <div>Product Name</div>
-    <div>Category</div>
-    <div>Location</div>
-    <div>Stock Level</div>
-    <div>Status</div>
-    <div>Last Updated</div>
-  </div>
-  {filteredProducts.map(product => (
-    <div key={product.id} className="table-row table-grid">
-      <div className="sku">{product.id}</div>
-      <div className="product-name">{product.name}</div>
-      <div className="category">
-        <span className={`category-badge ${product.category.toLowerCase()}`}>
-          {product.category}
-        </span>
-      </div>
-      <div className="location">
-        Zone {product.zone} - {product.shelf}
-      </div>
-      <div className="stock-level">
-        <div className="stock-info">
-          <span className="current">{product.quantity}</span>
-          <span className="range">({product.minStock}-{product.maxStock})</span>
+      {showAddForm && (
+        <div className="modal-overlay">
+          <div className="add-product-form modal-content">
+            <div className="modal-header"> {/* New div for header */}
+              <h2>Add New Product</h2>
+              <button className="close-button" onClick={() => setShowAddForm(false)}>
+                &times; {/* HTML entity for 'x' */}
+              </button>
+            </div>
+            <form onSubmit={handleAddProduct}>
+              <div className="form-group"> {/* New div for form group */}
+                <label htmlFor="skuId">SKU ID</label>
+                <input type="text" id="skuId" name="id" placeholder="SKU ID" required />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="productName">Product Name</label>
+                <input type="text" id="productName" name="name" placeholder="Product Name" required />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="category">Category</label>
+                <select id="category" name="category" required>
+                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="zone">Zone</label>
+                {loadingZones ? (
+                  <select id="zone" name="zone" required disabled>
+                    <option>Loading Zones...</option>
+                  </select>
+                ) : (
+                  <select id="zone" name="zone" required>
+                    {availableZones.length > 0 ? (
+                      availableZones.map(zoneId => (
+                        <option key={zoneId} value={zoneId}>{zoneId}</option>
+                      ))
+                    ) : (
+                      <option disabled>No zones available. Please add zones first.</option>
+                    )}
+                  </select>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="shelf">Shelf</label>
+                <input type="text" id="shelf" name="shelf" placeholder="Shelf (e.g. A1-001)" required />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" placeholder="Quantity" required />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="minStock">Min Stock</label>
+                <input type="number" id="minStock" name="minStock" placeholder="Min Stock" required />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="maxStock">Max Stock</label>
+                <input type="number" id="maxStock" name="maxStock" placeholder="Max Stock" required />
+              </div>
+
+              <div className="modal-actions"> {/* Renamed form-actions to modal-actions for consistency */}
+                <button type="button" onClick={() => setShowAddForm(false)} className="cancel-button">Cancel</button>
+                <button type="submit" disabled={loadingZones || availableZones.length === 0} className="add-button">Add Product</button> {/* Added add-button class */}
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="stock-bar">
-          <div
-            className={`stock-fill ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}
-            style={{ width: `${Math.min((product.quantity / product.maxStock) * 100, 100)}%` }}
-          ></div>
+      )}
+
+      <div className="products-table">
+        <div className="table-header table-grid">
+          <div>SKU</div>
+          <div>Product Name</div>
+          <div>Category</div>
+          <div>Location</div>
+          <div>Stock Level</div>
+          <div>Status</div>
+          <div>Last Updated</div>
         </div>
+        {products.length === 0 && !loadingZones && !error ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#718096' }}>No products found.</div>
+        ) : filteredProducts.map(product => (
+          <div key={product.id} className="table-row table-grid">
+            <div className="sku">{product.id}</div>
+            <div className="product-name">{product.name}</div>
+            <div className="category">
+              <span className={`category-badge ${product.category.toLowerCase()}`}>
+                {product.category}
+              </span>
+            </div>
+            <div className="location">
+              Zone {product.zone} - {product.shelf}
+            </div>
+            <div className="stock-level">
+              <div className="stock-info">
+                <span className="current">{product.quantity}</span>
+                <span className="range">({product.minStock}-{product.maxStock})</span>
+              </div>
+              <div className="stock-bar">
+                <div
+                  className={`stock-fill ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}
+                  style={{ width: `${Math.min((product.quantity / product.maxStock) * 100, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+            <div className={`status ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}>
+              {getStockStatus(product.quantity, product.minStock, product.maxStock).toUpperCase()}
+            </div>
+            <div className="last-updated">{new Date(product.lastUpdated).toLocaleString()}</div>
+          </div>
+        ))}
       </div>
-      <div className={`status ${getStockStatus(product.quantity, product.minStock, product.maxStock)}`}>
-        {getStockStatus(product.quantity, product.minStock, product.maxStock).toUpperCase()}
-      </div>
-      <div className="last-updated">{product.lastUpdated}</div>
-    </div>
-  ))}
-</div>
     </div>
   );
 };

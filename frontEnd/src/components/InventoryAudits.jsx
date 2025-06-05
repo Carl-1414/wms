@@ -1,155 +1,278 @@
-import React, { useState } from 'react';
-import './InventoryAudits.css';
+// InventoryAudits.js
+import React, { useEffect, useState } from 'react';
+import './InventoryAudits.css'; // Assuming you have a CSS file for styling
 
 const InventoryAudits = () => {
-  const [audits, setAudits] = useState([
-    { id: 'AUD-001', zone: 'A1', date: '2024-01-15', auditor: 'John Smith', discrepancies: 3, status: 'Resolved', accuracy: 98.5 },
-    { id: 'AUD-002', zone: 'B2', date: '2024-01-14', auditor: 'Sarah Johnson', discrepancies: 0, status: 'Clean', accuracy: 100 },
-    { id: 'AUD-003', zone: 'C3', date: '2024-01-13', auditor: 'Mike Wilson', discrepancies: 7, status: 'Pending', accuracy: 94.2 },
-    { id: 'AUD-004', zone: 'D4', date: '2024-01-12', auditor: 'Lisa Brown', discrepancies: 2, status: 'Resolved', accuracy: 99.1 },
-    { id: 'AUD-005', zone: 'E5', date: '2024-01-11', auditor: 'David Lee', discrepancies: 1, status: 'Resolved', accuracy: 99.5 },
-  ]);
+    const [audits, setAudits] = useState([]);
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [newAudit, setNewAudit] = useState({
+        zone: '',
+        scheduledDate: '', // Frontend state uses camelCase for form inputs
+        auditor: '',
+        auditType: '',     // Frontend state uses camelCase for form inputs
+    });
+    const [warehouseZones, setWarehouseZones] = useState([]); // State for warehouse zones
 
-  const [showScheduleForm, setShowScheduleForm] = useState(false);
+    // State for displaying messages to the user (replaces alert())
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
 
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'Clean': return '✅';
-      case 'Resolved': return '🔧';
-      case 'Pending': return '⏳';
-      case 'In Progress': return '🔍';
-      default: return '📋';
-    }
-  };
+    // Function to display temporary messages
+    const showMessage = (msg, type = 'info') => {
+        setMessage(msg);
+        setMessageType(type);
+        // Hide message after 3 seconds
+        setTimeout(() => {
+            setMessage('');
+            setMessageType('');
+        }, 3000); 
+    };
 
-  const avgAccuracy = audits.reduce((acc, audit) => acc + audit.accuracy, 0) / audits.length;
-  const pendingAudits = audits.filter(a => a.status === 'Pending').length;
-  const totalDiscrepancies = audits.reduce((acc, audit) => acc + audit.discrepancies, 0);
+    // Fetch audits on component mount
+    useEffect(() => {
+        const fetchAudits = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/inventory-audits');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
+                }
+                const data = await response.json();
+                setAudits(data);
+            } catch (error) {
+                console.error('Error fetching audits:', error);
+                showMessage(`Failed to load audits: ${error.message}`, 'error'); // Display error to the user
+            }
+        };
 
-  return (
-    <div className="inventory-audits">
-      <div className="page-header">
-        <h1>Inventory Audits</h1>
-        <button className="add-btn" onClick={() => setShowScheduleForm(true)}>
-          + Schedule Audit
-        </button>
-      </div>
+        fetchAudits();
+    }, []);
 
-      <div className="audits-overview">
-        <div className="overview-card">
-          <h3>Total Audits</h3>
-          <div className="overview-value">{audits.length}</div>
-        </div>
-        <div className="overview-card">
-          <h3>Average Accuracy</h3>
-          <div className="overview-value">{avgAccuracy.toFixed(1)}%</div>
-        </div>
-        <div className="overview-card">
-          <h3>Pending Audits</h3>
-          <div className="overview-value">{pendingAudits}</div>
-        </div>
-        <div className="overview-card">
-          <h3>Total Discrepancies</h3>
-          <div className="overview-value">{totalDiscrepancies}</div>
-        </div>
-      </div>
+    // Fetch warehouse zones on component mount
+    useEffect(() => {
+        const fetchWarehouseZones = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/warehouse-zones');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
+                }
+                const data = await response.json();
+                setWarehouseZones(data); // Populate the warehouseZones state
+            } catch (error) {
+                console.error('Error fetching warehouse zones:', error);
+                showMessage(`Failed to load warehouse zones: ${error.message}`, 'error'); // Display error to the user
+            }
+        };
 
-      <div className="audits-grid">
-        {audits.map(audit => (
-          <div key={audit.id} className={`audit-card ${audit.status.toLowerCase()}`}>
-            <div className="audit-header">
-              <div className="audit-id">
-                <span className="status-icon">{getStatusIcon(audit.status)}</span>
-                {audit.id}
-              </div>
-              <span className={`status-badge ${audit.status.toLowerCase()}`}>
-                {audit.status}
-              </span>
-            </div>
+        fetchWarehouseZones();
+    }, []); // Empty dependency array means this runs once on mount
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewAudit(prevAudit => ({
+            ...prevAudit,
+            [name]: value
+        }));
+    };
+
+    const handleAddAudit = async (e) => {
+        e.preventDefault();
+
+        // Basic validation
+        if (!newAudit.zone || !newAudit.scheduledDate || !newAudit.auditor || !newAudit.auditType) {
+            showMessage('Please fill in all required fields.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3000/api/inventory-audits', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // Send the new audit data to the server
+                body: JSON.stringify(newAudit),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message}`);
+            }
+
+            // The backend should return the newly created audit object with its generated ID and default values
+            // The backend's response uses snake_case for database column names like 'scheduled_date' and 'audit_type'
+            const addedAudit = await response.json();
             
-            <div className="audit-details">
-              <h3>Zone {audit.zone}</h3>
-              <div className="detail-row">
-                <span className="label">Date:</span>
-                <span className="value">{audit.date}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Auditor:</span>
-                <span className="value">{audit.auditor}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Discrepancies:</span>
-                <span className={`value ${audit.discrepancies > 0 ? 'warning' : 'success'}`}>
-                  {audit.discrepancies}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Accuracy:</span>
-                <span className="value">{audit.accuracy}%</span>
-              </div>
-            </div>
-            
-            <div className="audit-actions">
-              <button className="action-btn primary">View Report</button>
-              <button className="action-btn secondary">Download</button>
-            </div>
-          </div>
-        ))}
-      </div>
+            // Add the new audit to the state to update the UI
+            setAudits(prevAudits => [...prevAudits, addedAudit]); 
+            setNewAudit({ // Reset form fields
+                zone: '',
+                scheduledDate: '',
+                auditor: '',
+                auditType: '',
+            });
+            setShowAddForm(false); // Close the modal
+            showMessage('New Audit Scheduled Successfully!', 'success');
+        } catch (error) {
+            console.error('Error scheduling audit:', error);
+            showMessage(`Failed to schedule audit: ${error.message}`, 'error');
+        }
+    };
 
-      {showScheduleForm && (
-        <div className="modal-overlay" onClick={() => setShowScheduleForm(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Schedule New Audit</h2>
-              <button className="close-btn" onClick={() => setShowScheduleForm(false)}>×</button>
+    // Helper function to get status color for styling audit cards
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Completed': return '#38a169'; // Green
+            case 'Scheduled': return '#d69e2e'; // Orange
+            case 'Overdue': return '#e53e3e'; // Red
+            case 'In Progress': return '#3182ce'; // Blue
+            default: return '#718096'; // Gray
+        }
+    };
+
+    // Calculate overview statistics based on current audits data
+    const totalAudits = audits.length;
+    const completedAudits = audits.filter(audit => audit.status === 'Completed').length;
+    // Calculate overdue audits: those scheduled in the past and still 'Scheduled' or 'In Progress'
+    const overdueAudits = audits.filter(audit => 
+        new Date(audit.scheduled_date) < new Date() && 
+        (audit.status === 'Scheduled' || audit.status === 'In Progress')
+    ).length;
+    const avgAccuracy = audits.length > 0
+        // Ensure accuracy property exists and is a number before summing
+        ? (audits.reduce((acc, audit) => acc + (audit.accuracy || 0), 0) / audits.length).toFixed(2)
+        : 'N/A';
+
+    return (
+        <div className="inventory-audits">
+            {/* Message display container */}
+            {message && (
+                <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white ${messageType === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+                    {message}
+                </div>
+            )}
+
+            <div className="page-header">
+                <h1>Inventory Audits</h1>
+                <button className="add-btn" onClick={() => setShowAddForm(true)}>
+                    + Schedule New Audit
+                </button>
             </div>
-            <form>
-              <div className="form-group">
-                <label>Zone</label>
-                <select required>
-                  <option value="">Select Zone</option>
-                  <option value="A1">Zone A1</option>
-                  <option value="B2">Zone B2</option>
-                  <option value="C3">Zone C3</option>
-                  <option value="D4">Zone D4</option>
-                  <option value="E5">Zone E5</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Scheduled Date</label>
-                <input type="date" required />
-              </div>
-              <div className="form-group">
-                <label>Auditor</label>
-                <select required>
-                  <option value="">Select Auditor</option>
-                  <option value="John Smith">John Smith</option>
-                  <option value="Sarah Johnson">Sarah Johnson</option>
-                  <option value="Mike Wilson">Mike Wilson</option>
-                  <option value="Lisa Brown">Lisa Brown</option>
-                  <option value="David Lee">David Lee</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Audit Type</label>
-                <select required>
-                  <option value="">Select Type</option>
-                  <option value="Full">Full Audit</option>
-                  <option value="Spot">Spot Check</option>
-                  <option value="Cycle">Cycle Count</option>
-                </select>
-              </div>
-              <div className="form-actions">
-                <button type="button" onClick={() => setShowScheduleForm(false)}>Cancel</button>
-                <button type="submit">Schedule Audit</button>
-              </div>
-            </form>
-          </div>
+
+            <div className="audits-overview">
+                <div className="overview-card">
+                    <h3>Total Audits</h3>
+                    <div className="overview-value">{totalAudits}</div>
+                </div>
+                <div className="overview-card">
+                    <h3>Completed Audits</h3>
+                    <div className="overview-value">{completedAudits}</div>
+                </div>
+                <div className="overview-card">
+                    <h3>Overdue Audits</h3>
+                    <div className="overview-value">{overdueAudits}</div>
+                </div>
+                <div className="overview-card">
+                    <h3>Average Accuracy</h3>
+                    <div className="overview-value">{avgAccuracy}%</div>
+                </div>
+            </div>
+
+            <div className="audits-grid">
+                {audits.length === 0 ? (
+                    <p className="no-audits-message">No inventory audits scheduled yet. Click "Schedule New Audit" to add one.</p>
+                ) : (
+                    audits.map((audit) => (
+                        <div key={audit.id} className="audit-card">
+                            <div className="audit-header">
+                                <h3>Audit {audit.id}</h3>
+                                <span className="audit-status" style={{ backgroundColor: getStatusColor(audit.status) }}>
+                                    {audit.status}
+                                </span>
+                            </div>
+                            <p><strong>Zone:</strong> {audit.zone}</p>
+                            {/* Use audit.scheduled_date as returned from the backend */}
+                            <p><strong>Scheduled Date:</strong> {new Date(audit.scheduled_date).toLocaleDateString()}</p>
+                            <p><strong>Auditor:</strong> {audit.auditor}</p>
+                            {/* Use audit.audit_type as returned from the backend */}
+                            <p><strong>Type:</strong> {audit.audit_type}</p>
+                            <p><strong>Discrepancies:</strong> {audit.discrepancies}</p>
+                            <p><strong>Accuracy:</strong> {audit.accuracy}%</p>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Modal for adding new audit */}
+            {showAddForm && (
+                <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Schedule New Inventory Audit</h2>
+                            <button className="close-btn" onClick={() => setShowAddForm(false)}>×</button>
+                        </div>
+                        <form onSubmit={handleAddAudit}>
+                            <div className="form-group">
+                                <label>Zone</label>
+                                <select
+                                    name="zone"
+                                    value={newAudit.zone}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="">Select Zone</option>
+                                    {warehouseZones.map((zone) => (
+                                        <option key={zone.id} value={zone.id}>
+                                            {zone.name} ({zone.id})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Scheduled Date</label>
+                                <input
+                                    type="date"
+                                    name="scheduledDate"
+                                    value={newAudit.scheduledDate}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Auditor</label>
+                                <input
+                                    type="text"
+                                    name="auditor"
+                                    value={newAudit.auditor}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Audit Type</label>
+                                <select
+                                    name="auditType"
+                                    value={newAudit.auditType}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="">Select Audit Type</option>
+                                    <option value="Full">Full Audit</option>
+                                    <option value="Cycle Count">Cycle Count</option>
+                                    <option value="Spot Check">Spot Check</option>
+                                </select>
+                            </div>
+                            <div className="form-actions">
+                                <button type="button" onClick={() => setShowAddForm(false)}>Cancel</button>
+                                <button type="submit">Schedule Audit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default InventoryAudits;
