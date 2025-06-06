@@ -1,380 +1,1232 @@
-.dashboard {
-  padding: 2rem;
-  width: 100%;
-  background: #f7fafc;
-  min-height: 100vh;
-  margin: 0;
-  box-sizing: border-box;
-  display: block;
+/* Settings.css */
+
+/* General styles for the settings component */
+body {
+    font-family: 'Inter', sans-serif; /* A more modern, clean font */
+    background-color: #f0f2f5; /* A softer background color for the whole page */
+    color: #333; /* Darker text for better contrast */
+    margin: 0;
+    padding: 0;
 }
 
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding: 0;
-  background: none;
-  border-radius: 0;
-  box-shadow: none;
-  border: none;
+.settings-container {
+    display: grid;
+    grid-template-columns: 280px 1fr; /* Fixed width for sidebar, rest for content */
+    gap: 3rem; /* Increased gap for more breathing room */
+    padding: 3rem; /* More padding around the content */
+    max-width: 1200px; /* Max width for the container to keep it from stretching too wide */
+    margin: 3rem auto; /* Center the container with margin */
+    background: #ffffff; /* White background for the main content area */
+    border-radius: 1rem; /* More rounded corners for a softer look */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
 }
 
-.dashboard-header h1 {
-  margin: 0;
-  color: #1a202c;
-  font-size: 2rem;
-  font-weight: 700;
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
+h1 {
+    font-size: 2.5rem; /* Larger, more impactful heading */
+    color: #2c3e50; /* A darker, more professional blue-grey */
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee; /* A subtle line under the heading */
 }
 
-.date {
-  color: #718096;
-  font-size: 0.875rem;
-  font-weight: 500;
-  padding: 0;
-  background: none;
-  border-radius: 0;
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.metric-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-  position: relative;
-  overflow: visible;
-  transition: all 0.2s ease;
-}
-
-.metric-card::before {
-  display: none;
-}
-
-.metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.metric-card h3 {
-  margin: 0 0 0.5rem 0;
-  color: #718096;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.metric-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.5rem;
-}
-
-.unit {
-  font-size: 0.875rem;
-  color: #718096;
-  font-weight: 500;
-}
-
-.trend {
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.trend.positive {
-  color: #38a169;
-  background: #f0fff4;
-}
-
-.trend.negative {
-  color: #e53e3e;
-  background: #fed7d7;
-}
-
-.trend.neutral {
-  color: #718096;
-  background: #f7fafc;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
-}
-
-.widget {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
-}
-
-.widget:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.widget h3 {
-  margin: 0 0 1rem 0;
-  color: #1a202c;
-  font-size: 1.125rem;
-  font-weight: 600;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f7fafc;
-}
-
-.order-item, .stock-item {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f7fafc;
-  transition: all 0.2s ease;
-}
-
-.order-item:hover, .stock-item:hover {
-  background: #f7fafc;
-  margin: 0 -0.75rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-}
-
-.order-item:last-child, .stock-item:last-child {
-  border-bottom: none;
-}
-
-.order-id {
-  font-weight: 600;
-  color: #4299e1;
-  font-size: 0.875rem;
-}
-
-.order-customer {
-  color: #2d3748;
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-.order-status {
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  text-transform: capitalize;
-}
-
-.order-status.processing {
-  color: #d69e2e;
-  background: #faf089;
-}
-
-.order-status.shipped {
-  color: #38a169;
-  background: #9ae6b4;
-}
-
-.order-status.pending {
-  color: #e53e3e;
-  background: #feb2b2;
-}
-
-.order-items {
-  color: #718096;
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-.stock-item {
-  grid-template-columns: 1fr auto;
-}
-
-.item-name {
-  font-weight: 600;
-  color: #2d3748;
-  font-size: 0.875rem;
-}
-
-.current-stock {
-  font-weight: 700;
-  color: #e53e3e;
-  font-size: 1rem;
-}
-
-.min-stock {
-  color: #718096;
-  font-size: 0.875rem;
-}
-
-/* Shipment item styling */
-.shipment-item, .zone-item, .audit-item {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f7fafc;
-  transition: all 0.2s ease;
-}
-
-.shipment-item:hover, .zone-item:hover, .audit-item:hover {
-  background: #f7fafc;
-  margin: 0 -0.75rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-}
-
-.shipment-item:last-child, .zone-item:last-child, .audit-item:last-child {
-  border-bottom: none;
-}
-
-.shipment-id, .zone-name, .audit-zone {
-  font-weight: 600;
-  color: #4299e1;
-  font-size: 0.875rem;
-}
-
-.shipment-supplier, .shipment-customer, .zone-capacity, .audit-date {
-  color: #2d3748;
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-.shipment-status, .zone-status, .audit-status {
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 100px;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  display: flex;              /* Use flexbox for centering */
-  align-items: center;        /* Vertical centering */
-  justify-content: center;    /* Horizontal centering */
-  max-width: 80px;
-  white-space: nowrap;
-  text-align: center;
-  line-height: 1.2;
-  height: 24px;               /* Optional: give consistent height */
-}
-
-.shipment-status.in-transit {
-  color: #d69e2e;       
-  background: #faf089;
-}
-
-.shipment-status.arrived {
-  color: #38a169;        
-  background: #9ae6b4;
-}
-
-.shipment-status.processing {
-  color: #3182ce;        
-  background: #90cdf4;
-}
-
-.shipment-status.loading {
-  color: #3182ce;        
-  background: #90cdf4;
-}
-
-.shipment-status.ready {
-  color: #805ad5;         /* purple */
-  background: #d6bcfa;
-}
-
-.shipment-status.scheduled {
-  color: #805ad5;
-  background: #d6bcfa;
-}
-
-.shipment-status.delayed {
-  color: #e53e3e;         /* red */
-  background: #feb2b2;
-}
-
-.shipment-status.cancelled {
-  color: #a0aec0;         /* gray */
-  background: #e2e8f0;
-}
-
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 1rem;
-  }
-
-  .dashboard-header {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Add consistent inner padding to key containers */
-
-.settings-container,
-.settings-section,
-.metrics-grid,
-.dashboard-grid,
-.widget,
-.metric-card {
-  padding: 1.5rem;
-  box-sizing: border-box;
+h2 {
+    font-size: 1.8rem; /* Slightly larger subheadings */
+    color: #34495e;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.5rem;
 }
 
 .settings-sidebar {
-  padding: 1.5rem;
+    background: linear-gradient(135deg, #4a90e2 0%, #7b68ee 100%); /* Gradient background for the sidebar */
+    padding: 2.5rem 1.5rem; /* Adjusted padding */
+    border-radius: 0.75rem; /* Slightly more rounded corners */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Shadow for the sidebar */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start */
 }
 
+.tab-btn {
+    display: flex; /* Use flexbox for icon and text alignment */
+    align-items: center;
+    gap: 1rem; /* Space between icon and text */
+    width: 100%; /* Make buttons full width in sidebar */
+    padding: 1.2rem 1.5rem; /* More vertical padding */
+    margin-bottom: 0.8rem; /* Slightly less margin between buttons */
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background for tabs */
+    color: #ffffff; /* White text for tabs */
+    font-weight: 600; /* Bolder font weight */
+    text-align: left; /* Align text to the left */
+    border-radius: 0.6rem; /* Rounded corners for buttons */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transition for all properties */
+    border: none; /* Remove default button border */
+}
+
+.tab-btn svg {
+    font-size: 1.5rem; /* Size for icons (requires an icon library like Font Awesome or similar) */
+    color: #ffffff;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.35); /* Slightly more opaque on hover */
+    transform: translateX(5px); /* Small slide effect on hover */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+}
+
+.tab-btn.active { /* Style for the active tab */
+    background: #ffffff; /* Solid white background for active tab */
+    color: #4a90e2; /* Active tab text color */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* More prominent shadow for active tab */
+    transform: translateX(0); /* Ensure active tab doesn't slide */
+}
+
+.tab-btn.active svg {
+    color: #4a90e2; /* Active tab icon color */
+}
+
+/* General Settings specific styles */
 .settings-content {
-  padding: 1.5rem;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
 
-.users-table {
-  padding: 1rem;
+.form-group {
+    margin-bottom: 1.8rem; /* More space between form elements */
+    display: flex;
+    align-items: center; /* Align label and input */
+    gap: 1.5rem; /* Space between label and input */
 }
 
-.table-header,
-.table-row {
-  padding: 0.75rem 1rem;
+.form-group label {
+    font-weight: 600; /* Bolder labels */
+    color: #555;
+    flex-basis: 180px; /* Fixed width for labels */
+    text-align: right; /* Align labels to the right */
 }
 
-.setting-group,
-.notification-group,
+.form-group input[type="text"],
+.form-group select {
+    flex-grow: 1; /* Allow input/select to take remaining space */
+    padding: 0.8rem 1.2rem; /* More padding for inputs */
+    border: 1px solid #dcdcdc; /* Lighter border */
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    color: #444;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9; /* Slightly off-white input background */
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+    border-color: #4a90e2; /* Highlight border on focus */
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2); /* Soft glow on focus */
+    outline: none;
+    background-color: #ffffff; /* White background on focus */
+}
+
+/* Save Changes Button */
+.save-changes-btn {
+    display: block; /* Make it a block element to center easily */
+    margin-top: 3rem; /* More space above the button */
+    padding: 1rem 2.5rem; /* Generous padding */
+    background: linear-gradient(45deg, #4a90e2 0%, #34ace0 100%); /* Gradient background for the button */
+    color: white;
+    font-size: 1.1rem; /* Larger font size */
+    font-weight: 600;
+    border: none;
+    border-radius: 0.75rem; /* Rounded corners */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Shadow for depth */
+    width: fit-content; /* Fit content width */
+    margin-left: auto; /* Center the button */
+    margin-right: auto;
+}
+
+.save-changes-btn:hover {
+    background: linear-gradient(45deg, #34ace0 0%, #4a90e2 100%); /* Reverse gradient on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Table styles (assuming these are for other tabs) */
+.table {
+    width: 100%;
+    border-collapse: separate; /* Use separate to allow border-radius on cells */
+    border-spacing: 0; /* Remove default spacing */
+    margin-top: 2rem;
+    background: #fff;
+    border-radius: 0.75rem;
+    overflow: hidden; /* Ensures rounded corners are applied */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table-header th {
+    background: #e9f2fa; /* Lighter blue for header */
+    font-weight: 700; /* Bolder header text */
+    color: #2c3e50;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid #dbe9f5; /* Subtle border */
+}
+
+.table-row td {
+    background: #fff;
+    padding: 1rem 1.5rem;
+    color: #444;
+    border-bottom: 1px solid #f0f0f0; /* Lighter row borders */
+    transition: background 0.3s ease;
+}
+
+.table-row:last-child td {
+    border-bottom: none; /* Remove border from last row */
+}
+
+.table-row:hover {
+    background: #f7f9fc; /* Very subtle hover effect */
+}
+
+/* Action button styles */
+.action-btn {
+    display: inline-flex; /* Use flex for icon and text alignment */
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem; /* More padding */
+    margin-right: 0.7rem; /* More space between buttons */
+    border-radius: 0.6rem; /* Slightly more rounded */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    text-decoration: none; /* Remove underline if applied */
+}
+
+.action-btn.edit {
+    background: #3182ce;
+    color: white;
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.2);
+}
+
+.action-btn.edit:hover {
+    background: #2b6cb0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(43, 108, 176, 0.3);
+}
+
+.action-btn.delete {
+    background: #e53e3e;
+    color: white;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.2);
+}
+
+.action-btn.delete:hover {
+    background: #c53030;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(197, 48, 48, 0.3);
+}
+
+/* Notification styles */
+.notification-group {
+    margin-bottom: 2.5rem; /* More space between groups */
+    background-color: #fbfdff; /* Light background for notification groups */
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid #eef2f5;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03); /* Inner shadow */
+}
+
+.notification-group h3 {
+    font-size: 1.3rem;
+    color: #34495e;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px dotted #e0e0e0;
+    padding-bottom: 0.6rem;
+}
+
+.notification-item {
+    margin-bottom: 1.2rem; /* More space between items */
+}
+
+.notification-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem; /* Slightly more gap */
+    font-weight: 500;
+    color: #4a5568;
+    cursor: pointer;
+    font-size: 1.05rem;
+}
+
+.notification-item input[type="checkbox"] {
+    width: 20px; /* Standardize checkbox size */
+    height: 20px;
+    margin: 0;
+    accent-color: #4a90e2; /* Custom checkbox color */
+    border-radius: 4px; /* Slightly rounded checkbox */
+    cursor: pointer;
+}
+
+/* Checkbox group styles */
 .checkbox-group {
-  padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem; /* Consistent gap */
+    margin-top: 0.8rem; /* More space from parent label */
+    padding-left: 1.5rem; /* Indent sub-checkboxes */
+    border-left: 2px solid #e0e0e0; /* Visual separator for sub-checkboxes */
 }
 
-.settings-section > button,
-.add-user-btn,
-.save-btn {
-  margin-top: 2rem;
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: normal;
+    color: #555;
+    cursor: pointer;
+    font-size: 0.98rem;
 }
 
+.checkbox-group input[type="checkbox"] {
+    width: 18px; /* Slightly smaller for sub-checkboxes */
+    height: 18px;
+    margin: 0;
+    accent-color: #6a5acd; /* Different accent color for sub-checkboxes for distinction */
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .settings-container {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+        margin: 2rem auto;
+    }
+
+    .settings-sidebar {
+        padding: 1.5rem;
+        flex-direction: row; /* Make sidebar horizontal on smaller screens */
+        flex-wrap: wrap; /* Allow buttons to wrap */
+        justify-content: center; /* Center buttons */
+        gap: 0.8rem; /* Smaller gap for horizontal layout */
+        border-radius: 0.75rem; /* Keep rounded corners */
+    }
+
+    .tab-btn {
+        width: auto; /* Auto width for horizontal tabs */
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 0; /* No bottom margin when horizontal */
+        font-size: 0.9rem;
+    }
+
+    .tab-btn svg {
+        font-size: 1.3rem;
+    }
+
+    .settings-content {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        flex-direction: column; /* Stack label and input */
+        align-items: flex-start; /* Align stacked items to the start */
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        text-align: left; /* Align labels to left */
+        flex-basis: auto; /* Remove fixed width */
+    }
+
+    .save-changes-btn {
+        width: 100%; /* Full width button on smaller screens */
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .table-header th,
+    .table-row td {
+        padding: 0.8rem 1rem;
+    }
+
+    .notification-group {
+        padding: 1rem;
+    }
+
+    .notification-item label,
+    .checkbox-group label {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tab-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .tab-btn svg {
+        font-size: 1.2rem;
+    }
+
+    .form-group input[type="text"],
+    .form-group select {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .save-changes-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .notification-item label,
+    .checkbox-group label {
+        font-size: 0.9rem;
+    }
+
+    .notification-item input[type="checkbox"],
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Dashboard Specific Styles */
+.dashboard-container {
+    padding: 20px;
+    background-color: #f4f7f6; /* Light grey background for the dashboard area */
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #dde2e1;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 1.8rem; /* Slightly smaller than settings H1 */
+    color: #333;
+}
+
+.dashboard-header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Styles for the error messages on the dashboard */
+.dashboard-error-message {
+    background-color: #ffebee; /* Light pink background */
+    color: #c62828; /* Darker red text for better contrast */
+    border: 1px solid #ef9a9a; /* Softer red border */
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    text-align: center;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Styles for loading and empty state messages in lists */
+.list-state-message {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-style: italic;
+    width: 100%; /* Ensure it takes full width in horizontal lists */
+}
+
+.stats-banner-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Responsive grid */
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content */
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card .icon {
+    font-size: 2.5rem; /* Larger icons */
+    margin-bottom: 15px;
+    color: #4a90e2; /* Consistent icon color */
+}
+
+.stat-card h3 {
+    font-size: 1.1rem; /* Slightly smaller heading for cards */
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.stat-card p {
+    font-size: 1.8rem; /* Larger text for the stat value */
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+/* General Widget Styling */
 .widget {
-  margin-bottom: 2rem; /* Add spacing between stacked widgets */
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+    margin-bottom: 30px;
 }
 
+.widget h3 {
+    display: block; /* Ensure it's a block element */
+    width: 100%; /* Ensure it takes full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    font-size: 1.4rem;
+    color: #212529; /* Darker, more standard heading color */
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 12px; /* Space between text and its border */
+    border-bottom: 1px solid #dee2e6; /* This border will now be full-width */
+    letter-spacing: -0.5px;
+}
+
+.horizontal-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 22px; /* Increased gap */
+    padding: 5px 5px 20px 5px; /* Padding for items and scrollbar */
+    margin: 0 -5px; /* Negative margin to align items with padding */
+}
+
+/* Custom Scrollbar for Webkit browsers */
+.horizontal-list::-webkit-scrollbar {
+    height: 10px;
+}
+
+.horizontal-list::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+    margin: 0 5px;
+}
+
+.horizontal-list::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 10px;
+    border: 2px solid #f1f3f5; /* Creates padding around thumb */
+}
+
+.horizontal-list::-webkit-scrollbar-thumb:hover {
+    background: #868e96;
+}
+
+/* Common style for items in horizontal lists - ENHANCED */
+.shipment-item,
+.zone-item,
+.audit-item {
+    background-color: #fdfdfe; /* Very light off-white */
+    border-top: 1px solid #e0e5eb;
+    border-right: 1px solid #e0e5eb;
+    border-bottom: 1px solid #e0e5eb;
+    border-left: 4px solid #667eea !important; /* Blue left accent, FORCED */
+    border-radius: 10px; /* Consistent radius */
+    padding: 20px; /* Original padding */
+    min-width: 260px; /* Original min-width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Original shadow */
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1); /* Original transition */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Original gap */
+    position: relative; /* For potential future pseudo-elements */
+}
+
+.shipment-item:hover,
+.zone-item:hover,
+.audit-item:hover {
+    transform: translateY(-5px) scale(1.015); /* Original hover transform */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08), 0 0 0 2px #6772e5; /* Original hover shadow with accent */
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    /* border-left-color should remain blue from the base style */
+}
+
+.shipment-id,
+.zone-name,
+.audit-zone {
+    font-weight: 600;
+    color: #343a40;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+}
+
+.shipment-customer,
+.zone-capacity,
+.audit-date {
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 2px;
+}
+
+.shipment-eta, /* Combined with status line */
+.zone-temp,
+.audit-discrepancies {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Line for status and time/details */
+.status-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto; /* Pushes status to the bottom if card height varies */
+    padding-top: 10px; /* Space above status line */
+    border-top: 1px dashed #e9ecef; /* Subtle separator */
+}
+
+.item-timestamp {
+    font-size: 0.8rem;
+    color: #868e96;
+}
+
+/* Status Badges - ENHANCED */
+.status-badge,
+.zone-status,
+.audit-status, /* Matches JSX class */
+.shipment-item .shipment-status /* Added for consolidation */ {
+    padding: 2px 6px; /* Matched to user image */
+    border-radius: 20px; /* Pill shape */
+    font-size: 0.75rem;
+    font-weight: bold; /* Made text bold */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    line-height: 1;
+    width: fit-content; /* Ensure badge width shrinks to content */
+    text-align: center; /* Center text within the badge */
+}
+
+/* Specific Status Colors (add more as needed based on actual values from JSX) */
+.status-badge.shipped, 
+.status-badge.delivered,
+.zone-status.normal,
+.audit-status-badge.completed {
+    background-color: #e6f7f0; /* Light Green */
+    color: #0d8a4a;
+}
+
+.status-badge.preparing,
+.status-badge.pending_pickup,
+.audit-status-badge.pending,
+.audit-status-badge.scheduled {
+    background-color: #fff4e6; /* Light Orange */
+    color: #c26a0a;
+}
+
+.status-badge.in_transit {
+    background-color: #e7f3ff; /* Light Blue */
+    color: #2369cf;
+}
+
+.status-badge.delayed,
+.zone-status.warning,
+.audit-status-badge.issues_found {
+    background-color: #ffeef0; /* Light Red */
+    color: #d92d20;
+}
+
+.zone-status.critical {
+    background-color: #fde8e8; /* Darker Light Red */
+    color: #b32121;
+}
+
+/* Shipment Status Text Highlighting (most properties moved to consolidated badge style) */
+.shipment-item .shipment-status { /* Target within shipment-item for specificity */
+    /* Core styles like padding, font-weight, text-transform, width, text-align, border-radius are now in the common group */
+    /* display: inline-block; is also in common group */
+    /* font-size: 0.8rem; /* This could be specific if needed, but common is 0.75rem */
+    line-height: 1.3; /* Retain if specific line height is needed for this context */
+    margin-top: 5px; /* Retain if specific margin is needed for this context */
+    /* border-radius: 6px; /* Common group uses 20px for pill shape, adjust if 6px is specifically desired here */
+}
+
+/* Color variants for shipment status text highlighting */
+.shipment-item .shipment-status.shipped,
+.shipment-item .shipment-status.delivered {
+    background-color: #e6f7f0; /* Light Green */
+    color: #0d8a4a;
+}
+
+.shipment-item .shipment-status.preparing,
+.shipment-item .shipment-status.pending_pickup { /* Assuming pending_pickup from previous badge styles */
+    background-color: #fff4e6; /* Light Orange */
+    color: #c26a0a;
+}
+
+.shipment-item .shipment-status.in_transit {
+    background-color: #e7f3ff; /* Light Blue */
+    color: #2369cf;
+}
+
+.shipment-item .shipment-status.delayed {
+    background-color: #ffeef0; /* Light Red */
+    color: #d92d20;
+}
+
+.shipment-item .shipment-status.cancelled {
+    background-color: #e9ecef; /* Light Grey */
+    color: #495057;
+}
+
+/* Add other specific shipment statuses as needed */
+
+/* Ensure audit status (text like '0 issues') also gets styled if it's not a badge */
+.audit-item .audit-status { /* If .audit-status is the container for the text */
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #555;
+    /* If it should look like a badge, ensure it has one of the .audit-status-badge classes */
+}
+
+/* === Enhanced Incoming Shipments Card Design === */
+.incoming-shipments-table .shipment-row {
+    background-color: #f8f9fa; /* Light grey background */
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Space between elements inside the card */
+    min-width: 200px; /* Adjust as needed for content */
+    border-left: 4px solid #667eea; /* Indigo accent */
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    position: relative; /* For potential future pseudo-elements or absolute positioning */
+}
+
+.incoming-shipments-table .shipment-row:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.incoming-shipments-table .shipment-col-id {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #343a40;
+    line-height: 1.3;
+}
+
+.incoming-shipments-table .shipment-col-supplier {
+    font-size: 0.85rem;
+    color: #495057;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.incoming-shipments-table .shipment-col-status {
+    margin-top: auto; /* Push status to the bottom if content above varies */
+    padding-top: 6px;
+}
+
+.incoming-shipments-table .shipment-col-status .status-badge {
+    /* General status badge styles are already defined, ensure they apply well */
+    /* We can add specific overrides if needed, e.g., font size */
+    font-size: 0.7rem; /* Slightly smaller badge text for these compact cards */
+    padding: 2px 6px; /* Compact padding */
+}
+
+.incoming-shipments-table .shipment-col-eta {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 2px; /* Small space above ETA */
+    text-align: right; /* Align ETA to the right */
+    width: 100%;
+}
+
+/* Specific status color for 'ARRIVED' (Green) - ensuring it's defined */
+.incoming-shipments-table .status-badge.arrived {
+    background-color: #d1fae5; /* Lighter green */
+    color: #067647;
+}
+
+/* Specific status color for 'SCHEDULED' (Purple) - as per image */
+.incoming-shipments-table .status-badge.scheduled {
+    background-color: #e9d8fd; /* Light Purple */
+    color: #6b46c1; /* Dark Purple */
+}
+
+/* Add other specific incoming shipment statuses if needed */
+
+/* Ensure audit status uses the badge style. Assumes JSX is <div class="audit-status scheduled"> */
+.audit-item .audit-status.scheduled {
+    background-color: #fff4e6; /* Light Orange */
+    color: #dd6b20; /* Darker Orange for better contrast */
+    padding: 2px 6px; /* Compact padding */
+    border-radius: 20px; /* Pill shape */
+    font-size: 0.75rem;
+    font-weight: bold; /* Bold font-weight */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    line-height: 1.2;
+    align-self: flex-start; /* Align badge to the start if in a flex container */
+    margin-top: 8px; /* Add some space above the badge */
+}
+
+/* Example for a 'Completed' status for audits */
+.audit-item .audit-status.completed {
+    background-color: #e6fffa; /* Light Teal */
+    color: #2c7a7b; /* Dark Teal */
+    padding: 2px 6px; /* Matched to user image */ 
+    border-radius: 16px; 
+    font-size: 0.75rem;
+    font-weight: bold; /* Made text bold */
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+    display: inline-block; 
+    line-height: 1.2;
+    align-self: flex-start;
+    margin-top: 8px;
+}
+
+
+.shipment-item.outgoing {
+    border-left: 4px solid #FF9800; /* Orange accent for outgoing */
+}
+
+/* List styles (can be horizontal or vertical) */
+.list {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto; /* Allow horizontal scrolling if items exceed width */
+    padding-bottom: 15px; /* Space for scrollbar if it appears */
+}
+
+.list.horizontal-list {
+    flex-direction: row;
+}
+
+/* Item styling (for shipments, zones, audits) */
+.shipment-item, .zone-item, .audit-item {
+    background-color: #f9f9f9; /* Slightly off-white for items */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    min-width: 250px; /* Minimum width for horizontal items */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease;
+}
+
+.shipment-item:hover, .zone-item:hover, .audit-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.shipment-id, .zone-name, .audit-zone {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.shipment-details, .zone-capacity, .audit-date {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.shipment-status, .zone-status, .audit-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px; /* Pill shape */
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: capitalize;
+    margin-top: 10px;
+}
+
+/* Status-specific colors */
+.shipment-status.pending, .zone-status.active, .audit-status.pending {
+    background-color: #fff0c2; /* Light yellow */
+    color: #f57f17; /* Dark yellow/orange */
+}
+
+.shipment-status.in-transit, .zone-status.maintenance, .audit-status.in-progress {
+    background-color: #cceeff; /* Light blue */
+    color: #0077cc; /* Dark blue */
+}
+
+.shipment-status.delivered, .zone-status.full, .audit-status.completed {
+    background-color: #d4edda; /* Light green */
+    color: #155724; /* Dark green */
+}
+
+.shipment-status.delayed, .zone-status.error, .audit-status.issues-found {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24; /* Dark red */
+}
+
+/* Example: Specific styles for incoming vs outgoing if needed */
+.shipment-item.incoming {
+    border-left: 4px solid #4CAF50; /* Green accent for incoming */
+}
+
+.shipment-item.outgoing {
+    border-left: 4px solid #FF9800; /* Orange accent for outgoing */
+}
+
+.zone-capacity {
+    font-weight: bold;
+}
+
+.zone-temp {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.audit-discrepancies {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* Add some general padding to the bottom of the dashboard */
+.dashboard-container > div:last-child {
+    margin-bottom: 0; /* Remove bottom margin from the last widget for cleaner look */
+}
+
+/* Ensure horizontal lists don't shrink items too much */
+.horizontal-list > * {
+    flex-shrink: 0;
+}
+
+/* Responsive adjustments if necessary */
+@media (max-width: 768px) {
+    .stats-banner-container {
+        grid-template-columns: 1fr; /* Stack stat cards on smaller screens */
+    }
+
+    .list.horizontal-list {
+        /* Consider stacking items vertically or ensuring adequate scroll */
+    }
+
+    .widget h3 {
+        font-size: 1.2rem;
+    }
+
+    .shipment-item, .zone-item, .audit-item {
+        min-width: 200px; /* Adjust min-width for smaller screens */
+    }
+}
+
+/* === SKU Inventory List Styles (Inspired by Screenshot) === */
+
+/* Widget container for this type of list */
+.sku-list-widget {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sku-list-widget h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.sku-table {
+  width: 100%;
+  border-collapse: collapse; /* Optional: for a more table-like feel if using <table> element */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Row for the SKU Table */
+.sku-table-header-row {
+  display: flex;
+  padding: 10px 15px;
+  color: #4A5568; /* Muted color for headers */
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e2e8f0; /* Solid border under headers */
+  margin-bottom: 5px;
+}
+
+/* Individual Data Row */
+.sku-table-row {
+  display: flex;
+  align-items: center;
+  padding: 15px 15px;
+  border-bottom: 1px solid #edf2f7; /* Lighter border for data rows */
+  font-size: 0.9rem;
+}
+
+.sku-table-row:last-child {
+  border-bottom: none;
+}
+
+/* Column Styling */
+.sku-col-sku-status {
+  flex: 0 0 15%; /* SKU and Status combined */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sku-col-product-updated {
+  flex: 0 0 30%; /* Product Name and Last Updated combined */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sku-col-category {
+  flex: 0 0 15%;
+  text-align: left;
+}
+
+.sku-col-location {
+  flex: 0 0 20%;
+  color: #4A5568;
+}
+
+.sku-col-stock-level {
+  flex: 0 0 20%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+/* Element Styling within columns */
+.sku-id {
+  color: #2b6cb0; /* Blueish color for SKU ID */
+  font-weight: 600;
+}
+
+.product-name {
+  color: #2D3748;
+  font-weight: 500;
+}
+
+.last-updated-date {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+/* Status Badges (e.g., NORMAL, LOW) */
+.sku-status-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+  width: fit-content;
+}
+
+.sku-status-badge.normal {
+  background-color: #c6f6d5; /* Light Green */
+  color: #2f855a;
+}
+
+.sku-status-badge.low {
+  background-color: #fed7d7; /* Light Red */
+  color: #c53030;
+}
+
+/* Category Badges (e.g., ELECTRONICS, FRAGILE) */
+.category-badge {
+  padding: 4px 10px;
+  border-radius: 12px; /* Pill shape */
+  font-size: 0.7rem;
+  font-weight: 500;
+  display: inline-block;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.category-badge.electronics {
+  background-color: #bee3f8; /* Light Blue */
+  color: #2b6cb0;
+}
+
+.category-badge.fragile {
+  background-color: #fed7d7; /* Light Red */
+  color: #c53030;
+}
+
+.category-badge.bulk {
+  background-color: #faf089; /* Light Yellow */
+  color: #975a16;
+}
+
+.category-badge.perishable {
+  background-color: #d6bcfa; /* Light Purple */
+  color: #6b46c1;
+}
+
+/* Stock Level Text and Progress Bar */
+.stock-level-text {
+  font-weight: 500;
+  color: #2D3748;
+}
+
+.stock-level-text .range {
+  font-size: 0.8rem;
+  color: #718096;
+  margin-left: 5px;
+}
+
+.stock-progress-bar-container {
+  width: 100px; /* Or a percentage of the column */
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden; /* To ensure inner bar respects border-radius */
+}
+
+.stock-progress-bar {
+  height: 100%;
+  background-color: #48bb78; /* Green for normal stock */
+  border-radius: 4px;
+  /* The width would be set dynamically via inline style or JS based on stock % */
+}
+
+.stock-progress-bar.low {
+  background-color: #f56565; /* Red for low stock */
+}
+
+/* Column Header Specific Styles (if you create actual header elements) */
+.sku-table-header-row .sku-col-sku-status,
+.sku-table-header-row .sku-col-product-updated,
+.sku-table-header-row .sku-col-category,
+.sku-table-header-row .sku-col-location,
+.sku-table-header-row .sku-col-stock-level {
+  /* Add any specific header text styling here if needed, e.g., text-align */
+}
+
+/* === Metric Cards Horizontal Layout and Design === */
+.metrics-grid {
+  display: flex;
+  flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
+  gap: 20px; /* Space between cards */
+  justify-content: space-around; /* Distribute cards evenly */
+  padding: 20px 0; /* Add some padding above and below the grid */
+  margin-bottom: 30px; /* Space below the metrics grid */
+}
+
+.metric-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  text-align: left; /* Align text to the left within the card */
+  flex: 1; /* Allow cards to grow and shrink equally */
+  min-width: 220px; /* Minimum width before wrapping */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e7eaf3; /* Subtle border */
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.metric-card h3 {
+  font-size: 0.95rem; /* Slightly smaller, more refined title */
+  color: #5a67d8; /* Indigo color for title */
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase; /* Uppercase for a more "stat" feel */
+  letter-spacing: 0.5px;
+}
+
+.metric-card .metric-value {
+  font-size: 2.2rem; /* Larger value */
+  font-weight: 700;
+  color: #2d3748; /* Dark grey for value */
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+
+.metric-card .metric-value .unit {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #718096; /* Lighter grey for unit */
+  margin-left: 6px;
+  text-transform: lowercase;
+}
+
+.metric-card .metric-trend {
+  font-size: 0.85rem;
+  color: #48bb78; /* Green for positive trend (can be dynamic) */
+  /* Example for negative trend: color: #f56565; */
+  margin-top: 10px;
+  height: 1.2em; /* Reserve space even if empty */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 992px) {
+  .metric-card {
+    min-width: calc(50% - 20px); /* Two cards per row */
+  }
+}
+
+@media (max-width: 576px) {
+  .metrics-grid {
+    flex-direction: column; /* Stack cards vertically */
+    gap: 15px;
+  }
+  .metric-card {
+    min-width: 100%; /* Full width for stacked cards */
+    padding: 20px;
+  }
+  .metric-card .metric-value {
+    font-size: 1.8rem;
+  }
+}

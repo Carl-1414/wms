@@ -199,6 +199,19 @@
   background: #e2e8f0;
 }
 
+.action-btn.danger {
+  background-color: #fee2e2; /* Light red background */
+  color: #e53e3e;             /* Red text */
+  border: 1px solid #fecaca;  /* Light red border */
+}
+
+.action-btn.danger:hover,
+.action-btn.danger:focus {
+  background-color: #e53e3e; /* Red background on hover */
+  color: white;               /* White text on hover */
+  border-color: #e53e3e;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSettings } from '../contexts/SettingsContext'; // Corrected import path
 // You might need to install these if you haven't: npm install react-chartjs-2 chart.js
 // import { Doughnut, Line, Bar } from 'react-chartjs-2';
 // import {
@@ -35,13 +36,7 @@ import './Dashboard.css';
 // );
 
 const Dashboard = () => {
-    // Static metrics data (no change needed here for backend integration)
-    const metrics = [
-        { title: 'Total SKUs', value: '2,847', unit: 'products', trend: '+12.5%' },
-        { title: 'Warehouse Zones', value: '8', unit: 'active', trend: '0%' },
-        { title: 'Pending Audits', value: '3', unit: 'zones', trend: '-25%' },
-        { title: 'Storage Capacity', value: '82%', unit: 'utilized', trend: '+5.2%' },
-    ];
+    const { settings, loadingSettings, errorSettings } = useSettings(); 
 
     // State for Incoming Shipments - DYNAMICALLY LOADED
     const [incomingShipments, setIncomingShipments] = useState([]);
@@ -62,6 +57,16 @@ const Dashboard = () => {
     const [recentAudits, setRecentAudits] = useState([]);
     const [loadingRecentAudits, setLoadingRecentAudits] = useState(true);
     const [errorRecentAudits, setErrorRecentAudits] = useState(null);
+
+    // NEW: State for Dashboard Stats - DYNAMICALLY LOADED
+    const [dashboardStats, setDashboardStats] = useState({
+        totalSkus: 0,
+        warehouseZonesCount: 0,
+        pendingAuditsCount: 0,
+        storageCapacityPercentage: 0,
+    });
+    const [loadingDashboardStats, setLoadingDashboardStats] = useState(true);
+    const [errorDashboardStats, setErrorDashboardStats] = useState(null);
 
     // Helper to format date/time for display
     const formatDateTime = (dateTimeString, type = 'date') => {
@@ -163,12 +168,32 @@ const Dashboard = () => {
         }
     };
 
+    // NEW: Function to fetch dashboard summary statistics
+    const fetchDashboardStats = async () => {
+        setLoadingDashboardStats(true);
+        setErrorDashboardStats(null);
+        try {
+            const response = await fetch('http://localhost:3000/api/dashboard-stats');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setDashboardStats(data);
+        } catch (error) {
+            console.error('Error fetching dashboard stats:', error);
+            setErrorDashboardStats('Failed to load dashboard statistics.');
+        } finally {
+            setLoadingDashboardStats(false);
+        }
+    };
+
     // useEffect hook to fetch data when the component mounts
     useEffect(() => {
         fetchIncomingShipments();
         fetchWarehouseZones();
         fetchOutgoingShipments(); // Fetch outgoing shipments
         fetchRecentAudits();     // Fetch recent audits
+        fetchDashboardStats();   // Fetch dashboard summary stats
     }, []);
 
     // Function to simulate adding a new incoming shipment (for demonstration purposes)
@@ -310,62 +335,91 @@ const Dashboard = () => {
         }
     };
 
-    // Conditional rendering for overall loading/error (if you want this)
-    // if (loadingIncomingShipments || loadingWarehouseZones || loadingOutgoingShipments || loadingRecentAudits) {
-    //     return <div className="loading-message">Loading dashboard data...</div>;
-    // }
-    // if (errorIncomingShipments || errorWarehouseZones || errorOutgoingShipments || errorRecentAudits) {
-    //     return <div className="error-message">Error loading dashboard data. Please check console.</div>;
-    // }
-
+    // Determine the title for the dashboard
+    let dashboardTitle = "Warehouse Management Dashboard"; // Default title
+    if (loadingSettings) {
+        dashboardTitle = "Loading Warehouse Name...";
+    } else if (errorSettings) {
+        dashboardTitle = "Error Loading Warehouse Name";
+        console.error("Error loading settings for dashboard title:", errorSettings);
+    } else if (settings && settings.warehouseName) {
+        dashboardTitle = `${settings.warehouseName} Dashboard`;
+    }
 
     return (
         <div className="dashboard">
             <div className="dashboard-header">
-                <h1>Warehouse Management Dashboard</h1>
+                <h1>{dashboardTitle}</h1> 
                 <div className="date">{new Date().toLocaleDateString()}</div>
             </div>
 
             <div className="metrics-grid">
-                {metrics.map((metric, index) => (
-                    <div key={index} className="metric-card">
-                        <h3>{metric.title}</h3>
-                        <div className="metric-value">
-                            {metric.value} <span className="unit">{metric.unit}</span>
+                {loadingDashboardStats ? (
+                    <div className="loading-message">Loading statistics...</div>
+                ) : errorDashboardStats ? (
+                    <div className="error-message">{errorDashboardStats}</div>
+                ) : (
+                    <>
+                        <div className="metric-card">
+                            <h3>Total SKUs</h3>
+                            <div className="metric-value">
+                                {dashboardStats.totalSkus !== undefined ? dashboardStats.totalSkus.toLocaleString() : 'N/A'} <span className="unit">products</span>
+                            </div>
+                            <div className="metric-trend">{/* Placeholder: e.g., +12.5% */}</div>
                         </div>
-                        <div className={`trend ${metric.trend.startsWith('+') ? 'positive' : metric.trend === '0%' ? 'neutral' : 'negative'}`}>
-                            {metric.trend}
+                        <div className="metric-card">
+                            <h3>Warehouse Zones</h3>
+                            <div className="metric-value">
+                                {dashboardStats.warehouseZonesCount !== undefined ? dashboardStats.warehouseZonesCount.toLocaleString() : 'N/A'} <span className="unit">active</span>
+                            </div>
+                            <div className="metric-trend">{/* Placeholder: e.g., +0% */}</div>
                         </div>
-                    </div>
-                ))}
+                        <div className="metric-card">
+                            <h3>Pending Audits</h3>
+                            <div className="metric-value">
+                                {dashboardStats.pendingAuditsCount !== undefined ? dashboardStats.pendingAuditsCount.toLocaleString() : 'N/A'} <span className="unit">zones</span>
+                            </div>
+                            <div className="metric-trend">{/* Placeholder: e.g., -25% */}</div>
+                        </div>
+                        <div className="metric-card">
+                            <h3>Storage Capacity</h3>
+                            <div className="metric-value">
+                                {dashboardStats.storageCapacityPercentage !== undefined ? `${dashboardStats.storageCapacityPercentage}%` : 'N/A'} <span className="unit">utilized</span>
+                            </div>
+                            <div className="metric-trend">{/* Placeholder: e.g., +5.2% */}</div>
+                        </div>
+                    </>
+                )}
             </div>
 
             <div className="horizontal-widgets">
                 {/* Incoming Shipments Widget - Dynamic */}
                 <div className="widget">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <div>
                         <h3>Incoming Shipments</h3>
                         {/* Uncomment this button to test adding incoming shipments */}
                         {/* <button onClick={addSampleIncomingShipment} style={{ padding: '8px 12px', cursor: 'pointer' }}>Add Sample Incoming Shipment</button> */}
                     </div>
-                    <div className="list horizontal-list">
+                    <div className="list incoming-shipments-table">
                         {loadingIncomingShipments ? (
-                            <div style={{ textAlign: 'center', padding: '20px', color: '#777' }}>Loading incoming shipments...</div>
+                            <div className="loading-message">Loading incoming shipments...</div>
                         ) : errorIncomingShipments ? (
-                            <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>{errorIncomingShipments}</div>
+                            <div className="error-message">{errorIncomingShipments}</div>
                         ) : incomingShipments.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '20px', color: '#777' }}>
+                            <div className="empty-list-message">
                                 No incoming shipments yet. Add one to see it appear here!
                             </div>
                         ) : (
                             incomingShipments.map((shipment) => (
-                                <div key={shipment.id} className="shipment-item">
-                                    <div className="shipment-id">{shipment.id}</div>
-                                    <div className="shipment-supplier">{shipment.supplier}</div>
-                                    <div className={`shipment-status ${shipment.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                                        {shipment.status}
+                                <div key={shipment.id} className="shipment-row">
+                                    <div className="shipment-col-id">{shipment.id}</div>
+                                    <div className="shipment-col-supplier">{shipment.supplier}</div>
+                                    <div className="shipment-col-status">
+                                        <span className={`status-badge ${shipment.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                                            {shipment.status}
+                                        </span>
                                     </div>
-                                    <div className="shipment-eta">{formatDateTime(shipment.eta, 'time')}</div>
+                                    <div className="shipment-col-eta">{formatDateTime(shipment.eta, 'time')}</div>
                                 </div>
                             ))
                         )}

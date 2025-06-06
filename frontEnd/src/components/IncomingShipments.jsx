@@ -14,6 +14,9 @@ const IncomingShipments = () => {
         status: 'Scheduled',
     });
     const [editingShipment, setEditingShipment] = useState(null); // State to hold shipment being edited
+    const [showViewDetailsModal, setShowViewDetailsModal] = useState(false);
+    const [selectedShipmentForDetails, setSelectedShipmentForDetails] = useState(null);
+    const [error, setError] = useState(null); // For displaying API errors
 
     useEffect(() => {
         fetchShipments();
@@ -29,7 +32,7 @@ const IncomingShipments = () => {
             setShipments(data);
         } catch (error) {
             console.error("Failed to fetch shipments:", error);
-            // alert("Failed to load shipments from the server.");
+            setError("Failed to load shipments from the server.");
         }
     };
 
@@ -155,6 +158,67 @@ const IncomingShipments = () => {
             console.error('Error updating shipment:', error);
             alert(`Error connecting to the backend: ${error.message}`);
         }
+    };
+
+    const handleDeleteShipment = async (id) => {
+        const confirmed = window.confirm("Are you sure you want to delete this shipment? This action cannot be undone.");
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/incoming-shipments/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                const contentType = response.headers.get("content-type");
+                let successMessage = 'Shipment deleted successfully!'; // Default success message
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    try {
+                        const result = await response.json();
+                        successMessage = result.message || successMessage;
+                    } catch (parseError) {
+                        console.error('Failed to parse successful JSON response (body might be HTML):', parseError);
+                        // successMessage remains the default. The backend might have processed the delete.
+                    }
+                }
+                alert(successMessage);
+                fetchShipments(); // Re-fetch to show updated data
+            } else {
+                // Handle error responses more carefully
+                let alertMessage;
+                const responseText = await response.text(); // Get body as text first
+                try {
+                    const errorData = JSON.parse(responseText); // Try to parse the text we got
+                    alertMessage = `Failed to delete shipment: ${errorData.message || response.statusText}`;
+                } catch (parseError) {
+                    // Parsing failed, responseText is not JSON (likely HTML or plain text)
+                    console.error('Error response was not valid JSON. Status:', response.status, 'Body snippet:', responseText.substring(0, 200));
+                    alertMessage = `Failed to delete shipment: ${response.statusText} (Server returned a non-JSON error).`;
+                }
+                alert(alertMessage);
+                setError(alertMessage); // Set the error state for display in the error bar
+            }
+        } catch (error) {
+            // This catch handles network errors or other unexpected errors during fetch/processing
+            console.error('Network or other error deleting shipment:', error);
+            let displayMessage = `An error occurred: ${error.message}`;
+            if (error instanceof SyntaxError && error.message.toLowerCase().includes('json')) {
+                displayMessage = 'Error: The server returned an unexpected response (likely HTML instead of JSON). Please check backend server logs for errors and ensure it is running correctly.';
+            } else if (error instanceof TypeError && error.message.toLowerCase().includes('failed to fetch')) {
+                displayMessage = 'Error: Could not connect to the backend server. Please ensure it is running and accessible at http://localhost:3000.';
+            }
+            alert(displayMessage);
+            setError(displayMessage);
+        }
+    };
+
+    const handleViewDetailsClick = (shipment) => {
+        setSelectedShipmentForDetails(shipment);
+        setShowViewDetailsModal(true);
+        setShowAddForm(false); // Ensure other modals are closed
+        setShowEditForm(false);
     };
 
     // Calculations for overview cards (now based on fetched data)
@@ -410,12 +474,45 @@ const IncomingShipments = () => {
                         </div>
 
                         <div className="shipment-actions">
-                            <button className="action-btn primary">View Details</button>
-                            <button className="action-btn secondary" onClick={() => handleEditClick(shipment)}>Edit</button> {/* Edit button */}
+                            <button className="action-btn primary" onClick={() => handleViewDetailsClick(shipment)}>View Details</button>
+                            <button className="action-btn secondary" onClick={() => handleEditClick(shipment)}>Edit</button>
+                            <button className="action-btn delete-shipment-btn" onClick={() => handleDeleteShipment(shipment.id)} title="Delete Shipment">
+                                Delete
+                            </button>
                         </div>
                     </div>
                 ))}
             </div>
+
+            {error && <div className="error-message-bar">Error: {error}</div>}
+            {/* View Details Modal */}
+            {showViewDetailsModal && selectedShipmentForDetails && (
+                <div className="add-shipment-modal-overlay" onClick={() => setShowViewDetailsModal(false)}>
+                    <div className="add-shipment-modal shipment-details-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Shipment Details (ID: {selectedShipmentForDetails.id})</h2>
+                            <button className="close-btn" onClick={() => setShowViewDetailsModal(false)}>×</button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="detail-item"><span className="detail-label">Supplier:</span> {selectedShipmentForDetails.supplier}</div>
+                            <div className="detail-item"><span className="detail-label">ETA:</span> {new Date(selectedShipmentForDetails.eta).toLocaleString()}</div>
+                            <div className="detail-item"><span className="detail-label">Items:</span> {selectedShipmentForDetails.items}</div>
+                            <div className="detail-item"><span className="detail-label">Value:</span> ${selectedShipmentForDetails.value.toLocaleString()}</div>
+                            <div className="detail-item"><span className="detail-label">Tracking #:</span> {selectedShipmentForDetails.tracking}</div>
+                            <div className="detail-item">
+                                <span className="detail-label">Status:</span> 
+                                <span className={`status-badge-detail ${selectedShipmentForDetails.status.toLowerCase().replace(' ', '-')}`}>
+                                    {getStatusIcon(selectedShipmentForDetails.status)} {selectedShipmentForDetails.status}
+                                </span>
+                            </div>
+                            {/* Add more details as needed */}
+                        </div>
+                        <div className="form-actions">
+                            <button type="button" className="action-btn secondary" onClick={() => setShowViewDetailsModal(false)}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

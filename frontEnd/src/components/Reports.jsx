@@ -34,19 +34,23 @@ const Reports = () => {
    */
   const fetchOverviewData = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/reports/overview`);
+      // Corrected API endpoint
+      const response = await fetch(`${API_BASE_URL}/reports/overview-stats`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setOverviewData(data);
+      // Adapt backend data (storageUsedGB) to frontend state (storageUsed)
+      setOverviewData({
+        ...data,
+        storageUsed: data.storageUsedGB !== undefined ? `${data.storageUsedGB} GB` : 'N/A'
+      });
     } catch (error) {
       console.error('Error fetching overview data:', error.message);
-      // Fallback to static/default values if the backend call fails
       setOverviewData({
-        availableReports: 5, // Static fallback matching your initial setup
-        generatedThisMonth: 'N/A',
-        recentDownloads: 'N/A',
+        availableReports: 5, 
+        generatedThisMonth: 0, // Default to 0 or N/A
+        recentDownloads: 0,
         storageUsed: 'N/A',
       });
     }
@@ -86,10 +90,20 @@ const Reports = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setRecentReports(data);
+      // Transform backend data to match frontend expectations
+      const transformedData = data.map(report => ({
+        id: report.id, // Keep the ID for actions like download
+        name: report.report_name,
+        date: new Date(report.generated_at).toLocaleDateString(), // Format date
+        type: report.report_type,
+        size: report.file_size_kb ? `${(report.file_size_kb / 1024).toFixed(1)} MB` : 'N/A', // Format size
+        // We'll use 'id' for download, so 'fileName' isn't strictly needed from backend for this step
+        // but if backend later provides a real filename, it can be added here.
+        fileName: report.id, // Using id as a placeholder for fileName for now for handleDownloadReport
+      }));
+      setRecentReports(transformedData);
     } catch (error) {
       console.error('Error fetching recent reports:', error.message);
-      // Fallback to an empty array if the backend call fails
       setRecentReports([]);
     }
   };
@@ -128,27 +142,63 @@ const Reports = () => {
   };
 
   /**
-   * Handles the download of a report.
-   * Sends a GET request to the backend to simulate a download and increment download count.
-   * @param {string} reportName - The name of the report to download.
+   * Handles the download of an existing (recently generated) report.
+   * @param {string} reportId - The ID of the report to download.
+   * @param {string} userFriendlyName - The desired filename for the user's download (e.g., 'Inventory Report Q1.csv').
    */
-  const handleDownloadReport = async (reportName) => {
+  const handleDownloadReport = async (reportId, userFriendlyName) => {
+    const apiBaseUrl = API_BASE_URL;
+
+    if (!reportId) {
+        console.error('handleDownloadReport error: reportId is missing.');
+        alert('Error: Report identifier is missing. Cannot download.');
+        return;
+    }
+
+    console.log(`Attempting to download report. Report ID: "${reportId}", User-friendly Name: "${userFriendlyName}"`);
+
     try {
-      // Encode the report name to handle spaces or special characters in the URL
-      const response = await fetch(`${API_BASE_URL}/reports/download/${encodeURIComponent(reportName)}`);
+        // The actual download endpoint needs to be created on the backend.
+        // This will likely change to something like `${apiBaseUrl}/reports/download/${reportId}`
+        // For now, this will fail or do nothing useful until backend is ready.
+      const response = await fetch(`${apiBaseUrl}/reports/download/${encodeURIComponent(reportId)}`);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      alert(data.message);
-      // Re-fetch overview data to update the recent downloads count
-      fetchOverviewData();
-      // In a real application, you might trigger a file download here, e.g.:
-      // window.open(`${API_BASE_URL}/reports/download-file-actual/${encodeURIComponent(reportName)}`);
+            let errorDetail = `Server responded with status: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorDetail = errorData.message || errorDetail;
+            } catch (e) {
+                // If response is not JSON or parsing fails, use status text or default message
+                errorDetail = response.statusText || `Failed to retrieve error details. Status: ${response.status}`;
+            }
+            console.error('Failed to download report. Detail:', errorDetail);
+            alert(`Failed to download report: ${errorDetail}`);
+            return;
+        }
+
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none'; // Hide the anchor element
+        a.href = downloadUrl;
+        // Use the userFriendlyName for the downloaded file, fallback to diskFileName if userFriendlyName is not provided
+        a.download = userFriendlyName || reportId;
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up: remove the anchor and revoke the object URL
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(downloadUrl);
+        
+        console.log(`Report "${userFriendlyName || reportId}" download initiated.`);
+        // Optionally, re-fetch overview data if download counts are displayed and updated by the backend
+        // fetchOverviewData(); 
+
     } catch (error) {
-      console.error('Error downloading report:', error.message);
-      alert(`Failed to download report: ${error.message}`);
+        console.error('An unexpected error occurred during download:', error);
+        alert(`An unexpected error occurred while downloading the report: ${error.message || 'Please try again.'}`);
     }
   };
 
@@ -255,7 +305,8 @@ const Reports = () => {
                   <div className="size">{report.size}</div>
                   <div className="actions">
                     {/* Attach download and share handlers */}
-                    <button className="action-btn download" onClick={() => handleDownloadReport(report.name)}>
+                    {/* Pass report.id as the first argument to handleDownloadReport */}
+                    <button className="action-btn download" onClick={() => handleDownloadReport(report.id, report.name)}>
                       Download
                     </button>
                     <button className="action-btn share" onClick={() => handleShareReport(report.name)}>

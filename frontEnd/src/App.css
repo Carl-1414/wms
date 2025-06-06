@@ -57,6 +57,18 @@
   flex: 1;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+  overflow-y: auto; /* Allows content to scroll if it exceeds viewport height */
+  position: relative; /* Added for positioning context if needed by children */
+}
+
+.main-content-header-utils {
+  display: flex;
+  justify-content: flex-end; /* Aligns items to the right */
+  padding-bottom: 10px; /* Optional: some space below the bell */
+  margin-bottom: 10px; /* Optional: space before main page content starts */
+  /* border-bottom: 1px solid #eee; */ /* Optional: a separator line */
 }
 
 .main-content.sidebar-open {
@@ -74,3 +86,210 @@
   }
 }
 
+/* ==========================================
+   Settings Page Enhancement Styles
+   ========================================== */
+
+/* Style for each section within the settings main panel (e.g., General, Users) */
+.settings-main-panel .settings-section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.settings-main-panel .settings-section h2 {
+  font-size: 1.5rem; /* Slightly larger section titles */
+  color: #333;
+  margin-top: 0; /* Remove default margin if any */
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.settings-main-panel .settings-section h3 {
+  font-size: 1.2rem;
+  color: #444;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+/* Styling for form groups */
+.settings-form .form-group {
+  margin-bottom: 1.25rem; /* Increased spacing */
+}
+
+.settings-form .form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #495057; /* Darker label color for better contrast */
+  font-size: 0.9rem;
+}
+
+/* Styling for input fields, select dropdowns, and textareas */
+.settings-form input[type="text"],
+.settings-form input[type="email"],
+.settings-form input[type="password"],
+.settings-form input[type="number"],
+.settings-form select,
+.settings-form textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem; /* Adjusted padding */
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem; /* Standard border radius */
+  box-sizing: border-box; /* Ensure padding and border are included in width/height */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.settings-form input[type="text"]:focus,
+.settings-form input[type="email"]:focus,
+.settings-form input[type="password"]:focus,
+.settings-form input[type="number"]:focus,
+.settings-form select:focus,
+.settings-form textarea:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Styling for buttons */
+.settings-form .save-btn,
+.settings-form .btn-secondary, /* Assuming you might have secondary buttons */
+.settings-form button {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  border: 1px solid transparent;
+  text-transform: capitalize;
+}
+
+.settings-form .save-btn {
+  background-color: #007bff; /* Primary blue */
+  color: white;
+  border-color: #007bff;
+}
+
+.settings-form .save-btn:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.settings-form .save-btn:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Minor adjustment for checkbox/radio if you use them */
+.settings-form .form-check-input {
+  margin-right: 0.5rem;
+}
+
+/* Alert/message styling improvements */
+.settings-form .error-message {
+  color: #721c24; /* Dark red for errors */
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.settings-form .success-message {
+  color: #155724; /* Dark green for success */
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.settings-form .loading-message {
+    color: #004085; /* Dark blue for loading */
+    background-color: #cce5ff;
+    border: 1px solid #b8daff;
+    padding: 0.75rem 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+}
+
+/* ==========================================
+   Settings Page Tab Navigation Styles
+   ========================================== */
+
+.settings-tabs {
+  display: flex;
+  flex-direction: column; /* Stack tabs vertically */
+  margin-right: 20px; /* Space between tabs and content panel */
+  min-width: 180px; /* Give the tab column a decent width */
+}
+
+.settings-tabs .tab-button {
+  display: flex; /* Align icon and text */
+  align-items: center;
+  text-align: left;
+  padding: 12px 15px;
+  margin-bottom: 8px; /* Space between tab buttons */
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #495057; /* Default tab text color */
+  background-color: #f8f9fa; /* Light background for tabs */
+  border: 1px solid #dee2e6; /* Subtle border */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%; /* Make buttons take full width of their container */
+}
+
+.settings-tabs .tab-button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+  color: #007bff; /* Highlight color on hover */
+}
+
+.settings-tabs .tab-button.active {
+  background-color: #007bff; /* Primary blue for active tab */
+  color: white;
+  border-color: #007bff;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.settings-tabs .tab-button.active:hover {
+  background-color: #0056b3; /* Darker blue on hover for active tab */
+  border-color: #0056b3;
+}
+
+/* Style for icons within tab buttons if you have them as separate elements or use font icons */
+.settings-tabs .tab-button .tab-icon {
+  margin-right: 8px;
+  font-size: 1.1em; /* Adjust if icons are too small/large */
+}
+
+/* Ensure the main settings layout uses flex to position tabs and content */
+.settings-layout {
+    display: flex;
+    flex-direction: row; /* Tabs on left, content on right */
+}
+
+/* The panel that contains the actual settings content */
+.settings-main-panel {
+    flex-grow: 1; /* Allows the content panel to take up remaining space */
+    /* The styles for .settings-section from previous step will apply here */
+}

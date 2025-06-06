@@ -200,3 +200,35 @@
 .action-btn.secondary:hover {
   background: #e2e8f0;
 }
+
+.delete-outgoing-shipment-btn {
+  /* Assuming .action-btn provides base styling like flex, padding, font-size, border-radius */
+  background-color: #fee2e2; /* Very light red background (Tailwind red-100) */
+  color: #e53e3e;             /* Red text color */
+  border: 1px solid #fecaca;  /* Light red border (Tailwind red-200) */
+  /* display, align-items, justify-content should be inherited if .action-btn is a flex container */
+  /* If not, uncomment below: */
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  text-transform: none; /* Respects JSX casing, e.g., 'Delete' */
+  font-weight: 600; /* Bolder for emphasis */
+  /* transition should be inherited from .action-btn if defined there */
+}
+
+.delete-outgoing-shipment-btn:hover,
+.delete-outgoing-shipment-btn:focus {
+  background-color: #e53e3e; /* Red background on hover */
+  color: white; /* White text on hover */
+  border-color: #e53e3e; /* Ensure border stays consistent or becomes part of background */
+}
+
+.error-message-bar {
+  background-color: #fed7d7; /* Light red */
+  color: #c53030; /* Darker red text */
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0; /* Or adjust margin to fit layout, e.g., margin-bottom: 1rem; */
+  border: 1px solid #f56565;
+  text-align: center;
+}

@@ -9,6 +9,7 @@ import InventoryAudits from './components/InventoryAudits';
 import Orders from './components/Orders';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
+import NotificationBell from './components/NotificationBell';
 import './App.css';
 
 function App() {
@@ -52,6 +53,9 @@ function App() {
     <div className="app">
       <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} onPageChange={handlePageChange} currentPage={currentPage} />
       <main className={`main-content ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+        <div className="main-content-header-utils">
+          <NotificationBell />
+        </div>
         {renderPage()}
       </main>
     </div>

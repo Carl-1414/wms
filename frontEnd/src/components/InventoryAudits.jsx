@@ -86,13 +86,22 @@ const InventoryAudits = () => {
         }
 
         try {
+            // Prepare payload with snake_case keys expected by the backend
+            const payload = {
+                zone_id: newAudit.zone, // newAudit.zone now holds the Zone ID
+                scheduled_date: newAudit.scheduledDate,
+                auditor: newAudit.auditor,
+                audit_type: newAudit.auditType,
+                // notes: newAudit.notes || null, // If you add a notes field later
+            };
+
             const response = await fetch('http://localhost:3000/api/inventory-audits', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // Send the new audit data to the server
-                body: JSON.stringify(newAudit),
+                // Send the transformed payload
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -102,10 +111,31 @@ const InventoryAudits = () => {
 
             // The backend should return the newly created audit object with its generated ID and default values
             // The backend's response uses snake_case for database column names like 'scheduled_date' and 'audit_type'
-            const addedAudit = await response.json();
+            const responseData = await response.json(); // responseData is now { message: "...", audit: { id: "...", ... } }
             
             // Add the new audit to the state to update the UI
-            setAudits(prevAudits => [...prevAudits, addedAudit]); 
+            if (responseData.audit && responseData.audit.id) {
+                setAudits(prevAudits => [...prevAudits, responseData.audit]); 
+            } else {
+                // If for some reason the audit object isn't returned as expected, fall back to refetching all audits
+                console.warn('New audit data not found in response, refetching all audits.');
+                const fetchAudits = async () => {
+                    try {
+                        const response = await fetch('http://localhost:3000/api/inventory-audits');
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
+                        }
+                        const data = await response.json();
+                        setAudits(data);
+                    } catch (error) {
+                        console.error('Error fetching audits:', error);
+                        showMessage(`Failed to load audits: ${error.message}`, 'error'); // Display error to the user
+                    }
+                };
+                fetchAudits(); // Make sure fetchAudits is defined in this component's scope
+            }
+
             setNewAudit({ // Reset form fields
                 zone: '',
                 scheduledDate: '',
@@ -117,6 +147,29 @@ const InventoryAudits = () => {
         } catch (error) {
             console.error('Error scheduling audit:', error);
             showMessage(`Failed to schedule audit: ${error.message}`, 'error');
+        }
+    };
+
+    const handleDeleteAudit = async (auditId) => {
+        if (!window.confirm(`Are you sure you want to delete audit ${auditId}? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/inventory-audits/${auditId}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Failed to delete audit'}`);
+            }
+
+            setAudits(prevAudits => prevAudits.filter(audit => audit.id !== auditId));
+            showMessage(`Audit ${auditId} deleted successfully.`, 'success');
+        } catch (error) {
+            console.error('Error deleting audit:', error);
+            showMessage(`Failed to delete audit ${auditId}: ${error.message}`, 'error');
         }
     };
 
@@ -199,6 +252,17 @@ const InventoryAudits = () => {
                             <p><strong>Type:</strong> {audit.audit_type}</p>
                             <p><strong>Discrepancies:</strong> {audit.discrepancies}</p>
                             <p><strong>Accuracy:</strong> {audit.accuracy}%</p>
+                            <div className="audit-actions">
+                                {/* Conditionally render delete button only if audit.id exists */}
+                                {audit.id && (
+                                    <button 
+                                        className="action-btn danger" 
+                                        onClick={() => handleDeleteAudit(audit.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))
                 )}
@@ -214,20 +278,24 @@ const InventoryAudits = () => {
                         </div>
                         <form onSubmit={handleAddAudit}>
                             <div className="form-group">
-                                <label>Zone</label>
-                                <select
+                                <label>Zone ID</label> {/* Changed label for clarity */}
+                                <input
+                                    type="text"
+                                    list="zone-datalist"
                                     name="zone"
                                     value={newAudit.zone}
                                     onChange={handleInputChange}
+                                    placeholder="Type or select Zone ID"
+                                    // Add a className here if you have a general class for form inputs, e.g., className="form-control"
                                     required
-                                >
-                                    <option value="">Select Zone</option>
+                                />
+                                <datalist id="zone-datalist">
                                     {warehouseZones.map((zone) => (
                                         <option key={zone.id} value={zone.id}>
                                             {zone.name} ({zone.id})
                                         </option>
                                     ))}
-                                </select>
+                                </datalist>
                             </div>
                             <div className="form-group">
                                 <label>Scheduled Date</label>
