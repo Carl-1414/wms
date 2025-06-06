@@ -85,11 +85,13 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Ensure table takes full width */
+  min-width: 900px; /* Diagnostic: ensure enough space for columns */
 }
 
 .table-header {
   display: grid;
-  grid-template-columns: 100px 1fr 140px 160px 200px 80px 120px 80px; /* Added 80px for Actions */
+  grid-template-columns: minmax(80px, 0.75fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(80px, 0.75fr) minmax(120px, 1fr) minmax(80px, 0.5fr); /* Adjusted for single line */
   background: #f8fafc;
   padding: 1rem;
   font-weight: 600;
@@ -99,7 +101,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 100px 1fr 140px 160px 200px 80px 120px 80px;
+  grid-template-columns: minmax(80px, 0.75fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(80px, 0.75fr) minmax(120px, 1fr) minmax(80px, 0.5fr);
   padding: 1rem;
   border-bottom: 1px solid #f7fafc;
   transition: background 0.2s;
@@ -280,31 +282,7 @@
     flex-direction: column;
   }
 }
-.table-grid {
-  display: grid;
-  grid-template-columns:
-    120px     
-    200px     
-    150px     
-    180px     
-    220px    
-    100px  
-    150px;  
-  column-gap: 13rem; 
-  align-items: center;
-  padding: 0.75rem 1rem;
-}
 
-
-.table-header {
-  background-color: #f8fafc;
-  font-weight: bold;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.table-row {
-  border-bottom: 1px solid #e2e8f0;
-}
 
 /* ProductStorage.css (or Modal.css if created) */
 
@@ -336,10 +314,9 @@
   display: flex;
   flex-direction: column;
   animation: modalScaleUp 0.35s ease-out forwards;
-  overflow: hidden; /* To contain border-radius with child elements */
+  overflow: hidden; /* Crucial for containing children and border-radius */
 }
 
-/* Modal Header */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -378,32 +355,34 @@
 /* Form Container within Modal */
 .modal-content form {
   padding: 25px;
-  overflow-y: auto; /* Enable scrolling for form content if it overflows */
-  flex-grow: 1;
+  overflow-y: auto; /* Enable scrolling for form content */
+  flex-grow: 1; /* Allows form to take available space */
+  /* Adding min-height to ensure it doesn't collapse if content is small but parent has space */
+  min-height: 0; /* Important for flex children that need to scroll */ 
 }
 
 /* Form Group (Label + Input/Select) */
 .form-group {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px; /* Adjusted for side-by-side layout */
 }
 
 .form-group label {
-  display: block;
-  font-weight: 500; /* Slightly less bold */
-  margin-bottom: 8px;
+  flex-basis: 120px; /* Adjust as needed for label width */
+  margin-right: 15px; /* Space between label and input */
+  font-weight: 500;
   color: #495057;
   font-size: 0.95em;
-  text-align: center; /* Center the label text */
+  text-align: left; /* Align label text to the left */
+  margin-bottom: 0; /* Vertical alignment handled by flex */
 }
 
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group select {
-  width: 100%;
-  max-width: 300px; /* Adjust as needed to control the width of the input fields */
-  display: block; /* Make it a block element to allow margin: auto for centering */
-  margin: 0 auto; /* Center the input field itself */
-  padding: 12px 15px;
+  flex-grow: 1; /* Input takes remaining space */
+  padding: 10px 15px;
   border: 1px solid #ced4da;
   border-radius: 6px;
   font-size: 1em;
@@ -411,7 +390,7 @@
   background-color: #fff;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  text-align: center; /* Center the text typed inside the input field */
+  text-align: left; /* Align text inside input to the left */
 }
 
 .form-group input[type="text"]::placeholder,

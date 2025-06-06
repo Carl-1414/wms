@@ -1,0 +1,172 @@
+/* StandardModal.css */
+
+/* Modal Overlay */
+.standard-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: standardModalFadeIn 0.3s ease-out forwards;
+}
+
+/* Modal Content Box */
+.standard-modal-content {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Important for border-radius and containing children */
+  animation: standardModalScaleUp 0.3s ease-out forwards;
+}
+
+/* Modal Header */
+.standard-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.standard-modal-header h2 {
+  font-size: 1.25em;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Close Button (X icon) */
+.standard-modal-close-button {
+  background: transparent;
+  border: none;
+  font-size: 1.5em;
+  color: #888;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+}
+
+.standard-modal-close-button:hover {
+  color: #333;
+}
+
+/* Form Container within Modal */
+.standard-modal-content form {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  min-height: 0; /* Essential for flex children that need to scroll */
+}
+
+/* Form Group (Label + Input/Select) */
+.standard-form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.standard-form-group label {
+  flex-basis: 130px; /* Adjust as needed */
+  margin-right: 15px;
+  font-weight: bold; /* Make labels bold */
+  color: #495057;
+  font-size: 0.9em;
+  text-align: left;
+}
+
+.standard-form-group input[type="text"],
+.standard-form-group input[type="number"],
+.standard-form-group select {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #495057;
+  background-color: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
+}
+
+.standard-form-group input[type="text"]::placeholder,
+.standard-form-group input[type="number"]::placeholder {
+  color: #adb5bd;
+  opacity: 1;
+}
+
+.standard-form-group input[type="text"]:focus,
+.standard-form-group input[type="number"]:focus,
+.standard-form-group select:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Modal Actions (Buttons) */
+.standard-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.standard-modal-actions button {
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.standard-modal-actions .confirm-button {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+}
+
+.standard-modal-actions .confirm-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.standard-modal-actions .cancel-button {
+  background-color: #6c757d;
+  color: white;
+  border: 1px solid #6c757d;
+}
+.standard-modal-actions .cancel-button:hover {
+  background-color: #545b62;
+  border-color: #545b62;
+}
+
+
+/* Animations */
+@keyframes standardModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes standardModalScaleUp {
+  from {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

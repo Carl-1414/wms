@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'; // Added useCallback
+import './StandardModal.css';
 import './ProductStorage.css';
 // You might also want to import a dedicated CSS for modals if you create one
 // import './Modal.css'; // Example
@@ -197,74 +198,58 @@ const ProductStorage = () => {
       </div>
 
       {showAddForm && (
-        <div className="modal-overlay">
-          <div className="add-product-form modal-content">
-            <div className="modal-header"> {/* New div for header */}
+        <div className="standard-modal-overlay">
+          <div className="standard-modal-content add-product-form">
+            <div className="standard-modal-header">
               <h2>Add New Product</h2>
-              <button className="close-button" onClick={() => setShowAddForm(false)}>
-                &times; {/* HTML entity for 'x' */}
-              </button>
+              <button onClick={() => setShowAddForm(false)} className="standard-modal-close-button">&times;</button>
             </div>
             <form onSubmit={handleAddProduct}>
-              <div className="form-group"> {/* New div for form group */}
-                <label htmlFor="skuId">SKU ID</label>
-                <input type="text" id="skuId" name="id" placeholder="SKU ID" required />
+              <div className="standard-form-group">
+                <label htmlFor="id">SKU ID</label>
+                <input type="text" id="id" name="id" required />
               </div>
-
-              <div className="form-group">
-                <label htmlFor="productName">Product Name</label>
-                <input type="text" id="productName" name="name" placeholder="Product Name" required />
+              <div className="standard-form-group">
+                <label htmlFor="name">Product Name</label>
+                <input type="text" id="name" name="name" required />
               </div>
-
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="category">Category</label>
                 <select id="category" name="category" required>
-                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                  {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
               </div>
-
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="zone">Zone</label>
                 {loadingZones ? (
-                  <select id="zone" name="zone" required disabled>
-                    <option>Loading Zones...</option>
-                  </select>
+                  <p>Loading zones...</p>
+                ) : error ? (
+                  <p style={{ color: 'red' }}>Error loading zones.</p>
                 ) : (
                   <select id="zone" name="zone" required>
-                    {availableZones.length > 0 ? (
-                      availableZones.map(zoneId => (
-                        <option key={zoneId} value={zoneId}>{zoneId}</option>
-                      ))
-                    ) : (
-                      <option disabled>No zones available. Please add zones first.</option>
-                    )}
+                    {availableZones.map(zoneId => <option key={zoneId} value={zoneId}>Zone {zoneId}</option>)}
                   </select>
                 )}
               </div>
-
-              <div className="form-group">
-                <label htmlFor="shelf">Shelf</label>
-                <input type="text" id="shelf" name="shelf" placeholder="Shelf (e.g. A1-001)" required />
+              <div className="standard-form-group">
+                <label htmlFor="shelf">Shelf (e.g. A1, B2)</label>
+                <input type="text" id="shelf" name="shelf" required />
               </div>
-
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="quantity">Quantity</label>
-                <input type="number" id="quantity" name="quantity" placeholder="Quantity" required />
+                <input type="number" id="quantity" name="quantity" required min="0" />
               </div>
-
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="minStock">Min Stock</label>
-                <input type="number" id="minStock" name="minStock" placeholder="Min Stock" required />
+                <input type="number" id="minStock" name="minStock" required min="0" />
               </div>
-
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="maxStock">Max Stock</label>
-                <input type="number" id="maxStock" name="maxStock" placeholder="Max Stock" required />
+                <input type="number" id="maxStock" name="maxStock" required min="0" />
               </div>
-
-              <div className="modal-actions"> {/* Renamed form-actions to modal-actions for consistency */}
+              <div className="standard-modal-actions">
+                <button type="submit" className="confirm-button">Add Product</button>
                 <button type="button" onClick={() => setShowAddForm(false)} className="cancel-button">Cancel</button>
-                <button type="submit" disabled={loadingZones || availableZones.length === 0} className="add-button">Add Product</button> {/* Added add-button class */}
               </div>
             </form>
           </div>
@@ -272,7 +257,7 @@ const ProductStorage = () => {
       )}
 
       <div className="products-table">
-        <div className="table-header table-grid">
+        <div className="table-header">
           <div>SKU</div>
           <div>Product Name</div>
           <div>Category</div>
@@ -285,7 +270,7 @@ const ProductStorage = () => {
         {products.length === 0 && !loadingZones && !error ? (
             <div style={{ textAlign: 'center', padding: '2rem', color: '#718096' }}>No products found.</div>
         ) : filteredProducts.map(product => (
-          <div key={product.id} className="table-row table-grid">
+          <div key={product.id} className="table-row">
             <div className="sku">{product.id}</div>
             <div className="product-name">{product.name}</div>
             <div className="category">

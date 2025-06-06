@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './OutgoingShipments.css';
+import './StandardModal.css'; // Import standard modal styles
 
 const OutgoingShipments = () => {
   // State to hold the fetched outgoing shipments
@@ -316,92 +317,48 @@ const OutgoingShipments = () => {
         </div>
       </div>
 
-      {/* Add Shipment Form Modal/Section */}
+      {/* Add New Outgoing Shipment Modal */}
       {showAddForm && (
-        <div className="add-shipment-modal-overlay">
-          <div className="add-shipment-modal">
-            <h2>Add New Outgoing Shipment</h2>
+        <div className="standard-modal-overlay">
+          <div className="standard-modal-content">
+            <div className="standard-modal-header">
+              <h2>Add New Outgoing Shipment</h2>
+              <button onClick={() => setShowAddForm(false)} className="standard-modal-close-button">&times;</button>
+            </div>
             <form onSubmit={handleAddShipment}>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="customer">Customer:</label>
-                <input
-                  type="text"
-                  id="customer"
-                  name="customer"
-                  value={newShipmentData.customer}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Retail Chain A"
-                  required
-                />
+                <input type="text" id="customer" name="customer" value={newShipmentData.customer} onChange={handleInputChange} placeholder="e.g., Retail Chain A" required />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="departure">Departure Time:</label>
-                <input
-                  type="datetime-local"
-                  id="departure"
-                  name="departure"
-                  value={newShipmentData.departure}
-                  onChange={handleInputChange}
-                  required
-                />
+                <input type="datetime-local" id="departure" name="departure" value={newShipmentData.departure} onChange={handleInputChange} required />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="items">Number of Items:</label>
-                <input
-                  type="number"
-                  id="items"
-                  name="items"
-                  value={newShipmentData.items}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 156"
-                  required
-                />
+                <input type="number" id="items" name="items" value={newShipmentData.items} onChange={handleInputChange} placeholder="e.g., 150" required />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="value">Total Value ($):</label>
-                <input
-                  type="number"
-                  id="value"
-                  name="value"
-                  value={newShipmentData.value}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 28000"
-                  required
-                />
+                <input type="number" id="value" name="value" value={newShipmentData.value} onChange={handleInputChange} placeholder="e.g., 28000" required />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="destination">Destination:</label>
-                <input
-                  type="text"
-                  id="destination"
-                  name="destination"
-                  value={newShipmentData.destination}
-                  onChange={handleInputChange}
-                  placeholder="e.g., New York, NY"
-                  required
-                />
+                <input type="text" id="destination" name="destination" value={newShipmentData.destination} onChange={handleInputChange} placeholder="e.g., New York, NY" required />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="status">Status:</label>
-                <select
-                  id="status"
-                  name="status"
-                  value={newShipmentData.status}
-                  onChange={handleInputChange}
-                  required
-                >
+                <select id="status" name="status" value={newShipmentData.status} onChange={handleInputChange} required>
                   <option value="Scheduled">Scheduled</option>
-                  <option value="Ready">Ready</option>
+                  <option value="Preparing">Preparing</option>
+                  <option value="Ready">Ready to Ship</option>
                   <option value="Loading">Loading</option>
                   <option value="Shipped">Shipped</option>
-                  <option value="Preparing">Preparing</option>
-                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
-
-              <div className="form-actions">
-                <button type="submit" className="action-btn primary">Add Shipment</button>
-                <button type="button" className="action-btn secondary" onClick={() => setShowAddForm(false)}>Cancel</button>
+              <div className="standard-modal-actions">
+                <button type="submit" className="confirm-button">Add Shipment</button>
+                <button type="button" onClick={() => setShowAddForm(false)} className="cancel-button">Cancel</button>
               </div>
             </form>
           </div>
@@ -410,11 +367,14 @@ const OutgoingShipments = () => {
 
       {/* Edit Shipment Form Modal/Section */}
       {showEditForm && editingShipment && (
-        <div className="add-shipment-modal-overlay">
-          <div className="add-shipment-modal">
-            <h2>Edit Outgoing Shipment (ID: {editingShipment.id})</h2>
+        <div className="standard-modal-overlay">
+          <div className="standard-modal-content">
+            <div className="standard-modal-header">
+              <h2>Edit Outgoing Shipment (ID: {editingShipment.id})</h2>
+              <button onClick={() => { setShowEditForm(false); setEditingShipment(null); }} className="standard-modal-close-button">&times;</button>
+            </div>
             <form onSubmit={handleUpdateShipment}>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="edit-customer">Customer:</label>
                 <input
                   type="text"
@@ -425,7 +385,7 @@ const OutgoingShipments = () => {
                   required
                 />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="edit-departure">Departure Time:</label>
                 <input
                   type="datetime-local"
@@ -436,7 +396,7 @@ const OutgoingShipments = () => {
                   required
                 />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="edit-items">Number of Items:</label>
                 <input
                   type="number"
@@ -447,7 +407,7 @@ const OutgoingShipments = () => {
                   required
                 />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="edit-value">Total Value ($):</label>
                 <input
                   type="number"
@@ -458,7 +418,7 @@ const OutgoingShipments = () => {
                   required
                 />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="edit-destination">Destination:</label>
                 <input
                   type="text"
@@ -469,7 +429,7 @@ const OutgoingShipments = () => {
                   required
                 />
               </div>
-              <div className="form-group">
+              <div className="standard-form-group">
                 <label htmlFor="edit-status">Status:</label>
                 <select
                   id="edit-status"
@@ -487,9 +447,9 @@ const OutgoingShipments = () => {
                 </select>
               </div>
 
-              <div className="form-actions">
-                <button type="submit" className="action-btn primary">Update Shipment</button>
-                <button type="button" className="action-btn secondary" onClick={() => { setShowEditForm(false); setEditingShipment(null); }}>Cancel</button>
+              <div className="standard-modal-actions">
+                <button type="submit" className="confirm-button">Update Shipment</button>
+                <button type="button" className="cancel-button" onClick={() => { setShowEditForm(false); setEditingShipment(null); }}>Cancel</button>
               </div>
             </form>
           </div>

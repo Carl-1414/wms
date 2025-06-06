@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './IncomingShipments.css';
+import './StandardModal.css'; // Import standard modal styles
 
 const IncomingShipments = () => {
     const [shipments, setShipments] = useState([]);
@@ -260,80 +261,38 @@ const IncomingShipments = () => {
                 </div>
             </div>
 
-            {/* Add Shipment Form Modal/Section */}
+            {/* Add New Incoming Shipment Modal */}
             {showAddForm && (
-                <div className="add-shipment-modal-overlay">
-                    <div className="add-shipment-modal">
-                        <h2>Add New Incoming Shipment</h2>
+                <div className="standard-modal-overlay">
+                    <div className="standard-modal-content">
+                        <div className="standard-modal-header">
+                            <h2>Add New Incoming Shipment</h2>
+                            <button onClick={() => setShowAddForm(false)} className="standard-modal-close-button">&times;</button>
+                        </div>
                         <form onSubmit={handleAddShipment}>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="supplier">Supplier:</label>
-                                <input
-                                    type="text"
-                                    id="supplier"
-                                    name="supplier"
-                                    value={newShipmentData.supplier}
-                                    onChange={handleInputChange}
-                                    placeholder="e.g., TechCorp Industries"
-                                    required
-                                />
+                                <input type="text" id="supplier" name="supplier" value={newShipmentData.supplier} onChange={handleInputChange} placeholder="e.g., TechCorp Industries" required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="eta">Estimated Arrival (ETA):</label>
-                                <input
-                                    type="datetime-local"
-                                    id="eta"
-                                    name="eta"
-                                    value={newShipmentData.eta}
-                                    onChange={handleInputChange}
-                                    required
-                                />
+                                <input type="datetime-local" id="eta" name="eta" value={newShipmentData.eta} onChange={handleInputChange} required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="items">Number of Items:</label>
-                                <input
-                                    type="number"
-                                    id="items"
-                                    name="items"
-                                    value={newShipmentData.items}
-                                    onChange={handleInputChange}
-                                    placeholder="e.g., 145"
-                                    required
-                                />
+                                <input type="number" id="items" name="items" value={newShipmentData.items} onChange={handleInputChange} placeholder="e.g., 165" required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="value">Total Value ($):</label>
-                                <input
-                                    type="number"
-                                    id="value"
-                                    name="value"
-                                    value={newShipmentData.value}
-                                    onChange={handleInputChange}
-                                    placeholder="e.g., 25000"
-                                    required
-                                />
+                                <input type="number" id="value" name="value" value={newShipmentData.value} onChange={handleInputChange} placeholder="e.g., 25000" required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="tracking">Tracking Number:</label>
-                                <input
-                                    type="text"
-                                    id="tracking"
-                                    name="tracking"
-                                    value={newShipmentData.tracking}
-                                    onChange={handleInputChange}
-                                    placeholder="e.g., TC123456789"
-                                    required
-                                />
+                                <input type="text" id="tracking" name="tracking" value={newShipmentData.tracking} onChange={handleInputChange} placeholder="e.g., TC123456789" required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="status">Status:</label>
-                                <select
-                                    id="status"
-                                    name="status"
-                                    value={newShipmentData.status}
-                                    onChange={handleInputChange}
-                                    required
-                                >
+                                <select id="status" name="status" value={newShipmentData.status} onChange={handleInputChange}>
                                     <option value="Scheduled">Scheduled</option>
                                     <option value="In Transit">In Transit</option>
                                     <option value="Arrived">Arrived</option>
@@ -342,86 +301,47 @@ const IncomingShipments = () => {
                                     <option value="Cancelled">Cancelled</option>
                                 </select>
                             </div>
-
-                            <div className="form-actions">
-                                <button type="submit" className="action-btn primary">Add Shipment</button>
-                                <button type="button" className="action-btn secondary" onClick={() => setShowAddForm(false)}>Cancel</button>
+                            <div className="standard-modal-actions">
+                                <button type="submit" className="confirm-button">Add Shipment</button>
+                                <button type="button" onClick={() => setShowAddForm(false)} className="cancel-button">Cancel</button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
 
-            {/* Edit Shipment Form Modal/Section */}
+            {/* Edit Shipment Form Modal */}
             {showEditForm && editingShipment && (
-                <div className="add-shipment-modal-overlay">
-                    <div className="add-shipment-modal">
-                        <h2>Edit Incoming Shipment (ID: {editingShipment.id})</h2>
+                <div className="standard-modal-overlay">
+                    <div className="standard-modal-content">
+                        <div className="standard-modal-header">
+                            <h2>Edit Incoming Shipment (ID: {editingShipment.id})</h2>
+                            <button onClick={() => setShowEditForm(false)} className="standard-modal-close-button">&times;</button>
+                        </div>
                         <form onSubmit={handleUpdateShipment}>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="edit-supplier">Supplier:</label>
-                                <input
-                                    type="text"
-                                    id="edit-supplier"
-                                    name="supplier"
-                                    value={editingShipment.supplier}
-                                    onChange={handleInputChange}
-                                    required
-                                />
+                                <input type="text" id="edit-supplier" name="supplier" value={editingShipment.supplier} onChange={handleInputChange} required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="edit-eta">Estimated Arrival (ETA):</label>
-                                <input
-                                    type="datetime-local"
-                                    id="edit-eta"
-                                    name="eta"
-                                    value={editingShipment.eta}
-                                    onChange={handleInputChange}
-                                    required
-                                />
+                                <input type="datetime-local" id="edit-eta" name="eta" value={editingShipment.eta} onChange={handleInputChange} required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="edit-items">Number of Items:</label>
-                                <input
-                                    type="number"
-                                    id="edit-items"
-                                    name="items"
-                                    value={editingShipment.items}
-                                    onChange={handleInputChange}
-                                    required
-                                />
+                                <input type="number" id="edit-items" name="items" value={editingShipment.items} onChange={handleInputChange} required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="edit-value">Total Value ($):</label>
-                                <input
-                                    type="number"
-                                    id="edit-value"
-                                    name="value"
-                                    value={editingShipment.value}
-                                    onChange={handleInputChange}
-                                    required
-                                />
+                                <input type="number" id="edit-value" name="value" value={editingShipment.value} onChange={handleInputChange} required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="edit-tracking">Tracking Number:</label>
-                                <input
-                                    type="text"
-                                    id="edit-tracking"
-                                    name="tracking"
-                                    value={editingShipment.tracking}
-                                    onChange={handleInputChange}
-                                    required
-                                />
+                                <input type="text" id="edit-tracking" name="tracking" value={editingShipment.tracking} onChange={handleInputChange} required />
                             </div>
-                            <div className="form-group">
+                            <div className="standard-form-group">
                                 <label htmlFor="edit-status">Status:</label>
-                                <select
-                                    id="edit-status"
-                                    name="status"
-                                    value={editingShipment.status}
-                                    onChange={handleInputChange}
-                                    required
-                                >
+                                <select id="edit-status" name="status" value={editingShipment.status} onChange={handleInputChange}>
                                     <option value="Scheduled">Scheduled</option>
                                     <option value="In Transit">In Transit</option>
                                     <option value="Arrived">Arrived</option>
@@ -430,19 +350,19 @@ const IncomingShipments = () => {
                                     <option value="Cancelled">Cancelled</option>
                                 </select>
                             </div>
-
-                            <div className="form-actions">
-                                <button type="submit" className="action-btn primary">Update Shipment</button>
-                                <button type="button" className="action-btn secondary" onClick={() => setShowEditForm(false)}>Cancel</button>
+                            <div className="standard-modal-actions">
+                                <button type="submit" className="confirm-button">Update Shipment</button>
+                                <button type="button" onClick={() => setShowEditForm(false)} className="cancel-button">Cancel</button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
 
-            <div className="shipments-grid">
+            {/* Shipments List */}
+            <div className="shipment-list">
                 {shipments.map(shipment => (
-                    <div key={shipment.id} className={`shipment-card ${shipment.status.toLowerCase().replace(' ', '-')}`}>
+                    <div key={shipment.id} className="shipment-card">
                         <div className="shipment-header">
                             <div className="shipment-id">
                                 <span className="status-icon">{getStatusIcon(shipment.status)}</span>

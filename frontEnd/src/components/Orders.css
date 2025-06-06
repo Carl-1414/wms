@@ -111,11 +111,16 @@
 .table-row {
   display: grid;
   /* Adjusted grid-template-columns for better visual spacing based on images*/
-  grid-template-columns: 100px 1.5fr 120px 100px 80px 120px 120px 150px;
+  grid-template-columns: minmax(80px, 0.75fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(90px, 0.75fr) minmax(60px, 0.5fr) minmax(100px, 0.75fr) minmax(100px, 0.75fr) minmax(120px, 1fr);
   /* Removed large column-gap; it's better to manage column widths */
   /* column-gap: 13rem; */
   align-items: center;
   padding: 0.75rem 1rem;
+}
+
+.table-header > div:nth-child(4),
+.table-row > div:nth-child(4) {
+  text-align: center;
 }
 
 .table-header {
@@ -185,13 +190,14 @@
 }
 
 .priority {
-  padding: 0.25rem 0.5rem; /* Adjusted padding to be consistent with status */
+  padding: 0.15rem 0.3rem; /* Reduced padding for a smaller badge */
   border-radius: 4px; /* Adjusted border-radius to be consistent with status */
   font-size: 0.75rem; /* Adjusted font-size to be consistent with status */
   font-weight: 600;
   text-transform: uppercase;
-  display: inline-block;
-  text-align: center;
+  display: inline-flex;   /* Use inline-flex for alignment capabilities */
+  align-items: center;    /* Vertically center text/content */
+  justify-content: center;/* Horizontally center text/content */
   /* Removed max-width, overflow, white-space, text-overflow unless needed for specific truncation */
 }
 
@@ -258,6 +264,36 @@
 }
 
 /* Modal specific styles */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem; /* Space below header elements */
+  margin-bottom: 1.5rem; /* Space between header and form content */
+  border-bottom: 1px solid #e9ecef; /* Subtle separator line */
+}
+
+.modal-header h2 {
+  margin: 0; /* Remove default h2 margins */
+  font-size: 1.5rem; /* Adjust font size for modal title */
+  color: #212529; /* Darker title color */
+}
+
+.modal-header .close-button {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem; /* Adjust size of close icon */
+  font-weight: bold;
+  color: #6c757d; /* Muted color for close icon */
+  cursor: pointer;
+  padding: 0.25rem 0.5rem; /* Add some padding for easier clicking */
+  line-height: 1;
+}
+
+.modal-header .close-button:hover {
+  color: #343a40; /* Darken close icon on hover */
+}
 .modal-overlay {
   position: fixed; /* Positions the overlay relative to the viewport */
   top: 0;
@@ -301,14 +337,26 @@
   text-align: center; /* Center the title */
 }
 
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; /* Removed to allow form groups to span width for side-by-side layout */
+}
+
 .form-group {
-  margin-bottom: 1rem; /* Space between form fields */
+  display: flex;
+  align-items: center; /* Vertically align label and input */
+  margin-bottom: 1.25rem; /* Slightly increased space between form groups */
+  width: 100%; /* Form groups now take full width of the form area */
 }
 
 .form-group label {
-  display: block; /* Make labels take full width */
-  margin-bottom: 0.5rem; /* Space between label and input */
-  color: #4a5568;
+  flex: 0 0 120px; /* Fixed width for labels, adjust as needed */
+  /* display: block; is no longer needed due to flex layout */
+  margin-bottom: 0; /* No bottom margin as label is side-by-side with input */
+  padding-right: 1rem; /* Space between label text and input field */
+  text-align: right; /* Align label text to the right */
+  color: #495057; /* Updated label color */
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -317,13 +365,16 @@
 .form-group input[type="number"],
 .form-group input[type="date"],
 .form-group select {
-  width: 100%; /* Make inputs take full width of their container */
-  padding: 0.75rem 1rem; /* Padding inside inputs*/
-  border: 1px solid #e2e8f0; /* Light border*/
-  border-radius: 6px; /* Rounded corners for inputs*/
+  flex-grow: 1; /* Allow input/select to take the remaining space in the flex group */
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da; /* Slightly darker border for better definition */
+  border-radius: 6px;
   font-size: 1rem;
-  color: #2d3748;
-  box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+  color: #495057; /* Updated text color */
+  box-sizing: border-box;
+  background-color: #f8f9fa; /* Subtle background color for inputs */
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; /* Smooth transitions */
+  /* width: 100%; is effectively handled by flex-grow: 1; */
 }
 
 .form-group input[type="text"]:focus,
@@ -331,8 +382,9 @@
 .form-group input[type="date"]:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #4299e1; /* Blue border on focus*/
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Blue shadow on focus */
+  border-color: #80bdff; /* Lighter blue border on focus, common with Bootstrap */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Standard Bootstrap-like focus shadow */
+  background-color: #fff; /* Ensure background is white on focus */
 }
 
 .modal-actions {
@@ -410,3 +462,161 @@
 }
 
 
+
+/* --- New Modal Styles for Orders --- */
+
+.orders-modal-overlay-new {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Ensure it's above other content */
+  animation: ordersModalFadeInNew 0.3s ease-out;
+}
+
+@keyframes ordersModalFadeInNew {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.orders-modal-content-new {
+  background: #ffffff;
+  padding: 0; /* Remove padding, header/footer will have their own */
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 550px; /* Slightly wider max-width */
+  animation: ordersModalSlideInNew 0.3s ease-out;
+  overflow: hidden; /* To contain rounded corners with header/footer */
+}
+
+@keyframes ordersModalSlideInNew {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.orders-modal-header-new {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa; /* Light gray header background */
+  border-bottom: 1px solid #dee2e6;
+}
+
+.orders-modal-title-new {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.orders-modal-close-btn-new {
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.orders-modal-close-btn-new:hover {
+  color: #212529;
+}
+
+.orders-modal-form-new {
+  padding: 1.5rem; /* Padding for the form content area */
+  max-height: 60vh; /* Limit form height and enable scrolling if needed */
+  overflow-y: auto;
+}
+
+.orders-form-group-new {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.orders-form-label-new {
+  flex: 0 0 130px; /* Fixed width for labels */
+  padding-right: 1rem;
+  text-align: left; /* Changed from right to left */
+  color: #495057;
+  font-weight: bold; /* Changed from 500 to bold */
+  font-size: 0.95rem;
+}
+
+.orders-form-input-new {
+  flex-grow: 1;
+  padding: 0.65rem 0.9rem; /* Adjusted padding */
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  color: #495057;
+  background-color: #fff; /* White background for inputs */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.orders-form-input-new:focus {
+  outline: none;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.orders-modal-actions-new {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa; /* Light gray footer background */
+  border-top: 1px solid #dee2e6;
+}
+
+.orders-btn-primary-new,
+.orders-btn-secondary-new {
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  border: 1px solid transparent;
+}
+
+.orders-btn-primary-new {
+  background-color: #0d6efd; /* Bootstrap primary blue */
+  color: white;
+  border-color: #0d6efd;
+}
+
+.orders-btn-primary-new:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.orders-btn-secondary-new {
+  background-color: #6c757d; /* Bootstrap secondary gray */
+  color: white;
+  border-color: #6c757d;
+}
+
+.orders-btn-secondary-new:hover {
+  background-color: #5c636a;
+  border-color: #565e64;
+}
+
+.orders-modal-error-new {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem 1.25rem;
+  margin: 0 1.5rem 1rem 1.5rem; /* Display below header, inside form area if error occurs */
+  border: 1px solid #f5c6cb;
+  border-radius: .25rem;
+  font-size: 0.9rem;
+}

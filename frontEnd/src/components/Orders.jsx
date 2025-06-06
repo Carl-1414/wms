@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Orders.css';
+import './Orders.css'; // Original CSS import
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -11,22 +11,22 @@ const Orders = () => {
     status: 'Pending',
     items: 0,
     value: 0,
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split('T')[0], // 'date' for form
     priority: 'Low'
   });
-  const [editingOrder, setEditingOrder] = useState(null); // To store the order being edited
-  const [isEditMode, setIsEditMode] = useState(false); // To distinguish between create and edit mode
-  const [error, setError] = useState(null); // State to store any errors
-  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:3000/api/orders'; // Your backend API base URL
+  const API_BASE_URL = 'http://localhost:3000/api/orders';
 
   const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
   const priorities = ['High', 'Medium', 'Low'];
 
-  // --- Fetch Orders from Backend on Component Mount ---
   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true);
       try {
         const response = await fetch(API_BASE_URL);
         if (!response.ok) {
@@ -34,30 +34,26 @@ const Orders = () => {
         }
         const data = await response.json();
         setOrders(data);
-        setError(null); // Clear any previous errors
+        setError(null);
       } catch (err) {
         console.error('Failed to fetch orders:', err);
         setError('Failed to load orders. Please try again later.');
       } finally {
-        setLoading(false); // Set loading to false once fetching is complete
+        setLoading(false);
       }
     };
-
     fetchOrders();
-  }, []); // Empty dependency array ensures this runs once on mount
+  }, []);
 
-  // Filter orders based on selected status and priority
   const filteredOrders = orders.filter(order => {
     return (filterStatus === '' || order.status === filterStatus) &&
            (filterPriority === '' || order.priority === filterPriority);
   });
 
-  // Calculate overview statistics based on filtered orders
-  const totalValue = filteredOrders.reduce((acc, order) => acc + parseFloat(order.value), 0);
-  const pendingOrders = filteredOrders.filter(o => o.status === 'Pending').length;
-  const processingOrders = filteredOrders.filter(o => o.status === 'Processing').length;
+  const totalValue = filteredOrders.reduce((acc, order) => acc + parseFloat(order.value || 0), 0);
+  const pendingOrdersCount = filteredOrders.filter(o => o.status === 'Pending').length;
+  const processingOrdersCount = filteredOrders.filter(o => o.status === 'Processing').length;
 
-  // Handle changes in the new order form
   const handleNewOrderChange = (e) => {
     const { name, value, type } = e.target;
     setNewOrder(prev => ({
@@ -66,42 +62,24 @@ const Orders = () => {
     }));
   };
 
-  // --- Handle Creation of a New Order via Backend API ---
   const handleCreateOrder = async (e) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
-
-    // Prepare the payload, mapping 'date' to 'order_date'
-    const payload = {
-      ...newOrder,
-      order_date: newOrder.date, // Map date to order_date
-    };
-
+    setError(null);
+    const payload = { ...newOrder, order_date: newOrder.date }; // Map form 'date' to 'order_date'
     try {
       const response = await fetch(API_BASE_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload), // Send the modified payload
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
-
-      const createdOrder = await response.json(); // Get the created order (with its ID from the backend)
-      setOrders(prevOrders => [...prevOrders, createdOrder]); // Add the new order to state
-      setNewOrder({ // Reset form
-        customer: '',
-        status: 'Pending',
-        items: 0,
-        value: 0,
-        date: new Date().toISOString().split('T')[0],
-        priority: 'Low'
-      });
-      setIsModalOpen(false); // Close modal
+      const createdOrder = await response.json();
+      setOrders(prevOrders => [...prevOrders, createdOrder]);
+      setNewOrder({ customer: '', status: 'Pending', items: 0, value: 0, date: new Date().toISOString().split('T')[0], priority: 'Low' });
+      setIsModalOpen(false);
       alert('Order created successfully!');
     } catch (err) {
       console.error('Failed to create order:', err);
@@ -109,91 +87,45 @@ const Orders = () => {
     }
   };
 
-  // --- Handle Initiation of Order Editing ---
   const handleEditOrder = (orderId) => {
     const orderToEdit = orders.find(order => order.id === orderId);
     if (orderToEdit) {
       setIsEditMode(true);
-      setEditingOrder(orderToEdit); // Store the original order being edited
-      // Populate the form with the order's data
-      // Ensure date format is yyyy-mm-dd for the input type='date'
+      setEditingOrder(orderToEdit);
       const formDate = orderToEdit.order_date ? new Date(orderToEdit.order_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
       setNewOrder({
         customer: orderToEdit.customer,
         status: orderToEdit.status,
         items: orderToEdit.items,
         value: orderToEdit.value,
-        date: formDate, // Use 'date' for the form field, correctly formatted
+        date: formDate, // Use 'date' for form field
         priority: orderToEdit.priority
       });
-      setIsModalOpen(true); // Open the modal
-    } else {
-      console.error('Order to edit not found:', orderId);
-      setError('Could not find the order to edit.');
+      setError(null);
+      setIsModalOpen(true);
     }
   };
 
-  // --- Handle Deletion of an Order ---
-  const handleDeleteOrder = async (orderId) => {
-    // Confirmation dialog
-    if (!window.confirm(`Are you sure you want to delete order ${orderId}? This action cannot be undone.`)) {
-      return; // User cancelled the action
-    }
-
-    setError(null); // Clear previous errors
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/${orderId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      // If deletion is successful, update the frontend state
-      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-      alert('Order deleted successfully!'); // Or use a more subtle notification
-
-    } catch (err) {
-      console.error('Failed to delete order:', err);
-      setError(`Failed to delete order ${orderId}: ${err.message}`);
-      // Display error to user, e.g., using an alert or a message area
-      alert(`Error deleting order: ${err.message}`); 
-    }
-  };
-
-  // --- Handle Update of an Order ---
   const handleUpdateOrder = async (e) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
-
-    // Prepare the payload, mapping 'date' to 'order_date'
-    const payload = {
-      ...newOrder,
-      order_date: newOrder.date, // Map date to order_date
-    };
-
+    setError(null);
+    if (!editingOrder) return;
+    const payload = { ...newOrder, order_date: newOrder.date }; // Map form 'date' to 'order_date'
     try {
       const response = await fetch(`${API_BASE_URL}/${editingOrder.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload), // Send the modified payload
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
-
-      const updatedOrder = await response.json(); // Get the updated order (with its ID from the backend)
-      setOrders(prevOrders => prevOrders.map(order => order.id === updatedOrder.id ? updatedOrder : order)); // Update the order in state
-      setIsEditMode(false); // Reset edit mode
+      const updatedOrder = await response.json();
+      setOrders(prevOrders => prevOrders.map(order => order.id === updatedOrder.id ? updatedOrder : order));
+      setIsEditMode(false);
       setEditingOrder(null);
-      setIsModalOpen(false); // Close modal
+      setIsModalOpen(false);
       alert('Order updated successfully!');
     } catch (err) {
       console.error('Failed to update order:', err);
@@ -201,15 +133,48 @@ const Orders = () => {
     }
   };
 
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm(`Are you sure you want to delete order ${orderId}? This action cannot be undone.`)) {
+      return;
+    }
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/${orderId}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+      alert('Order deleted successfully!');
+    } catch (err) {
+      console.error('Failed to delete order:', err);
+      setError(`Failed to delete order ${orderId}: ${err.message}`);
+      alert(`Error deleting order: ${err.message}`);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingOrder(null);
+    setError(null);
+    setNewOrder({ customer: '', status: 'Pending', items: 0, value: 0, date: new Date().toISOString().split('T')[0], priority: 'Low' });
+  };
+
   return (
     <div className="orders">
       <div className="page-header">
         <h1>Orders Management</h1>
-        <button className="add-btn" onClick={() => setIsModalOpen(true)}>+ New Order</button>
+        <button className="add-btn" onClick={() => {
+          setIsEditMode(false);
+          setNewOrder({ customer: '', status: 'Pending', items: 0, value: 0, date: new Date().toISOString().split('T')[0], priority: 'Low' });
+          setError(null);
+          setIsModalOpen(true);
+        }}>+ New Order</button>
       </div>
 
-      {loading && <div className="loading-message" style={{ textAlign: 'center', padding: '1rem' }}>Loading orders...</div>}
-      {error && <div className="error-message" style={{ textAlign: 'center', padding: '1rem', color: 'red' }}>{error}</div>}
+      {loading && <div className="loading-message">Loading orders...</div>}
+      {error && !isModalOpen && <div className="error-message page-error">{error}</div>}
 
       <div className="orders-overview">
         <div className="overview-card">
@@ -218,11 +183,11 @@ const Orders = () => {
         </div>
         <div className="overview-card">
           <h3>Pending Orders</h3>
-          <div className="overview-value">{pendingOrders}</div>
+          <div className="overview-value">{pendingOrdersCount}</div>
         </div>
         <div className="overview-card">
           <h3>Processing</h3>
-          <div className="overview-value">{processingOrders}</div>
+          <div className="overview-value">{processingOrdersCount}</div>
         </div>
         <div className="overview-card">
           <h3>Total Value</h3>
@@ -232,23 +197,13 @@ const Orders = () => {
 
       <div className="filters-section">
         <div className="filters">
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
             <option value="">All Statuses</option>
-            {statuses.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
+            {statuses.map(status => <option key={status} value={status}>{status}</option>)}
           </select>
-          <select
-            value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
-          >
+          <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
             <option value="">All Priorities</option>
-            {priorities.map(priority => (
-              <option key={priority} value={priority}>{priority}</option>
-            ))}
+            {priorities.map(priority => <option key={priority} value={priority}>{priority}</option>)}
           </select>
         </div>
       </div>
@@ -269,109 +224,62 @@ const Orders = () => {
             <div key={order.id} className="table-row">
               <div className="order-id">{order.id}</div>
               <div className="customer">{order.customer}</div>
-              <div className={`status ${order.status ? order.status.toLowerCase() : ''}`}>
-                {order.status}
-              </div>
-              <div className={`priority ${order.priority ? order.priority.toLowerCase() : ''}`}>
-                {order.priority}
-              </div>
+              <div className={`status ${order.status ? order.status.toLowerCase() : ''}`}>{order.status}</div>
+              <div className={`priority ${order.priority ? order.priority.toLowerCase() : ''}`}>{order.priority}</div>
               <div className="items">{order.items}</div>
-              <div className="value">${parseFloat(order.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-              <div className="date">{order.date}</div>
+              <div className="value">${parseFloat(order.value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="date">{order.order_date ? new Date(order.order_date).toLocaleDateString() : 'N/A'}</div>
               <div className="actions">
-                <button className="action-btn view">View</button>
                 <button className="action-btn edit" onClick={() => handleEditOrder(order.id)}>Edit</button>
                 <button className="action-btn delete" onClick={() => handleDeleteOrder(order.id)}>Delete</button>
               </div>
             </div>
           ))
         ) : (
-          !loading && !error && (
-            <div className="no-orders-message" style={{ textAlign: 'center', padding: '2rem', color: '#718096' }}>
-              No orders found. Click "+ New Order" to add one.
-            </div>
-          )
+          !loading && !error && null
         )}
       </div>
 
-      {/* New Order Modal */}
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>{isEditMode ? 'Update Order' : 'Create New Order'}</h2>
-            {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-            <form onSubmit={isEditMode ? handleUpdateOrder : handleCreateOrder}>
-              <div className="form-group">
-                <label>Customer:</label>
-                <input
-                  type="text"
-                  name="customer"
-                  value={newOrder.customer}
-                  onChange={handleNewOrderChange}
-                  required
-                />
+        <div className="orders-modal-overlay-new"> {/* Original modal class */}
+          <div className="orders-modal-content-new"> {/* Original modal class */}
+            <div className="orders-modal-header-new">
+                <h2 className="orders-modal-title-new">{isEditMode ? 'Edit Order' : 'Create New Order'}</h2>
+                <button onClick={closeModal} className="orders-modal-close-btn-new">&times;</button>
+            </div>
+            {error && <div className="orders-modal-error-new">{error}</div>}
+            <form onSubmit={isEditMode ? handleUpdateOrder : handleCreateOrder} className="orders-modal-form-new">
+              <div className="orders-form-group-new">
+                <label htmlFor="customer" className="orders-form-label-new">Customer:</label>
+                <input type="text" id="customer" name="customer" value={newOrder.customer} onChange={handleNewOrderChange} required className="orders-form-input-new" />
               </div>
-              <div className="form-group">
-                <label>Status:</label>
-                <select name="status" value={newOrder.status} onChange={handleNewOrderChange}>
+              <div className="orders-form-group-new">
+                <label htmlFor="status" className="orders-form-label-new">Status:</label>
+                <select id="status" name="status" value={newOrder.status} onChange={handleNewOrderChange} className="orders-form-input-new">
                   {statuses.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
-              <div className="form-group">
-                <label>Items:</label>
-                <input
-                  type="number"
-                  name="items"
-                  value={newOrder.items}
-                  onChange={handleNewOrderChange}
-                  required
-                />
+              <div className="orders-form-group-new">
+                <label htmlFor="items" className="orders-form-label-new">Items:</label>
+                <input type="number" id="items" name="items" value={newOrder.items} onChange={handleNewOrderChange} min="0" required className="orders-form-input-new" />
               </div>
-              <div className="form-group">
-                <label>Value:</label>
-                <input
-                  type="number"
-                  name="value"
-                  value={newOrder.value}
-                  onChange={handleNewOrderChange}
-                  step="0.01" // Allow decimal values
-                  required
-                />
+              <div className="orders-form-group-new">
+                <label htmlFor="value" className="orders-form-label-new">Value:</label>
+                <input type="number" id="value" name="value" value={newOrder.value} onChange={handleNewOrderChange} step="0.01" min="0" required className="orders-form-input-new" />
               </div>
-              <div className="form-group">
-                <label>Order Date:</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={newOrder.date}
-                  onChange={handleNewOrderChange}
-                  required
-                />
+              <div className="orders-form-group-new">
+                <label htmlFor="orderDate" className="orders-form-label-new">Order Date:</label>
+                <input type="date" id="orderDate" name="date" value={newOrder.date} onChange={handleNewOrderChange} required className="orders-form-input-new" />
               </div>
-              <div className="form-group">
-                <label>Priority:</label>
-                <select name="priority" value={newOrder.priority} onChange={handleNewOrderChange}>
+              <div className="orders-form-group-new">
+                <label htmlFor="priority" className="orders-form-label-new">Priority:</label>
+                <select id="priority" name="priority" value={newOrder.priority} onChange={handleNewOrderChange} className="orders-form-input-new">
                   {priorities.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
-              <div className="modal-actions">
-                <button type="submit" className="btn btn-primary">
-                  {isEditMode ? 'Update Order' : 'Create Order'}
-                </button>
-                <button type="button" className="btn btn-secondary" onClick={() => {
-                  setIsModalOpen(false);
-                  setIsEditMode(false); // Reset edit mode on cancel
-                  setEditingOrder(null);
-                  // Optionally reset newOrder form to defaults
-                  setNewOrder({
-                    customer: '',
-                    status: 'Pending',
-                    items: 0,
-                    value: 0,
-                    date: new Date().toISOString().split('T')[0],
-                    priority: 'Low'
-                  });
-                }}>Cancel</button>
+              <div className="orders-modal-actions-new">
+                <button type="submit" className="orders-btn-primary-new">{isEditMode ? 'Update Order' : 'Create Order'}</button>
+                <button type="button" className="orders-btn-secondary-new" onClick={closeModal}>Cancel</button>
               </div>
             </form>
           </div>
