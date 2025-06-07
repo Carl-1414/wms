@@ -1,34 +1,29 @@
-// InventoryAudits.js
 import React, { useEffect, useState } from 'react';
-import './InventoryAudits.css'; // Assuming you have a CSS file for styling
+import './InventoryAudits.css';
 
 const InventoryAudits = () => {
     const [audits, setAudits] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [newAudit, setNewAudit] = useState({
         zone: '',
-        scheduledDate: '', // Frontend state uses camelCase for form inputs
+        scheduledDate: '',
         auditor: '',
-        auditType: '',     // Frontend state uses camelCase for form inputs
+        auditType: '',
     });
-    const [warehouseZones, setWarehouseZones] = useState([]); // State for warehouse zones
+    const [warehouseZones, setWarehouseZones] = useState([]);
 
-    // State for displaying messages to the user (replaces alert())
     const [message, setMessage] = useState('');
-    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+    const [messageType, setMessageType] = useState('');
 
-    // Function to display temporary messages
     const showMessage = (msg, type = 'info') => {
         setMessage(msg);
         setMessageType(type);
-        // Hide message after 3 seconds
         setTimeout(() => {
             setMessage('');
             setMessageType('');
-        }, 3000); 
+        }, 3000);
     };
 
-    // Fetch audits on component mount
     useEffect(() => {
         const fetchAudits = async () => {
             try {
@@ -41,14 +36,13 @@ const InventoryAudits = () => {
                 setAudits(data);
             } catch (error) {
                 console.error('Error fetching audits:', error);
-                showMessage(`Failed to load audits: ${error.message}`, 'error'); // Display error to the user
+                showMessage(`Failed to load audits: ${error.message}`, 'error');
             }
         };
 
         fetchAudits();
     }, []);
 
-    // Fetch warehouse zones on component mount
     useEffect(() => {
         const fetchWarehouseZones = async () => {
             try {
@@ -58,15 +52,15 @@ const InventoryAudits = () => {
                     throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
                 }
                 const data = await response.json();
-                setWarehouseZones(data); // Populate the warehouseZones state
+                setWarehouseZones(data);
             } catch (error) {
                 console.error('Error fetching warehouse zones:', error);
-                showMessage(`Failed to load warehouse zones: ${error.message}`, 'error'); // Display error to the user
+                showMessage(`Failed to load warehouse zones: ${error.message}`, 'error');
             }
         };
 
         fetchWarehouseZones();
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -79,20 +73,17 @@ const InventoryAudits = () => {
     const handleAddAudit = async (e) => {
         e.preventDefault();
 
-        // Basic validation
         if (!newAudit.zone || !newAudit.scheduledDate || !newAudit.auditor || !newAudit.auditType) {
             showMessage('Please fill in all required fields.', 'error');
             return;
         }
 
         try {
-            // Prepare payload with snake_case keys expected by the backend
             const payload = {
-                zone_id: newAudit.zone, // newAudit.zone now holds the Zone ID
+                zone_id: newAudit.zone,
                 scheduled_date: newAudit.scheduledDate,
                 auditor: newAudit.auditor,
                 audit_type: newAudit.auditType,
-                // notes: newAudit.notes || null, // If you add a notes field later
             };
 
             const response = await fetch('http://localhost:3000/api/inventory-audits', {
@@ -100,7 +91,6 @@ const InventoryAudits = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // Send the transformed payload
                 body: JSON.stringify(payload),
             });
 
@@ -109,15 +99,11 @@ const InventoryAudits = () => {
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message}`);
             }
 
-            // The backend should return the newly created audit object with its generated ID and default values
-            // The backend's response uses snake_case for database column names like 'scheduled_date' and 'audit_type'
-            const responseData = await response.json(); // responseData is now { message: "...", audit: { id: "...", ... } }
-            
-            // Add the new audit to the state to update the UI
+            const responseData = await response.json();
+
             if (responseData.audit && responseData.audit.id) {
-                setAudits(prevAudits => [...prevAudits, responseData.audit]); 
+                setAudits(prevAudits => [...prevAudits, responseData.audit]);
             } else {
-                // If for some reason the audit object isn't returned as expected, fall back to refetching all audits
                 console.warn('New audit data not found in response, refetching all audits.');
                 const fetchAudits = async () => {
                     try {
@@ -130,19 +116,19 @@ const InventoryAudits = () => {
                         setAudits(data);
                     } catch (error) {
                         console.error('Error fetching audits:', error);
-                        showMessage(`Failed to load audits: ${error.message}`, 'error'); // Display error to the user
+                        showMessage(`Failed to load audits: ${error.message}`, 'error');
                     }
                 };
-                fetchAudits(); // Make sure fetchAudits is defined in this component's scope
+                fetchAudits();
             }
 
-            setNewAudit({ // Reset form fields
+            setNewAudit({
                 zone: '',
                 scheduledDate: '',
                 auditor: '',
                 auditType: '',
             });
-            setShowAddForm(false); // Close the modal
+            setShowAddForm(false);
             showMessage('New Audit Scheduled Successfully!', 'success');
         } catch (error) {
             console.error('Error scheduling audit:', error);
@@ -173,33 +159,28 @@ const InventoryAudits = () => {
         }
     };
 
-    // Helper function to get status color for styling audit cards
     const getStatusColor = (status) => {
         switch (status) {
-            case 'Completed': return '#38a169'; // Green
-            case 'Scheduled': return '#d69e2e'; // Orange
-            case 'Overdue': return '#e53e3e'; // Red
-            case 'In Progress': return '#3182ce'; // Blue
-            default: return '#718096'; // Gray
+            case 'Completed': return '#38a169';
+            case 'Scheduled': return '#d69e2e';
+            case 'Overdue': return '#e53e3e';
+            case 'In Progress': return '#3182ce';
+            default: return '#718096';
         }
     };
 
-    // Calculate overview statistics based on current audits data
     const totalAudits = audits.length;
     const completedAudits = audits.filter(audit => audit.status === 'Completed').length;
-    // Calculate overdue audits: those scheduled in the past and still 'Scheduled' or 'In Progress'
-    const overdueAudits = audits.filter(audit => 
-        new Date(audit.scheduled_date) < new Date() && 
+    const overdueAudits = audits.filter(audit =>
+        new Date(audit.scheduled_date) < new Date() &&
         (audit.status === 'Scheduled' || audit.status === 'In Progress')
     ).length;
     const avgAccuracy = audits.length > 0
-        // Ensure accuracy property exists and is a number before summing
         ? (audits.reduce((acc, audit) => acc + (audit.accuracy || 0), 0) / audits.length).toFixed(2)
         : 'N/A';
 
     return (
         <div className="inventory-audits">
-            {/* Message display container */}
             {message && (
                 <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white ${messageType === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
                     {message}
@@ -245,18 +226,15 @@ const InventoryAudits = () => {
                                 </span>
                             </div>
                             <p><strong>Zone:</strong> {audit.zone}</p>
-                            {/* Use audit.scheduled_date as returned from the backend */}
                             <p><strong>Scheduled Date:</strong> {new Date(audit.scheduled_date).toLocaleDateString()}</p>
                             <p><strong>Auditor:</strong> {audit.auditor}</p>
-                            {/* Use audit.audit_type as returned from the backend */}
                             <p><strong>Type:</strong> {audit.audit_type}</p>
                             <p><strong>Discrepancies:</strong> {audit.discrepancies}</p>
                             <p><strong>Accuracy:</strong> {audit.accuracy}%</p>
                             <div className="audit-actions">
-                                {/* Conditionally render delete button only if audit.id exists */}
                                 {audit.id && (
-                                    <button 
-                                        className="action-btn danger" 
+                                    <button
+                                        className="action-btn danger"
                                         onClick={() => handleDeleteAudit(audit.id)}
                                     >
                                         Delete
@@ -268,7 +246,6 @@ const InventoryAudits = () => {
                 )}
             </div>
 
-            {/* Modal for adding new audit */}
             {showAddForm && (
                 <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -278,7 +255,7 @@ const InventoryAudits = () => {
                         </div>
                         <form onSubmit={handleAddAudit}>
                             <div className="form-group">
-                                <label>Zone ID</label> {/* Changed label for clarity */}
+                                <label>Zone ID</label>
                                 <input
                                     type="text"
                                     list="zone-datalist"
@@ -286,7 +263,6 @@ const InventoryAudits = () => {
                                     value={newAudit.zone}
                                     onChange={handleInputChange}
                                     placeholder="Type or select Zone ID"
-                                    // Add a className here if you have a general class for form inputs, e.g., className="form-control"
                                     required
                                 />
                                 <datalist id="zone-datalist">

@@ -1,30 +1,25 @@
-/* Settings.css */
-
-/* General styles for the settings component */
 body {
-    font-family: 'Inter', sans-serif; /* A more modern, clean font */
-    background-color: #f8f9fa; /* A softer, light background color for the whole page */
-    color: #343a40; /* Darker text for better contrast and readability */
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
     margin: 0;
     padding: 0;
     line-height: 1.6;
 }
 
-.settings {
-    /* Top-level container, if needed for overall page layout */
-}
+.settings {}
 
 .page-header {
     background-color: #ffffff;
     padding: 2rem 3rem;
     border-bottom: 1px solid #e9ecef;
     box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-    margin-bottom: 2rem; /* Space between header and main content */
+    margin-bottom: 2rem;
 }
 
 .page-header h1 {
-    font-size: 2.8rem; /* Larger, more impactful heading */
-    color: #212529; /* A strong dark color for the main title */
+    font-size: 2.8rem;
+    color: #212529;
     margin: 0;
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -32,110 +27,115 @@ body {
 
 .settings-container {
     display: grid;
-    grid-template-columns: 280px 1fr; /* Fixed width for sidebar, rest for content */
-    gap: 2.5rem; /* Increased gap for more breathing room */
-    padding: 0 3rem 3rem; /* Padding only on sides and bottom, header has its own */
-    max-width: 1300px; /* Max width for the container to keep it from stretching too wide */
-    margin: 0 auto; /* Center the container */
-    background: #ffffff; /* White background for the main content area */
-    border-radius: 0.8rem; /* More rounded corners for a softer look */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+    grid-template-columns: 280px 1fr;
+    gap: 2.5rem;
+    padding: 0 3rem 3rem;
+    max-width: 1300px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 0.8rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .settings-sidebar {
-    background: linear-gradient(145deg, #6c757d 0%, #495057 100%); /* Deep grey gradient for a sophisticated look */
-    padding: 2rem 1.5rem; /* Adjusted padding */
-    border-radius: 0.8rem; /* More rounded corners for a softer look */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Prominent shadow for depth */
+    background: linear-gradient(145deg, #6c757d 0%, #495057 100%);
+    padding: 2rem 1.5rem;
+    border-radius: 0.8rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Align items to the start */
-    min-height: 600px; /* Ensure sidebar has some height */
+    align-items: flex-start;
+    min-height: 600px;
 }
 
 .tab-btn {
-    display: flex; /* Use flexbox for icon and text alignment */
+    display: flex;
     align-items: center;
-    gap: 1rem; /* Space between icon and text */
-    width: 100%; /* Make buttons full width in sidebar */
-    padding: 1.1rem 1.4rem; /* More vertical padding */
-    margin-bottom: 0.7rem; /* Slightly less margin between buttons */
-    background: rgba(255, 255, 255, 0.15); /* Semi-transparent background for tabs */
-    color: #f8f9fa; /* Light text for tabs */
-    font-weight: 600; /* Bolder font weight */
-    text-align: left; /* Align text to the left */
-    border-radius: 0.6rem; /* Rounded corners for buttons */
+    gap: 1rem;
+    width: 100%;
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 0.7rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: #f8f9fa;
+    font-weight: 600;
+    text-align: left;
+    border-radius: 0.6rem;
     cursor: pointer;
-    transition: all 0.3s ease; /* Smooth transition for all properties */
-    border: none; /* Remove default button border */
+    transition: all 0.3s ease;
+    border: none;
     font-size: 1.05rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle individual button shadow */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .tab-btn:hover {
-    background: rgba(255, 255, 255, 0.25); /* Slightly more opaque on hover */
-    transform: translateY(-2px); /* Small lift effect on hover */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* More prominent shadow on hover */
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.tab-btn.active { /* Style for the active tab */
-    background: #ffffff; /* Solid white background for active tab */
-    color: #495057; /* Active tab text color (dark grey) */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* More prominent shadow for active tab */
-    transform: translateY(0); /* Ensure active tab doesn't lift */
+.tab-btn.active {
+    background: #ffffff;
+    color: #495057;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
 }
 
 .tab-icon {
-    font-size: 1.4rem; /* Size for emoji icons. For SVG/Font Awesome, use specific classes/sizes. */
-    color: inherit; /* Inherit color from parent (.tab-btn) */
-    line-height: 1; /* Align emojis better */
+    font-size: 1.4rem;
+    color: inherit;
+    line-height: 1;
 }
 
-/* Main Content Area */
 .settings-content {
     background-color: #ffffff;
     padding: 2.5rem;
     border-radius: 0.8rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Shadow for depth */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .settings-section {
-    margin-bottom: 2rem; /* Space between different sections within a tab */
+    margin-bottom: 2rem;
 }
 
 .settings-section h2 {
-    font-size: 2rem; /* Size for tab section headings */
+    font-size: 2rem;
     color: #343a40;
     margin-bottom: 1.8rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #e9ecef; /* A subtle but clear line under the heading */
+    border-bottom: 2px solid #e9ecef;
     font-weight: 600;
 }
 
 .settings-section h3 {
-    font-size: 1.4rem; /* Size for sub-headings like Email Notifications */
+    font-size: 1.4rem;
     color: #495057;
     margin-top: 2.5rem;
     margin-bottom: 1.2rem;
     font-weight: 500;
 }
 
-/* Form Group Styles (consolidated from setting-group and form-group) */
 .form-group {
-    margin-bottom: 1.6rem; /* Space between form elements */
+    margin-bottom: 1.6rem;
     display: flex;
-    align-items: center; /* Align label and input horizontally */
-    gap: 1.5rem; /* Space between label and input */
+    align-items: center;
+    gap: 1.5rem;
     padding: 0.5rem 0;
 }
 
 .form-group label {
-    font-weight: 600; /* Bolder labels */
+    font-weight: 600;
     color: #495057;
-    flex-basis: 220px; /* Fixed width for labels */
-    text-align: right; /* Align labels to the right */
+    flex-basis: 220px;
+    text-align: right;
     font-size: 1rem;
-    flex-shrink: 0; /* Prevent label from shrinking */
+    flex-shrink: 0;
+    padding-right: 0.5rem;
+    transition: color 0.3s ease, transform 0.2s ease;
+    cursor: default;
+}
+
+.form-group label:hover {
+    color: #0056b3;
 }
 
 .form-group input[type="text"],
@@ -143,15 +143,15 @@ body {
 .form-group input[type="password"],
 .form-group input[type="number"],
 .form-group select {
-    flex-grow: 1; /* Allow input/select to take remaining space */
-    padding: 0.9rem 1.2rem; /* More padding for inputs */
-    border: 1px solid #ced4da; /* Lighter, more modern border */
-    border-radius: 0.6rem; /* Softer rounded corners */
+    flex-grow: 1;
+    padding: 0.9rem 1.2rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.6rem;
     font-size: 1.05rem;
     color: #495057;
     transition: all 0.3s ease;
-    background-color: #fdfdfe; /* Very light background for inputs */
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
+    background-color: #fdfdfe;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .form-group input[type="text"]:focus,
@@ -159,33 +159,40 @@ body {
 .form-group input[type="password"]:focus,
 .form-group input[type="number"]:focus,
 .form-group select:focus {
-    border-color: #007bff; /* Primary blue highlight border on focus */
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2); /* Soft glow on focus */
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2);
     outline: none;
-    background-color: #ffffff; /* White background on focus */
+    background-color: #ffffff;
 }
 
-/* Save Button Styles (for all save buttons) */
 .save-btn {
-    display: inline-block; /* Keep inline-block for flexible placement */
-    margin-top: 2.5rem; /* More space above the button */
-    padding: 1rem 2.5rem; /* Generous padding */
-    background: linear-gradient(45deg, #007bff 0%, #0056b3 100%); /* Primary blue gradient */
+    display: inline-block;
+    margin-top: 2.5rem;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     color: white;
-    font-size: 1.15rem; /* Larger font size */
+    font-size: 1.15rem;
     font-weight: 600;
     border: none;
-    border-radius: 0.75rem; /* Rounded corners */
+    border-radius: 0.75rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.25); /* Shadow for depth */
+    transition: background 0.3s ease, transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+    box-shadow: 0 5px 12px rgba(0, 100, 200, 0.22);
     letter-spacing: 0.02em;
+    position: relative;
+    overflow: hidden;
 }
 
 .save-btn:hover {
-    background: linear-gradient(45deg, #0056b3 0%, #007bff 100%); /* Reverse gradient on hover */
-    transform: translateY(-3px); /* More pronounced lift effect */
-    box-shadow: 0 9px 20px rgba(0, 123, 255, 0.35);
+    background: linear-gradient(135deg, #0069d9 0%, #004a99 100%);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 18px rgba(0, 100, 200, 0.3), 0 0 6px rgba(0, 123, 255, 0.2);
+}
+
+.save-btn:active {
+    transform: translateY(-1px) scale(0.99);
+    background: linear-gradient(135deg, #0056b3 0%, #003c73 100%);
+    box-shadow: 0 3px 8px rgba(0, 80, 160, 0.25), inset 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .save-btn:disabled {
@@ -195,29 +202,27 @@ body {
     transform: none;
 }
 
-
-/* Table styles (for User Management) */
 .users-table {
     width: 100%;
-    border-collapse: separate; /* Use separate to allow border-radius on cells */
-    border-spacing: 0; /* Remove default spacing */
+    border-collapse: separate;
+    border-spacing: 0;
     margin-top: 2rem;
     background: #fff;
     border-radius: 0.75rem;
-    overflow: hidden; /* Ensures rounded corners are applied */
+    overflow: hidden;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e9ecef; /* Outer border for the table container */
+    border: 1px solid #e9ecef;
 }
 
 .table-header {
     display: grid;
-    grid-template-columns: 1.5fr 2fr 1fr 1fr 2fr; /* Adjusted column widths */
-    background: #e9f2fa; /* Lighter blue for header */
-    font-weight: 700; /* Bolder header text */
+    grid-template-columns: 1.5fr 2fr 1fr 1fr 2fr;
+    background: #e9f2fa;
+    font-weight: 700;
     color: #2c3e50;
     padding: 1rem 1.5rem;
     text-align: left;
-    border-bottom: 1px solid #dbe9f5; /* Subtle border */
+    border-bottom: 1px solid #dbe9f5;
     font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -225,25 +230,24 @@ body {
 
 .table-row {
     display: grid;
-    grid-template-columns: 1.5fr 2fr 1fr 1fr 2fr; /* Match header columns */
+    grid-template-columns: 1.5fr 2fr 1fr 1fr 2fr;
     background: #fff;
     padding: 1rem 1.5rem;
     color: #495057;
-    border-bottom: 1px solid #f0f0f0; /* Lighter row borders */
+    border-bottom: 1px solid #f0f0f0;
     transition: background 0.3s ease;
     align-items: center;
     font-size: 0.92rem;
 }
 
 .table-row:last-child {
-    border-bottom: none; /* Remove border from last row */
+    border-bottom: none;
 }
 
 .table-row:hover {
-    background: #f7f9fc; /* Very subtle hover effect */
+    background: #f7f9fc;
 }
 
-/* Status Badges for Users */
 .status {
     display: inline-block;
     padding: 0.3em 0.8em;
@@ -264,25 +268,24 @@ body {
     color: #721c24;
 }
 
-/* Action button styles */
 .action-btn {
-    display: inline-flex; /* Use flex for icon and text alignment */
+    display: inline-flex;
     align-items: center;
-    justify-content: center; /* Center content within button */
+    justify-content: center;
     gap: 0.5rem;
-    padding: 0.6rem 1.1rem; /* More padding */
-    margin-right: 0.6rem; /* Space between buttons */
-    border-radius: 0.5rem; /* Slightly more rounded */
+    padding: 0.6rem 1.1rem;
+    margin-right: 0.6rem;
+    border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 500;
-    text-decoration: none; /* Remove underline if applied */
+    text-decoration: none;
     font-size: 0.9rem;
-    min-width: 80px; /* Ensure buttons have a minimum width */
+    min-width: 80px;
 }
 
 .action-btn.edit {
-    background: #17a2b8; /* Info blue */
+    background: #17a2b8;
     color: white;
     box-shadow: 0 2px 6px rgba(23, 162, 184, 0.2);
 }
@@ -294,7 +297,7 @@ body {
 }
 
 .action-btn.delete {
-    background: #dc3545; /* Danger red */
+    background: #dc3545;
     color: white;
     box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
 }
@@ -308,7 +311,7 @@ body {
 .add-user-btn {
     margin-top: 2rem;
     padding: 0.8rem 1.5rem;
-    background-color: #28a745; /* Success green */
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 0.6rem;
@@ -347,20 +350,20 @@ body {
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
-    justify-content: flex-end; /* Align buttons to the right */
+    justify-content: flex-end;
 }
 
 .cancel-btn {
-    padding: 1rem 2.5rem;
-    background-color: #6c757d; /* Secondary grey */
+    padding: 0.6rem 1.1rem; /* Matched to .action-btn horizontal padding */
+    background-color: #6c757d;
     color: white;
     border: none;
-    border-radius: 0.75rem;
+    border-radius: 0.5rem; /* Matched to .action-btn */
     cursor: pointer;
-    font-size: 1.15rem;
-    font-weight: 600;
+    font-size: 0.9rem; /* Matched to .action-btn */
+    font-weight: 600; /* Kept for form button consistency */
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+    box-shadow: 0 3px 7px rgba(108, 117, 125, 0.18); /* Adjusted shadow slightly for new padding */
 }
 
 .cancel-btn:hover {
@@ -369,25 +372,23 @@ body {
     box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
 }
 
-
-/* Notification styles */
 .notification-group {
-    margin-bottom: 2rem; /* Space between groups */
-    background-color: #f8f9fa; /* Light background for notification groups */
+    margin-bottom: 2rem;
+    background-color: #f8f9fa;
     padding: 1.8rem;
     border-radius: 0.75rem;
     border: 1px solid #e9ecef;
-    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.04); /* Inner shadow */
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .notification-item {
-    margin-bottom: 1rem; /* Space between items */
+    margin-bottom: 1rem;
 }
 
 .notification-item label {
     display: flex;
     align-items: center;
-    gap: 1rem; /* Space between checkbox and text */
+    gap: 1rem;
     font-weight: 500;
     color: #495057;
     cursor: pointer;
@@ -395,16 +396,15 @@ body {
 }
 
 .notification-item input[type="checkbox"] {
-    width: 22px; /* Standardize checkbox size */
+    width: 22px;
     height: 22px;
     margin: 0;
-    accent-color: #007bff; /* Primary blue for checkboxes */
-    border-radius: 5px; /* Slightly rounded checkbox */
+    accent-color: #007bff;
+    border-radius: 5px;
     cursor: pointer;
-    transform: scale(1.05); /* Slightly larger */
+    transform: scale(1.05);
 }
 
-/* Messages (Error, Success, Loading) */
 .loading-message {
     color: #007bff;
     font-style: italic;
@@ -431,8 +431,6 @@ body {
     border-radius: 0.5rem;
 }
 
-
-/* Responsive styles */
 @media (max-width: 1024px) {
     .settings-container {
         grid-template-columns: 1fr;
@@ -441,18 +439,18 @@ body {
 
     .settings-sidebar {
         padding: 1.5rem;
-        flex-direction: row; /* Make sidebar horizontal on smaller screens */
-        flex-wrap: wrap; /* Allow buttons to wrap */
-        justify-content: center; /* Center buttons */
-        gap: 0.8rem; /* Smaller gap for horizontal layout */
-        border-radius: 0.75rem; /* Keep rounded corners */
-        min-height: auto; /* Allow height to adjust */
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.8rem;
+        border-radius: 0.75rem;
+        min-height: auto;
     }
 
     .tab-btn {
-        width: auto; /* Auto width for horizontal tabs */
+        width: auto;
         padding: 0.8rem 1.2rem;
-        margin-bottom: 0; /* No bottom margin when horizontal */
+        margin-bottom: 0;
         font-size: 0.95rem;
     }
 
@@ -476,140 +474,14 @@ body {
     }
 
     .form-group {
-        flex-direction: column; /* Stack label and input */
-        align-items: flex-start; /* Align stacked items to the start */
+        flex-direction: column;
+        align-items: flex-start;
         gap: 0.6rem;
     }
 
     .form-group label {
-        text-align: left; /* Align labels to left */
-        flex-basis: auto; /* Remove fixed width */
-        width: 100%; /* Take full width */
-    }
-
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="password"],
-    .form-group input[type="number"],
-    .form-group select {
-        width: 100%; /* Full width inputs */
-        padding: 0.8rem 1.1rem;
-        font-size: 1rem;
-    }
-
-    .save-btn,
-    .add-user-btn,
-    .cancel-btn {
-        width: 100%; /* Full width button on smaller screens */
-        padding: 1rem;
-        font-size: 1rem;
-        margin-top: 2rem;
-    }
-
-    .form-actions {
-        flex-direction: column; /* Stack action buttons */
-    }
-
-    .action-btn {
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
-        margin-right: 0.5rem; /* Adjust margin */
-        min-width: unset; /* Remove min-width */
-    }
-
-    .table-header,
-    .table-row {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* More flexible columns */
-        gap: 0.8rem;
-        padding: 0.8rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    .users-table .table-row .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: flex-start;
-    }
-
-    .notification-group {
-        padding: 1.2rem;
-    }
-
-    .notification-item label {
-        font-size: 0.95rem;
-    }
-
-    .notification-item input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .page-header {
-        padding: 1.5rem 1rem;
-        margin-bottom: 1.5rem;
-    }
-    .page-header h1 {
-        font-size: 2.2rem;
-    }
-    .settings-container {
-        padding: 0 1rem 1rem;
-    }
-    .settings-sidebar {
-        padding: 1rem;
-        gap: 0.6rem;
-    }
-    .tab-btn {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
-    }
-    .tab-icon {
-        font-size: 1.1rem;
-    }
-    .settings-content {
-        padding: 1.5rem;
-    }
-    .settings-section h2 {
-        font-size: 1.6rem;
-        margin-bottom: 1.2rem;
-        padding-bottom: 0.6rem;
-    }
-    .settings-section h3 {
-        font-size: 1.2rem;
-        margin-top: 1.8rem;
-    }
-    .form-group {
-        margin-bottom: 1.2rem;
-    }
-    .form-group label {
-        font-size: 0.9rem;
-    }
-    .form-group input,
-    .form-group select {
-        padding: 0.7rem;
-        font-size: 0.9rem;
-    }
-    .save-btn,
-    .add-user-btn,
-    .cancel-btn {
-        padding: 0.8rem 1.2rem;
-        font-size: 0.95rem;
-    }
-    .action-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-        margin-right: 0.3rem;
-    }
-    .status {
-        font-size: 0.75em;
-    }
-    .table-header,
-    .table-row {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-        gap: 0.5rem;
-        padding: 0.6rem 0.8rem;
-        font-size: 0.85rem;
+        text-align: left;
+        flex-basis: auto;
+        width: 100%;
     }
 }

@@ -114,27 +114,27 @@
 
 .delete-zone-btn {
   background-color: transparent;
-  border: none; /* No border for a clean icon button */
-  color: #718096; /* A mid-grey color for the icon */
-  padding: 0.5rem; /* Increased padding */
-  border-radius: 50%; /* Makes it circular */
+  border: none;
+  color: #718096;
+  padding: 0.5rem;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 1.2rem; /* Increased icon size */
-  line-height: 1; /* Ensures icon is centered vertically */
-  display: inline-flex; /* Helps with centering icon if needed */
-  align-items: center; /* Helps with centering icon if needed */
-  justify-content: center; /* Helps with centering icon if needed */
+  font-size: 1.2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .delete-zone-btn:hover {
-  background-color: #e53e3e; /* Red background on hover */
-  color: white; /* White icon on hover */
+  background-color: #e53e3e;
+  color: white;
 }
 
 .delete-zone-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.5); /* Red focus ring */
+  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.5);
 }
 
 .zone-status {
@@ -197,19 +197,17 @@
   transition: width 0.3s ease;
 }
 
-/* --- Original Modal Styles (keep these as base) --- */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  /* Add fade-in for overlay */
   opacity: 0;
   animation: fadeInOverlay 0.3s ease-out forwards;
 }
@@ -221,28 +219,18 @@
 
 .modal {
   background: white;
-  /* padding: 2rem; /* Controlled by modal-header, modal-body, form-actions */
   width: 90%;
-  max-width: 500px; /* Default max-width, can be overridden by .modal-content-animated */
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  /* Base modal styling, animation and specific appearance in .modal-content-animated */
-  border-radius: 8px; /* Base border radius */
+  border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  /* Remove transform from base .modal if it's handled by .modal-content-animated */
-  /* transform: translate(-50%, -50%); /* This might conflict if overlay is flex centering */
-  /* position: absolute; /* This might conflict if overlay is flex centering */
-  /* top: 50%; */
-  /* left: 50%; */
 }
-
-
-/* --- Enhanced Modal Styles --- */
 
 @keyframes fadeInScaleUp {
   from {
     opacity: 0;
-    transform: scale(0.95); /* Adjusted for flex centering */
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -254,86 +242,80 @@
   animation: fadeInScaleUp 0.3s ease-out forwards;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
-  width: 500px; /* Specific width for the animated modal */
-  padding: 0; /* Remove base padding, handled by inner elements */
+  width: 500px;
+  padding: 0;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* margin-bottom: 1.5rem; /* Replaced by padding */
-  padding: 1.25rem 1.5rem; /* Adjusted padding */
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-header h2 {
   margin: 0;
-  color: #2d3748; /* Darker text for header */
-  font-size: 1.25rem; /* Slightly smaller but clear */
+  color: #2d3748;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.75rem; /* Larger for easier clicking */
+  font-size: 1.75rem;
   cursor: pointer;
   color: #718096;
-  padding: 0.25rem 0.5rem; /* Add some padding for easier click target */
+  padding: 0.25rem 0.5rem;
   line-height: 1;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .close-btn:hover {
   color: #2d3748;
-  background-color: #edf2f7; /* Subtle hover background */
+  background-color: #edf2f7;
   border-radius: 4px;
 }
 
 .modal-body {
-  padding: 1.5rem; /* Padding for the form content area */
-  max-height: calc(90vh - 150px); /* Adjust based on header/footer height */
+  padding: 1.5rem;
+  max-height: calc(90vh - 150px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center form groups horizontally */
+  align-items: center;
 }
 
 .modal .form-group {
   margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1rem; /* Space between label and input */
-  width: 85%; /* Set width for form groups to enable centering and reduce input size */
+  gap: 1rem;
+  width: 85%;
 }
 
 .modal .form-group label {
-  /* display: block; /* Removed for flex layout */
-  margin-bottom: 0; /* Vertical alignment handled by flex */
+  margin-bottom: 0;
   color: #4a5568;
-  font-weight: bold; /* Make label text bold */
+  font-weight: bold;
   font-size: 0.875rem;
-  text-align: left; /* Align text to the left within the label's space */
-  flex-basis: 120px; /* Fixed width for labels */
-  flex-shrink: 0; /* Prevent labels from shrinking */
+  text-align: left;
+  flex-basis: 120px;
+  flex-shrink: 0;
 }
 
 .modal .form-group input[type="text"],
 .modal .form-group input[type="number"] {
-  /* width: 90%; /* Removed */
-  padding: 0.65rem 0.9rem; /* Keep padding */
-  border: 1px solid #cbd5e0; /* Keep border */
-  border-radius: 6px; /* Keep border-radius */
-  font-size: 0.95rem; /* Keep font-size */
-  color: #2d3748; /* Keep color */
-  background-color: #fff; /* Keep background-color */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Keep transition */
-  /* display: block; /* Removed */
-  /* margin-left: auto; /* Removed */
-  /* margin-right: auto; /* Removed */
-  flex-grow: 1; /* Input takes remaining space */
-  min-width: 0; /* Allow input to shrink properly in flex layout */
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  background-color: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  flex-grow: 1;
+  min-width: 0;
 }
 
 .modal .form-group input[type="text"]:focus,
@@ -347,23 +329,21 @@
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
-  /* margin-top: 2rem; /* Replaced by padding */
   padding: 1.25rem 1.5rem;
   border-top: 1px solid #e2e8f0;
-  background-color: #f9fafb; /* Slight background for footer */
-  border-bottom-left-radius: 12px; /* Match modal rounding */
-  border-bottom-right-radius: 12px; /* Match modal rounding */
+  background-color: #f9fafb;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
-/* General Button Styles */
 .btn {
-  padding: 0.65rem 1.25rem; /* Adjusted padding */
+  padding: 0.65rem 1.25rem;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid transparent; /* Base border */
+  border: 1px solid transparent;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   line-height: 1.5;
@@ -387,9 +367,9 @@
 }
 
 .btn-secondary {
-  background-color: #f7fafc; /* Lighter gray */
+  background-color: #f7fafc;
   color: #4a5568;
-  border: 1px solid #e2e8f0; /* Softer border */
+  border: 1px solid #e2e8f0;
 }
 
 .btn-secondary:hover {

@@ -38,12 +38,10 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('general');
   const { settings: globalSettings, loadingSettings, errorSettings, refreshSettings } = useSettings();
 
-  // State for General Settings
   const [warehouseName, setWarehouseName] = useState('');
   const [timeZone, setTimeZone] = useState('');
   const [defaultCurrency, setDefaultCurrency] = useState('');
 
-  // State for User Management
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState(null);
@@ -51,18 +49,16 @@ const Settings = () => {
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
-  const [newUserRole, setNewUserRole] = useState('Staff'); // Default role
-  const [editingUser, setEditingUser] = useState(null); // User object being edited, or null if adding
+  const [newUserRole, setNewUserRole] = useState('Staff');
+  const [editingUser, setEditingUser] = useState(null);
 
-  // State for Warehouse Configuration
   const [defaultStorageTemp, setDefaultStorageTemp] = useState('');
   const [lowStockThreshold, setLowStockThreshold] = useState('');
   const [autoReorderPoint, setAutoReorderPoint] = useState('');
-  const [auditFrequency, setAuditFrequency] = useState('Monthly'); // Default to one of the options
+  const [auditFrequency, setAuditFrequency] = useState('Monthly');
   const [loadingWarehouseSettings, setLoadingWarehouseSettings] = useState(false);
   const [errorWarehouseSettings, setErrorWarehouseSettings] = useState(null);
 
-  // State for Notification Settings
   const [notifyLowStockEmail, setNotifyLowStockEmail] = useState(false);
   const [notifyCriticalIssueEmail, setNotifyCriticalIssueEmail] = useState(false);
   const [notifyDailyReportEmail, setNotifyDailyReportEmail] = useState(false);
@@ -70,12 +66,10 @@ const Settings = () => {
   const [loadingNotificationSettings, setLoadingNotificationSettings] = useState(false);
   const [errorNotificationSettings, setErrorNotificationSettings] = useState(null);
 
-  // State for In-App Notification Settings
   const [notifyLowStockInApp, setNotifyLowStockInApp] = useState(false);
   const [notifyCriticalIssueInApp, setNotifyCriticalIssueInApp] = useState(false);
   const [notifyShipmentUpdateInApp, setNotifyShipmentUpdateInApp] = useState(false);
 
-  // State for Security Settings
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -104,7 +98,7 @@ const Settings = () => {
       }
 
       alert('General settings saved successfully!');
-      refreshSettings(); // Refresh global settings context
+      refreshSettings();
     } catch (error) {
       console.error('Failed to save general settings:', error);
       alert(`Failed to save general settings: ${error.message}`);
@@ -113,12 +107,12 @@ const Settings = () => {
 
   useEffect(() => {
     if (globalSettings && Object.keys(globalSettings).length > 0) {
-      console.log('Settings.jsx useEffect: globalSettings CHANGED or loaded:', globalSettings); // LOG 4
+      console.log('Settings.jsx useEffect: globalSettings CHANGED or loaded:', globalSettings);
       setWarehouseName(globalSettings.warehouse_name || '');
       setTimeZone(globalSettings.time_zone || '');
       setDefaultCurrency(globalSettings.default_currency || '');
     } else if (!loadingSettings && !errorSettings && globalSettings && Object.keys(globalSettings).length === 0) {
-      console.log('Settings.jsx useEffect: globalSettings LOADED but EMPTY:', globalSettings); // LOG 5
+      console.log('Settings.jsx useEffect: globalSettings LOADED but EMPTY:', globalSettings);
       setWarehouseName('');
       setTimeZone('');
       setDefaultCurrency('');
@@ -154,6 +148,7 @@ const Settings = () => {
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log('Data received from /api/settings/warehouse:', data);
       setDefaultStorageTemp(data.default_storage_temperature || '');
       setLowStockThreshold(data.low_stock_threshold || '');
       setAutoReorderPoint(data.auto_reorder_point || '');
@@ -180,7 +175,6 @@ const Settings = () => {
       setNotifyCriticalIssueEmail(data.notification_critical_issue_email || false);
       setNotifyDailyReportEmail(data.notification_daily_report_email || false);
       setNotifyShipmentUpdateEmail(data.notification_shipment_update_email || false);
-      // Populate in-app notification states
       setNotifyLowStockInApp(data.notification_low_stock_in_app || false);
       setNotifyCriticalIssueInApp(data.notification_critical_issue_in_app || false);
       setNotifyShipmentUpdateInApp(data.notification_shipment_update_in_app || false);
@@ -210,8 +204,6 @@ const Settings = () => {
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
       alert('Warehouse configuration saved successfully!');
-      // Optionally re-fetch to confirm, though PUT should return success if DB updated
-      // fetchWarehouseSettings(); 
     } catch (error) {
       console.error('Failed to save warehouse configuration:', error);
       alert(`Failed to save warehouse configuration: ${error.message}`);
@@ -253,7 +245,6 @@ const Settings = () => {
       notification_critical_issue_email: notifyCriticalIssueEmail,
       notification_daily_report_email: notifyDailyReportEmail,
       notification_shipment_update_email: notifyShipmentUpdateEmail,
-      // Add in-app settings to payload
       notification_low_stock_in_app: notifyLowStockInApp,
       notification_critical_issue_in_app: notifyCriticalIssueInApp,
       notification_shipment_update_in_app: notifyShipmentUpdateInApp,
@@ -280,14 +271,13 @@ const Settings = () => {
     setNewUserName(user.name);
     setNewUserEmail(user.email);
     setNewUserRole(user.role);
-    // Password field is not set for editing, as we don't update it here
-    setNewUserPassword(''); // Clear password field when opening edit form
+    setNewUserPassword('');
     setShowAddUserForm(true);
   };
 
   const handleSaveUser = async (e) => {
     e.preventDefault();
-    if (!newUserName || !newUserEmail || (!newUserPassword && !editingUser) || !newUserRole) { // Password required only for new users
+    if (!newUserName || !newUserEmail || (!newUserPassword && !editingUser) || !newUserRole) {
       alert('Please fill in all required fields.');
       return;
     }
@@ -296,10 +286,8 @@ const Settings = () => {
       name: newUserName,
       email: newUserEmail,
       role: newUserRole,
-      // Only include password if it's a new user and password is provided
       ...(editingUser ? {} : (newUserPassword ? { password: newUserPassword } : {})),
-      // If editing, we might want to send status if we add a status field to the form
-      ...(editingUser && editingUser.status ? { status: editingUser.status } : {}), 
+      ...(editingUser && editingUser.status ? { status: editingUser.status } : {}),
     };
 
     let url = 'http://localhost:3000/api/users';
@@ -308,12 +296,7 @@ const Settings = () => {
     if (editingUser) {
       url = `http://localhost:3000/api/users/${editingUser.id}`;
       method = 'PUT';
-      // For PUT, we don't send the password if it's not being changed.
-      // The backend is already set up to ignore password if not provided for PUT.
-      // However, our current userData includes it if newUserPassword was set (e.g. from a previous add attempt)
-      // Let's ensure password is not part of userData for PUT unless specifically handled.
-      // For now, our backend PUT doesn't accept password, so we remove it from userData if editing.
-      delete userData.password; 
+      delete userData.password;
     }
 
     try {
@@ -332,13 +315,12 @@ const Settings = () => {
 
       alert(`User ${editingUser ? 'updated' : 'added'} successfully!`);
       setShowAddUserForm(false);
-      setEditingUser(null); // Reset editing state
-      // Clear form fields
+      setEditingUser(null);
       setNewUserName('');
       setNewUserEmail('');
       setNewUserPassword('');
       setNewUserRole('Staff');
-      fetchUsers(); // Refresh the user list
+      fetchUsers();
     } catch (error) {
       console.error(`Failed to ${editingUser ? 'update' : 'add'} user:`, error);
       alert(`Failed to ${editingUser ? 'update' : 'add'} user: ${error.message}`);
@@ -358,7 +340,7 @@ const Settings = () => {
         }
 
         alert('User deleted successfully!');
-        fetchUsers(); // Refresh the user list
+        fetchUsers();
       } catch (error) {
         console.error('Failed to delete user:', error);
         alert(`Failed to delete user: ${error.message}`);
@@ -377,12 +359,11 @@ const Settings = () => {
       setChangePasswordLoading(false);
       return;
     }
-    if (newPassword.length < 8) { // Basic password length validation
+    if (newPassword.length < 8) {
       setChangePasswordError('New password must be at least 8 characters long.');
       setChangePasswordLoading(false);
       return;
     }
-    // Clear client-side alerts if inputs are valid before API call
     if (!currentPassword || !newPassword || !confirmNewPassword) {
         setChangePasswordError('Please fill in all password fields.');
         setChangePasswordLoading(false);
@@ -390,13 +371,13 @@ const Settings = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/change-password', { 
-        method: 'POST', 
+      const response = await fetch('http://localhost:3000/api/auth/change-password', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPassword, newPassword }), // Use correct keys
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
 
-      const data = await response.json(); // This line expects JSON
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || `HTTP error! status: ${response.status}`);
@@ -408,8 +389,7 @@ const Settings = () => {
       setConfirmNewPassword('');
     } catch (error) {
       console.error('Failed to change password:', error);
-      // If the error is due to non-JSON response, error.message might already be the JSON parse error
-      if (error instanceof SyntaxError) { // Specifically catch JSON parsing errors
+      if (error instanceof SyntaxError) {
         setChangePasswordError('Received an invalid response from the server. Please try again.');
       } else {
         setChangePasswordError(error.message || 'Failed to change password. Please try again.');
@@ -427,7 +407,6 @@ const Settings = () => {
     { id: 'security', name: 'Security', icon: '🔒' },
   ];
 
-  // Data for General Settings Dropdowns
   const auditFrequencyOptions = [
     { value: 'Daily', label: 'Daily' },
     { value: 'Weekly', label: 'Weekly' },
@@ -437,9 +416,8 @@ const Settings = () => {
     { value: 'Annually', label: 'Annually' },
   ];
 
-  // Effect to fetch data when a tab becomes active
   useEffect(() => {
-    if (activeTab === 'users' && users.length === 0) { 
+    if (activeTab === 'users' && users.length === 0) {
       fetchUsers();
     } else if (activeTab === 'warehouse') {
       fetchWarehouseSettings();
@@ -527,40 +505,40 @@ const Settings = () => {
           <div className="notification-group">
             <div className="notification-item">
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={notifyLowStockEmail} 
-                  onChange={(e) => setNotifyLowStockEmail(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={notifyLowStockEmail}
+                  onChange={(e) => setNotifyLowStockEmail(e.target.checked)}
                 />
                 Email notifications for low stock
               </label>
             </div>
             <div className="notification-item">
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={notifyCriticalIssueEmail} 
-                  onChange={(e) => setNotifyCriticalIssueEmail(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={notifyCriticalIssueEmail}
+                  onChange={(e) => setNotifyCriticalIssueEmail(e.target.checked)}
                 />
                 Email notifications for critical system issues
               </label>
             </div>
             <div className="notification-item">
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={notifyDailyReportEmail} 
-                  onChange={(e) => setNotifyDailyReportEmail(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={notifyDailyReportEmail}
+                  onChange={(e) => setNotifyDailyReportEmail(e.target.checked)}
                 />
                 Receive daily inventory reports via email
               </label>
             </div>
             <div className="notification-item">
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={notifyShipmentUpdateEmail} 
-                  onChange={(e) => setNotifyShipmentUpdateEmail(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={notifyShipmentUpdateEmail}
+                  onChange={(e) => setNotifyShipmentUpdateEmail(e.target.checked)}
                 />
                 Email notifications for shipment status updates
               </label>
@@ -571,30 +549,30 @@ const Settings = () => {
           <div className="notification-group">
             <div className="notification-item">
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={notifyLowStockInApp} 
-                  onChange={(e) => setNotifyLowStockInApp(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={notifyLowStockInApp}
+                  onChange={(e) => setNotifyLowStockInApp(e.target.checked)}
                 />
                 Low stock alerts
               </label>
             </div>
             <div className="notification-item">
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={notifyCriticalIssueInApp} 
-                  onChange={(e) => setNotifyCriticalIssueInApp(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={notifyCriticalIssueInApp}
+                  onChange={(e) => setNotifyCriticalIssueInApp(e.target.checked)}
                 />
                 Critical system issue alerts
               </label>
             </div>
             <div className="notification-item">
               <label>
-                <input 
-                  type="checkbox" 
-                  checked={notifyShipmentUpdateInApp} 
-                  onChange={(e) => setNotifyShipmentUpdateInApp(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={notifyShipmentUpdateInApp}
+                  onChange={(e) => setNotifyShipmentUpdateInApp(e.target.checked)}
                 />
                 Shipment status update alerts
               </label>

@@ -3,13 +3,12 @@ import React, { useEffect, useState } from 'react';
 import './WarehouseZones.css';
 
 const WarehouseZones = () => {
-    // Initialize zones as an empty array, it will be populated from the backend
     const [zones, setZones] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [newZone, setNewZone] = useState({
         id: '',
         name: '',
-        maxCapacity: '', // Matches backend expected key
+        maxCapacity: '',
         temperature: '',
         humidity: ''
     });
@@ -17,39 +16,35 @@ const WarehouseZones = () => {
     const [selectedZoneIdForStock, setSelectedZoneIdForStock] = useState(null);
     const [stockQuantityChange, setStockQuantityChange] = useState('');
 
-    // --- Fetch Zones from Backend on Component Mount ---
     const fetchZones = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/warehouse-zones'); // Adjust port if different
+            const response = await fetch('http://localhost:3000/api/warehouse-zones');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            setZones(data); // Set the zones state with data from backend
+            setZones(data);
         } catch (error) {
             console.error('Error fetching zones:', error);
-            // Optionally, show an error message to the user
         }
     };
 
-    // --- Fetch Zones from Backend on Component Mount ---
     useEffect(() => {
         const fetchZones = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/warehouse-zones'); // Adjust port if different
+                const response = await fetch('http://localhost:3000/api/warehouse-zones');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                setZones(data); // Set the zones state with data from backend
+                setZones(data);
             } catch (error) {
                 console.error('Error fetching zones:', error);
-                // Optionally, show an error message to the user
             }
         };
 
         fetchZones();
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -59,12 +54,11 @@ const WarehouseZones = () => {
         }));
     };
 
-    // Handle form submission to backend
-    const handleAddZone = async (e) => { // Make it async
+    const handleAddZone = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:3000/api/warehouse-zones', { // Adjust port if different
+            const response = await fetch('http://localhost:3000/api/warehouse-zones', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +66,7 @@ const WarehouseZones = () => {
                 body: JSON.stringify({
                     id: newZone.id,
                     name: newZone.name,
-                    max_capacity: parseInt(newZone.maxCapacity, 10), // Changed key to snake_case
+                    max_capacity: parseInt(newZone.maxCapacity, 10),
                     temperature: parseInt(newZone.temperature, 10),
                     humidity: parseInt(newZone.humidity, 10)
                 }),
@@ -83,18 +77,14 @@ const WarehouseZones = () => {
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message}`);
             }
 
-            const responseData = await response.json(); // Get the full response data
+            const responseData = await response.json();
 
-            // Add the new zone (from responseData.zone) to the state
             if (responseData.zone) {
                 setZones(prevZones => [...prevZones, responseData.zone]);
             } else {
                 console.error('New zone data not found in server response. Full response:', responseData);
-                // Consider re-fetching all zones to ensure UI consistency if this happens
-                // fetchZones(); // You might need to ensure fetchZones is defined and accessible here
             }
 
-            // Reset form fields
             setNewZone({
                 id: '',
                 name: '',
@@ -102,7 +92,7 @@ const WarehouseZones = () => {
                 temperature: '',
                 humidity: ''
             });
-            setShowAddForm(false); // Close the modal
+            setShowAddForm(false);
             console.log('New Zone Added:', responseData.zone);
 
         } catch (error) {
@@ -139,9 +129,8 @@ const WarehouseZones = () => {
                 throw new Error(responseData.message || `HTTP error! status: ${response.status}`);
             }
 
-            // Update the zones state with the updated zone information
-            setZones(prevZones => 
-                prevZones.map(z => 
+            setZones(prevZones =>
+                prevZones.map(z =>
                     z.id === selectedZoneIdForStock ? responseData.zone : z
                 )
             );
@@ -167,7 +156,7 @@ const WarehouseZones = () => {
     };
 
     const getCapacityStatus = (capacity, maxCapacity) => {
-        if (maxCapacity === 0) return 'Normal'; // Avoid division by zero
+        if (maxCapacity === 0) return 'Normal';
         const percentage = (capacity / maxCapacity) * 100;
         if (percentage >= 90) return 'Critical';
         if (percentage >= 75) return 'Warning';
@@ -182,18 +171,15 @@ const WarehouseZones = () => {
                 });
 
                 if (!response.ok) {
-                    // Try to parse error message from backend if available
                     let errorMsg = `HTTP error! status: ${response.status}`;
                     try {
                         const errorData = await response.json();
                         errorMsg = errorData.message || errorMsg;
                     } catch (e) {
-                        // Ignore if response is not JSON
                     }
                     throw new Error(errorMsg);
                 }
 
-                // If deletion is successful (e.g., status 200 or 204 No Content)
                 setZones(prevZones => prevZones.filter(zone => zone.id !== zoneId));
                 alert(`Zone ${zoneId} deleted successfully.`);
 
@@ -204,16 +190,15 @@ const WarehouseZones = () => {
         }
     };
 
-    // Calculate total products, critical zones, etc. from the fetched zones
     const totalProducts = zones.reduce((acc, zone) => acc + (zone.products_count || 0), 0);
     const criticalZones = zones.filter(zone => getCapacityStatus(zone.capacity, zone.max_capacity) === 'Critical').length;
     const avgCapacity = zones.length > 0
         ? Math.round(zones.reduce((acc, zone) => {
             const currentCapacity = zone.capacity || 0;
             const currentMaxCapacity = zone.max_capacity || 0;
-            if (currentMaxCapacity === 0) return acc; // Avoid division by zero, don't add to sum for this zone
+            if (currentMaxCapacity === 0) return acc;
             return acc + (currentCapacity / currentMaxCapacity) * 100;
-        }, 0) / zones.filter(zone => (zone.max_capacity || 0) > 0).length) // Divide only by zones with max_capacity > 0
+        }, 0) / zones.filter(zone => (zone.max_capacity || 0) > 0).length)
         : 0;
 
 
@@ -255,14 +240,14 @@ const WarehouseZones = () => {
                 {zones.map((zone) => (
                     <div key={zone.id} className={`zone-card ${getCapacityStatus(zone.capacity, zone.max_capacity).toLowerCase()}`}>
                         <div className="zone-header">
-                            <div> {/* Group title and status together */} 
+                            <div>
                                 <h3>Zone {zone.id}</h3>
                                 <span className={`zone-status ${getCapacityStatus(zone.capacity, zone.max_capacity).toLowerCase()}`}>
                                     {getCapacityStatus(zone.capacity, zone.max_capacity)}
                                 </span>
                             </div>
-                            <button 
-                                className="delete-zone-btn" 
+                            <button
+                                className="delete-zone-btn"
                                 onClick={() => handleDeleteZone(zone.id)}
                                 title={`Delete Zone ${zone.id}`}
                             >
@@ -301,12 +286,12 @@ const WarehouseZones = () => {
                                 <span className="metric-value">{zone.products_count || 0}</span>
                             </div>
 
-                            <button 
+                            <button
                                 className="adjust-stock-btn"
                                 onClick={() => {
                                     setSelectedZoneIdForStock(zone.id);
                                     setShowStockModal(true);
-                                    setStockQuantityChange(''); // Reset for new entry
+                                    setStockQuantityChange('');
                                 }}
                             >
                                 Adjust Stock
@@ -328,9 +313,9 @@ const WarehouseZones = () => {
                                 <label>Zone ID</label>
                                 <input
                                     type="text"
-                                    name="id" // Add name attribute
+                                    name="id"
                                     value={newZone.id}
-                                    onChange={handleInputChange} // Use generic handler
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -338,9 +323,9 @@ const WarehouseZones = () => {
                                 <label>Zone Name</label>
                                 <input
                                     type="text"
-                                    name="name" // Add name attribute
+                                    name="name"
                                     value={newZone.name}
-                                    onChange={handleInputChange} // Use generic handler
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -348,9 +333,9 @@ const WarehouseZones = () => {
                                 <label>Max Capacity</label>
                                 <input
                                     type="number"
-                                    name="maxCapacity" // Add name attribute
+                                    name="maxCapacity"
                                     value={newZone.maxCapacity}
-                                    onChange={handleInputChange} // Use generic handler
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -358,9 +343,9 @@ const WarehouseZones = () => {
                                 <label>Temperature (°C)</label>
                                 <input
                                     type="number"
-                                    name="temperature" // Add name attribute
+                                    name="temperature"
                                     value={newZone.temperature}
-                                    onChange={handleInputChange} // Use generic handler
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -368,9 +353,9 @@ const WarehouseZones = () => {
                                 <label>Humidity (%)</label>
                                 <input
                                     type="number"
-                                    name="humidity" // Add name attribute
+                                    name="humidity"
                                     value={newZone.humidity}
-                                    onChange={handleInputChange} // Use generic handler
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -383,7 +368,6 @@ const WarehouseZones = () => {
                 </div>
             )}
 
-            {/* Stock Adjustment Modal */}
             {showStockModal && selectedZoneIdForStock && (
                 <div className={`modal-overlay ${showStockModal ? 'active' : ''}`} onClick={() => setShowStockModal(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './IncomingShipments.css';
-import './StandardModal.css'; // Import standard modal styles
+import './StandardModal.css';
 
 const IncomingShipments = () => {
     const [shipments, setShipments] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
-    const [showEditForm, setShowEditForm] = useState(false); // State to control visibility of edit form
+    const [showEditForm, setShowEditForm] = useState(false);
     const [newShipmentData, setNewShipmentData] = useState({
         supplier: '',
         eta: '',
@@ -14,10 +14,10 @@ const IncomingShipments = () => {
         tracking: '',
         status: 'Scheduled',
     });
-    const [editingShipment, setEditingShipment] = useState(null); // State to hold shipment being edited
+    const [editingShipment, setEditingShipment] = useState(null);
     const [showViewDetailsModal, setShowViewDetailsModal] = useState(false);
     const [selectedShipmentForDetails, setSelectedShipmentForDetails] = useState(null);
-    const [error, setError] = useState(null); // For displaying API errors
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetchShipments();
@@ -42,9 +42,9 @@ const IncomingShipments = () => {
             case 'In Transit': return '🚛';
             case 'Arrived': return '✅';
             case 'Processing': return '⚙️';
-            case 'Scheduled': return '�';
+            case 'Scheduled': return '🗓️';
             case 'Delayed': return '⚠️';
-            case 'Cancelled': return '❌'; // Added cancelled icon
+            case 'Cancelled': return '❌';
             default: return '📦';
         }
     };
@@ -110,18 +110,15 @@ const IncomingShipments = () => {
         }
     };
 
-    // Function to open the edit form with pre-filled data
     const handleEditClick = (shipment) => {
         setEditingShipment({
             ...shipment,
-            // Format ETA for datetime-local input
             eta: new Date(shipment.eta).toISOString().slice(0, 16)
         });
         setShowEditForm(true);
-        setShowAddForm(false); // Ensure add form is closed
+        setShowAddForm(false);
     };
 
-    // Handler for submitting the edited shipment form
     const handleUpdateShipment = async (e) => {
         e.preventDefault();
 
@@ -147,9 +144,9 @@ const IncomingShipments = () => {
             });
 
             if (response.ok) {
-                fetchShipments(); // Re-fetch to show updated data
-                setShowEditForm(false); // Close the edit form
-                setEditingShipment(null); // Clear editing state
+                fetchShipments();
+                setShowEditForm(false);
+                setEditingShipment(null);
                 alert('Shipment updated successfully!');
             } else {
                 const errorData = await response.json();
@@ -174,35 +171,31 @@ const IncomingShipments = () => {
 
             if (response.ok) {
                 const contentType = response.headers.get("content-type");
-                let successMessage = 'Shipment deleted successfully!'; // Default success message
+                let successMessage = 'Shipment deleted successfully!';
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                     try {
                         const result = await response.json();
                         successMessage = result.message || successMessage;
                     } catch (parseError) {
                         console.error('Failed to parse successful JSON response (body might be HTML):', parseError);
-                        // successMessage remains the default. The backend might have processed the delete.
                     }
                 }
                 alert(successMessage);
-                fetchShipments(); // Re-fetch to show updated data
+                fetchShipments();
             } else {
-                // Handle error responses more carefully
                 let alertMessage;
-                const responseText = await response.text(); // Get body as text first
+                const responseText = await response.text();
                 try {
-                    const errorData = JSON.parse(responseText); // Try to parse the text we got
+                    const errorData = JSON.parse(responseText);
                     alertMessage = `Failed to delete shipment: ${errorData.message || response.statusText}`;
                 } catch (parseError) {
-                    // Parsing failed, responseText is not JSON (likely HTML or plain text)
                     console.error('Error response was not valid JSON. Status:', response.status, 'Body snippet:', responseText.substring(0, 200));
                     alertMessage = `Failed to delete shipment: ${response.statusText} (Server returned a non-JSON error).`;
                 }
                 alert(alertMessage);
-                setError(alertMessage); // Set the error state for display in the error bar
+                setError(alertMessage);
             }
         } catch (error) {
-            // This catch handles network errors or other unexpected errors during fetch/processing
             console.error('Network or other error deleting shipment:', error);
             let displayMessage = `An error occurred: ${error.message}`;
             if (error instanceof SyntaxError && error.message.toLowerCase().includes('json')) {
@@ -218,11 +211,10 @@ const IncomingShipments = () => {
     const handleViewDetailsClick = (shipment) => {
         setSelectedShipmentForDetails(shipment);
         setShowViewDetailsModal(true);
-        setShowAddForm(false); // Ensure other modals are closed
+        setShowAddForm(false);
         setShowEditForm(false);
     };
 
-    // Calculations for overview cards (now based on fetched data)
     const totalShipments = shipments.length;
     const arrivedToday = shipments.filter(s => {
         const etaDate = new Date(s.eta);
@@ -261,7 +253,6 @@ const IncomingShipments = () => {
                 </div>
             </div>
 
-            {/* Add New Incoming Shipment Modal */}
             {showAddForm && (
                 <div className="standard-modal-overlay">
                     <div className="standard-modal-content">
@@ -310,7 +301,6 @@ const IncomingShipments = () => {
                 </div>
             )}
 
-            {/* Edit Shipment Form Modal */}
             {showEditForm && editingShipment && (
                 <div className="standard-modal-overlay">
                     <div className="standard-modal-content">
@@ -359,7 +349,6 @@ const IncomingShipments = () => {
                 </div>
             )}
 
-            {/* Shipments List */}
             <div className="shipment-list">
                 {shipments.map(shipment => (
                     <div key={shipment.id} className="shipment-card">
@@ -405,7 +394,6 @@ const IncomingShipments = () => {
             </div>
 
             {error && <div className="error-message-bar">Error: {error}</div>}
-            {/* View Details Modal */}
             {showViewDetailsModal && selectedShipmentForDetails && (
                 <div className="add-shipment-modal-overlay" onClick={() => setShowViewDetailsModal(false)}>
                     <div className="add-shipment-modal shipment-details-modal" onClick={(e) => e.stopPropagation()}>
@@ -420,12 +408,11 @@ const IncomingShipments = () => {
                             <div className="detail-item"><span className="detail-label">Value:</span> ${selectedShipmentForDetails.value.toLocaleString()}</div>
                             <div className="detail-item"><span className="detail-label">Tracking #:</span> {selectedShipmentForDetails.tracking}</div>
                             <div className="detail-item">
-                                <span className="detail-label">Status:</span> 
+                                <span className="detail-label">Status:</span>
                                 <span className={`status-badge-detail ${selectedShipmentForDetails.status.toLowerCase().replace(' ', '-')}`}>
                                     {getStatusIcon(selectedShipmentForDetails.status)} {selectedShipmentForDetails.status}
                                 </span>
                             </div>
-                            {/* Add more details as needed */}
                         </div>
                         <div className="form-actions">
                             <button type="button" className="action-btn secondary" onClick={() => setShowViewDetailsModal(false)}>Close</button>

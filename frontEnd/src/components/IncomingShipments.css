@@ -210,29 +210,26 @@
 }
 
 .delete-shipment-btn {
-  /* Inherits flex: 1, padding, font-size, default font-weight, border-radius from .action-btn */
-  background-color: #fee2e2; /* Very light red background (Tailwind red-100) */
-  color: #e53e3e;             /* Red text color */
-  border: 1px solid #fecaca;  /* Light red border (Tailwind red-200) */
-  display: flex; 
+  background-color: #fee2e2;
+  color: #e53e3e;
+  border: 1px solid #fecaca;
+  display: flex;
   align-items: center;
   justify-content: center;
-  text-transform: none; /* Displays text as 'Delete' (respects JSX casing) */
-  font-weight: 600; /* Bolder for emphasis */
-  /* transition is already in .action-btn as 'all 0.2s' */
+  text-transform: none;
+  font-weight: 600;
 }
-
 
 .delete-shipment-btn:hover,
 .delete-shipment-btn:focus {
-  background-color: #e53e3e; /* Red background on hover */
-  color: white; /* White text on hover */
-  border-color: #e53e3e; /* Ensure border stays consistent or becomes part of background */
+  background-color: #e53e3e;
+  color: white;
+  border-color: #e53e3e;
 }
 
 .error-message-bar {
-  background-color: #fed7d7; /* Light red */
-  color: #c53030; /* Darker red text */
+  background-color: #fed7d7;
+  color: #c53030;
   padding: 1rem;
   border-radius: 8px;
   margin: 1rem 0;

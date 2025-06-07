@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Added useCallback
+import React, { useState, useEffect, useCallback } from 'react';
 import './StandardModal.css';
 import './ProductStorage.css';
-// You might also want to import a dedicated CSS for modals if you create one
-// import './Modal.css'; // Example
 
 const ProductStorage = () => {
   const [products, setProducts] = useState([]);
@@ -74,7 +72,7 @@ const ProductStorage = () => {
 
   const handleDeleteProduct = async (productId) => {
     if (window.confirm(`Are you sure you want to delete product ${productId}? This action will attempt to remove it permanently.`)) {
-      setError(null); // Clear previous errors
+      setError(null);
       try {
         const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
           method: 'DELETE',
@@ -89,7 +87,7 @@ const ProductStorage = () => {
           const errorMessage = errorData.message || `Failed to delete product ${productId}. Status: ${response.status}`;
           console.error('Failed to delete product:', errorMessage, errorData);
           alert(errorMessage);
-          setError(errorMessage); // Optionally display error in the UI
+          setError(errorMessage);
         }
       } catch (err) {
         console.error('Error connecting to the backend for product deletion:', err);
@@ -265,7 +263,7 @@ const ProductStorage = () => {
           <div>Stock Level</div>
           <div>Status</div>
           <div>Last Updated</div>
-          <div>Actions</div> {/* New Actions Header */}
+          <div>Actions</div>
         </div>
         {products.length === 0 && !loadingZones && !error ? (
             <div style={{ textAlign: 'center', padding: '2rem', color: '#718096' }}>No products found.</div>
@@ -298,9 +296,9 @@ const ProductStorage = () => {
             </div>
             <div className="last-updated">{new Date(product.lastUpdated).toLocaleString()}</div>
             <div className="product-action-cell">
-              <button 
-                onClick={() => handleDeleteProduct(product.id)} 
-                className="delete-product-btn" 
+              <button
+                onClick={() => handleDeleteProduct(product.id)}
+                className="delete-product-btn"
                 title={`Delete ${product.name}`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>

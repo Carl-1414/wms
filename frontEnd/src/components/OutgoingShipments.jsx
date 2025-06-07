@@ -1,39 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import './OutgoingShipments.css';
-import './StandardModal.css'; // Import standard modal styles
+import './StandardModal.css';
 
 const OutgoingShipments = () => {
-  // State to hold the fetched outgoing shipments
-  const [shipments, setShipments] = useState([]); // Start as empty array for fetching
+  const [shipments, setShipments] = useState([]);
 
-  // State to control the visibility of the add shipment form
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // State to hold the data for a new outgoing shipment
   const [newShipmentData, setNewShipmentData] = useState({
     customer: '',
-    departure: '', // ISO 8601 format (e.g., "YYYY-MM-DDTHH:mm") for datetime-local input
+    departure: '',
     items: '',
     value: '',
     destination: '',
-    status: 'Scheduled', // Default status for new outgoing shipments
+    status: 'Scheduled',
   });
 
-  // State for editing a shipment
   const [showEditForm, setShowEditForm] = useState(false);
-  const [editingShipment, setEditingShipment] = useState(null); // Holds the shipment data being edited
+  const [editingShipment, setEditingShipment] = useState(null);
 
-  // State for viewing shipment details
   const [showViewDetailsModal, setShowViewDetailsModal] = useState(false);
   const [selectedShipmentForDetails, setSelectedShipmentForDetails] = useState(null);
 
-  // State for error messages
-  const [error, setError] = useState(null); // For displaying API errors
+  const [error, setError] = useState(null);
 
-  // Fetches outgoing shipments from the backend when the component mounts
   useEffect(() => {
     fetchOutgoingShipments();
-  }, []); // Empty dependency array means it runs only once on mount
+  }, []);
 
   const fetchOutgoingShipments = async () => {
     try {
@@ -45,7 +38,6 @@ const OutgoingShipments = () => {
       setShipments(data);
     } catch (error) {
       console.error("Failed to fetch outgoing shipments:", error);
-      // alert("Failed to load outgoing shipments from the server."); // Uncomment for user feedback
     }
   };
 
@@ -60,7 +52,6 @@ const OutgoingShipments = () => {
     }
   };
 
-  // Handler for input changes in the new outgoing shipment form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewShipmentData(prevData => ({
@@ -69,7 +60,6 @@ const OutgoingShipments = () => {
     }));
   };
 
-  // Handler for input changes in the EDIT outgoing shipment form
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
     setEditingShipment(prevData => ({
@@ -78,11 +68,9 @@ const OutgoingShipments = () => {
     }));
   };
 
-  // Handler for submitting the new outgoing shipment form
   const handleAddShipment = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
-    // Basic validation
     if (!newShipmentData.customer || !newShipmentData.departure || newShipmentData.items === '' || newShipmentData.value === '' || !newShipmentData.destination) {
       alert("Please fill in all required fields.");
       return;
@@ -96,8 +84,8 @@ const OutgoingShipments = () => {
         },
         body: JSON.stringify({
           customer: newShipmentData.customer,
-          departure: newShipmentData.departure, // Send as string; MySQL DATETIME handles this
-          items: Number(newShipmentData.items), // Ensure numbers are sent as numbers
+          departure: newShipmentData.departure,
+          items: Number(newShipmentData.items),
           value: Number(newShipmentData.value),
           destination: newShipmentData.destination,
           status: newShipmentData.status
@@ -105,10 +93,8 @@ const OutgoingShipments = () => {
       });
 
       if (response.ok) {
-        // If successful, re-fetch all outgoing shipments to update the list
         fetchOutgoingShipments();
-        setShowAddForm(false); // Hide the form
-        // Reset form fields
+        setShowAddForm(false);
         setNewShipmentData({
           customer: '',
           departure: '',
@@ -128,19 +114,15 @@ const OutgoingShipments = () => {
     }
   };
 
-  // Function to open the edit form with pre-filled data
   const handleEditClick = (shipment) => {
     setEditingShipment({
         ...shipment,
-        // Format departure for datetime-local input if it's not already a compatible string
-        // Assuming shipment.departure is a valid date string or Date object
         departure: new Date(shipment.departure).toISOString().slice(0, 16)
     });
     setShowEditForm(true);
-    setShowAddForm(false); // Ensure add form is closed
+    setShowAddForm(false);
   };
 
-  // Handler for submitting the edited shipment form
   const handleUpdateShipment = async (e) => {
     e.preventDefault();
 
@@ -150,7 +132,6 @@ const OutgoingShipments = () => {
     }
 
     try {
-        // ASSUMPTION: Your backend has a PUT endpoint at /api/outgoing-shipments/:id
         const response = await fetch(`http://localhost:3000/api/outgoing-shipments/${editingShipment.id}`, {
             method: 'PUT',
             headers: {
@@ -167,9 +148,9 @@ const OutgoingShipments = () => {
         });
 
         if (response.ok) {
-            fetchOutgoingShipments(); // Re-fetch to show updated data
-            setShowEditForm(false); // Close the edit form
-            setEditingShipment(null); // Clear editing state
+            fetchOutgoingShipments();
+            setShowEditForm(false);
+            setEditingShipment(null);
             alert('Outgoing shipment updated successfully!');
         } else {
             const errorData = await response.json();
@@ -204,8 +185,8 @@ const OutgoingShipments = () => {
                 }
             }
             alert(successMessage);
-            fetchOutgoingShipments(); // Re-fetch to update the list
-            setError(null); // Clear any previous errors
+            fetchOutgoingShipments();
+            setError(null);
         } else {
             let alertMessage;
             const responseText = await response.text();
@@ -232,59 +213,53 @@ const OutgoingShipments = () => {
     }
   };
 
-  // Handler for viewing shipment details
   const handleViewDetailsClick = (shipment) => {
     setSelectedShipmentForDetails(shipment);
     setShowViewDetailsModal(true);
-    setShowAddForm(false); // Ensure other modals are closed
+    setShowAddForm(false);
     setShowEditForm(false);
   };
 
-  // Handler for printing a label
   const handlePrintLabel = (shipment) => {
     const labelWindow = window.open('', '_blank', 'width=400,height=300');
     labelWindow.document.write(`
         <html>
-            <head>
-                <title>Shipment Label - ${shipment.id}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; margin: 20px; }
-                    h2 { border-bottom: 1px solid #000; padding-bottom: 5px; }
-                    p { margin: 5px 0; }
-                    .label-item { font-weight: bold; }
-                </style>
-            </head>
-            <body>
-                <h2>Shipment Label</h2>
-                <p><span class="label-item">ID:</span> ${shipment.id}</p>
-                <p><span class="label-item">Customer:</span> ${shipment.customer}</p>
-                <p><span class="label-item">Destination:</span> ${shipment.destination}</p>
-                <p><span class="label-item">Departure:</span> ${new Date(shipment.departure).toLocaleString()}</p>
-                <p><span class="label-item">Items:</span> ${shipment.items}</p>
-                <p><span class="label-item">Value:</span> $${shipment.value.toLocaleString()}</p>
-                <script>
-                    window.onload = function() {
-                        window.print();
-                        // window.onafterprint = function() { window.close(); }; // Optional: close after printing
-                    }
-                </script>
-            </body>
+          <head>
+              <title>Shipment Label - ${shipment.id}</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 20px; }
+                  h2 { border-bottom: 1px solid #000; padding-bottom: 5px; }
+                  p { margin: 5px 0; }
+                  .label-item { font-weight: bold; }
+              </style>
+          </head>
+          <body>
+              <h2>Shipment Label</h2>
+              <p><span class="label-item">ID:</span> ${shipment.id}</p>
+              <p><span class="label-item">Customer:</span> ${shipment.customer}</p>
+              <p><span class="label-item">Destination:</span> ${shipment.destination}</p>
+              <p><span class="label-item">Departure:</span> ${new Date(shipment.departure).toLocaleString()}</p>
+              <p><span class="label-item">Items:</span> ${shipment.items}</p>
+              <p><span class="label-item">Value:</span> $${shipment.value.toLocaleString()}</p>
+              <script>
+                  window.onload = function() {
+                      window.print();
+                  }
+              </script>
+          </body>
         </html>
     `);
     labelWindow.document.close();
   };
 
-  // Calculations for overview cards (now based on fetched data)
   const totalShipments = shipments.length;
-  // For 'Shipped Today', you need to parse departure and compare dates
   const shippedToday = shipments.filter(s => {
       const departureDate = new Date(s.departure);
       const today = new Date();
-      // Compare year, month, and day
       return s.status === 'Shipped' &&
-             departureDate.getFullYear() === today.getFullYear() &&
-             departureDate.getMonth() === today.getMonth() &&
-             departureDate.getDate() === today.getDate();
+            departureDate.getFullYear() === today.getFullYear() &&
+            departureDate.getMonth() === today.getMonth() &&
+            departureDate.getDate() === today.getDate();
   }).length;
   const readyToShip = shipments.filter(s => s.status === 'Ready').length;
   const totalValue = shipments.reduce((acc, shipment) => acc + shipment.value, 0);
@@ -294,7 +269,6 @@ const OutgoingShipments = () => {
       {error && <div className="error-message-bar">Error: {error}</div>}
       <div className="page-header">
         <h1>Outgoing Shipments</h1>
-        {/* Button to show the add shipment form */}
         <button className="add-btn" onClick={() => setShowAddForm(true)}>+ New Shipment</button>
       </div>
 
@@ -317,7 +291,6 @@ const OutgoingShipments = () => {
         </div>
       </div>
 
-      {/* Add New Outgoing Shipment Modal */}
       {showAddForm && (
         <div className="standard-modal-overlay">
           <div className="standard-modal-content">
@@ -365,7 +338,6 @@ const OutgoingShipments = () => {
         </div>
       )}
 
-      {/* Edit Shipment Form Modal/Section */}
       {showEditForm && editingShipment && (
         <div className="standard-modal-overlay">
           <div className="standard-modal-content">
@@ -381,7 +353,7 @@ const OutgoingShipments = () => {
                   id="edit-customer"
                   name="customer"
                   value={editingShipment.customer}
-                  onChange={handleEditInputChange} // Use dedicated handler for edit form
+                  onChange={handleEditInputChange}
                   required
                 />
               </div>
@@ -391,7 +363,7 @@ const OutgoingShipments = () => {
                   type="datetime-local"
                   id="edit-departure"
                   name="departure"
-                  value={editingShipment.departure} // Already formatted in handleEditClick
+                  value={editingShipment.departure}
                   onChange={handleEditInputChange}
                   required
                 />
@@ -456,7 +428,6 @@ const OutgoingShipments = () => {
         </div>
       )}
 
-      {/* View Details Modal */}
       {showViewDetailsModal && selectedShipmentForDetails && (
         <div className="add-shipment-modal-overlay" onClick={() => setShowViewDetailsModal(false)}>
           <div className="add-shipment-modal shipment-details-modal" onClick={(e) => e.stopPropagation()}>
@@ -471,12 +442,11 @@ const OutgoingShipments = () => {
               <div className="detail-item"><span className="detail-label">Items:</span> {selectedShipmentForDetails.items}</div>
               <div className="detail-item"><span className="detail-label">Value:</span> ${selectedShipmentForDetails.value.toLocaleString()}</div>
               <div className="detail-item">
-                <span className="detail-label">Status:</span> 
+                <span className="detail-label">Status:</span>
                 <span className={`status-badge-detail ${selectedShipmentForDetails.status.toLowerCase().replace(' ', '-')}`}>
                   {getStatusIcon(selectedShipmentForDetails.status)} {selectedShipmentForDetails.status}
                 </span>
               </div>
-              {/* Add more details as needed, e.g., tracking if you add it to outgoing shipments */}
             </div>
             <div className="form-actions">
               <button type="button" className="action-btn secondary" onClick={() => setShowViewDetailsModal(false)}>Close</button>
@@ -502,7 +472,6 @@ const OutgoingShipments = () => {
               <h3>{shipment.customer}</h3>
               <div className="detail-row">
                 <span className="label">Departure:</span>
-                {/* Ensure date formatting is consistent. MySQL DATETIME might return 'YYYY-MM-DD HH:MM:SS' */}
                 <span className="value">{new Date(shipment.departure).toLocaleString()}</span>
               </div>
               <div className="detail-row">

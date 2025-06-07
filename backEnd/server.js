@@ -1,48 +1,25 @@
-// server.js
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const pool = require('./database'); // Assuming 'database.js' exports your MySQL pool
+const pool = require('./database'); 
 const bcrypt = require('bcryptjs');
+const ExcelJS = require('exceljs');
 
-// Define the port for the server
 const PORT = process.env.PORT || 3000;
 
-// Enable CORS for all origins (important for frontend development)
 app.use(cors());
-// Enable parsing of JSON request bodies
+
 app.use(express.json());
 
-/**
- * Function to create tables and stored procedures.
- * This is now fully idempotent and handles foreign key constraints more robustly.
- * It will drop tables first, then recreate them, ensuring a clean state.
- */
 async function initializeDatabase() {
     let connection;
     try {
         connection = await pool.getConnection();
         console.log('Database initialization started...');
 
-        // Temporarily disable foreign key checks for robust schema changes
         await connection.query('SET FOREIGN_KEY_CHECKS = 0');
         console.log('Foreign key checks disabled.');
 
-        // --- Drop tables if they exist (for a clean slate during development/re-runs) ---
-        // Drop in reverse dependency order to avoid foreign key constraint errors
-        // console.log('Dropping existing tables (if any)...');
-        // await connection.query('DROP TABLE IF EXISTS settings');
-        // await connection.query('DROP TABLE IF EXISTS generated_reports');
-        // await connection.query('DROP TABLE IF EXISTS products');
-        // await connection.query('DROP TABLE IF EXISTS inventory_audits');
-        // await connection.query('DROP TABLE IF EXISTS orders');
-        // await connection.query('DROP TABLE IF EXISTS incoming_shipments'); // Renamed table
-        // await connection.query('DROP TABLE IF EXISTS outgoing_shipments');
-        // await connection.query('DROP TABLE IF EXISTS warehouse_zones');
-        // console.log('Tables dropped.'); // Data will now be persistent
-
-        // --- Create tables in dependency order ---
-        // 1. warehouse_zones (parent for products and inventory_audits)
         const createWarehouseZonesTableSQL = `
             CREATE TABLE IF NOT EXISTS warehouse_zones (
                 id VARCHAR(255) PRIMARY KEY,
@@ -58,7 +35,6 @@ async function initializeDatabase() {
         await connection.query(createWarehouseZonesTableSQL);
         console.log('Table "warehouse_zones" checked/created successfully.');
 
-        // 2. products (references warehouse_zones.id)
         const createProductsTableSQL = `
             CREATE TABLE IF NOT EXISTS products (
                 id VARCHAR(255) PRIMARY KEY,
@@ -66,6 +42,7 @@ async function initializeDatabase() {
                 category VARCHAR(255),
                 zone VARCHAR(255) NOT NULL,
                 shelf VARCHAR(255),
+                unit_value DECIMAL(10, 2) DEFAULT 0.00, -- Added for financial reporting
                 quantity INT DEFAULT 0,
                 minStock INT DEFAULT 0,
                 maxStock INT DEFAULT 0,
@@ -78,7 +55,6 @@ async function initializeDatabase() {
         await connection.query(createProductsTableSQL);
         console.log('Table "products" checked/created successfully.');
 
-        // 3. inventory_audits (corresponds to recent_audits on frontend)
         const createInventoryAuditsTableSQL = `
             CREATE TABLE IF NOT EXISTS inventory_audits (
                 id VARCHAR(255) PRIMARY KEY,
@@ -98,7 +74,6 @@ async function initializeDatabase() {
         await connection.query(createInventoryAuditsTableSQL);
         console.log('Table "inventory_audits" checked/created successfully.');
 
-        // 4. incoming_shipments (renamed from 'shipments')
         const createIncomingShipmentsTableSQL = `
             CREATE TABLE IF NOT EXISTS incoming_shipments (
                 id VARCHAR(255) PRIMARY KEY,
@@ -113,8 +88,6 @@ async function initializeDatabase() {
         await connection.query(createIncomingShipmentsTableSQL);
         console.log('Table "incoming_shipments" checked/created successfully.');
 
-        // 5. outgoing_shipments
-        // Corrected: Changed PRIMARY_KEY to PRIMARY KEY (added space)
         const createOutgoingShipmentsTableSQL = `
             CREATE TABLE IF NOT EXISTS outgoing_shipments (
                 id VARCHAR(255) PRIMARY KEY,
@@ -129,7 +102,6 @@ async function initializeDatabase() {
         await connection.query(createOutgoingShipmentsTableSQL);
         console.log('Table "outgoing_shipments" checked/created successfully.');
 
-        // 6. orders
         const createOrdersTableSQL = `
             CREATE TABLE IF NOT EXISTS orders (
                 id VARCHAR(255) PRIMARY KEY,
@@ -144,7 +116,6 @@ async function initializeDatabase() {
         await connection.query(createOrdersTableSQL);
         console.log('Table "orders" checked/created successfully.');
 
-        // 7. generated_reports
         const createGeneratedReportsTableSQL = `
             CREATE TABLE IF NOT EXISTS generated_reports (
                 id VARCHAR(255) PRIMARY KEY,
@@ -158,7 +129,6 @@ async function initializeDatabase() {
         await connection.query(createGeneratedReportsTableSQL);
         console.log('Table "generated_reports" checked/created successfully.');
 
-        // 8. settings
         const createSettingsTableSQL = `
             CREATE TABLE IF NOT EXISTS settings (
                 setting_key VARCHAR(255) PRIMARY KEY,
@@ -168,7 +138,6 @@ async function initializeDatabase() {
         await connection.query(createSettingsTableSQL);
         console.log('Table "settings" checked/created successfully.');
 
-        // Insert default settings if they don't exist
         console.log('Inserting default settings if not present...');
         await connection.query(`
             INSERT INTO settings (setting_key, setting_value) VALUES
@@ -179,18 +148,16 @@ async function initializeDatabase() {
         `);
         console.log('Default settings ensured.');
 
-        // Initialize Warehouse Configuration Settings
         const warehouseConfigSettings = [
-            { key: 'default_storage_temperature', value: '20' }, // Default: 20°C
-            { key: 'low_stock_threshold', value: '10' },          // Default: 10 items
-            { key: 'auto_reorder_point', value: '5' },           // Default: 5 items
-            { key: 'audit_frequency', value: 'Monthly' }         // Default: Monthly
+            { key: 'default_storage_temperature', value: '20' }, 
+            { key: 'low_stock_threshold', value: '10' },          
+            { key: 'auto_reorder_point', value: '5' },          
+            { key: 'audit_frequency', value: 'Monthly' }        
         ];
         for (const setting of warehouseConfigSettings) {
             await connection.query('INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)', [setting.key, setting.value]);
         }
 
-        // Initialize Notification Settings (true/false stored as '1'/'0' or 'true'/'false' strings)
         const notificationSettings = [
             { key: 'notification_low_stock_email', value: 'true' },
             { key: 'notification_critical_issue_email', value: 'true' },
@@ -206,7 +173,6 @@ async function initializeDatabase() {
 
         console.log('Database initialized/verified successfully with general, warehouse, and notification settings.');
 
-        // 9. users
         const createUsersTableSQL = `
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -221,7 +187,6 @@ async function initializeDatabase() {
         await connection.query(createUsersTableSQL);
         console.log('Table "users" checked/created successfully.');
 
-        // 10. app_notifications table
         const createAppNotificationsTableSQL = `
             CREATE TABLE IF NOT EXISTS app_notifications (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -235,7 +200,6 @@ async function initializeDatabase() {
         await connection.query(createAppNotificationsTableSQL);
         console.log('Table app_notifications ensured.');
 
-        // Example: Add a sample notification if the table is empty (for testing)
         const [countResult] = await connection.query('SELECT COUNT(*) as count FROM app_notifications');
         if (countResult[0].count === 0) {
             await connection.query("INSERT INTO app_notifications (message, type) VALUES (?, ?)", ['Welcome to the new notification system!', 'info']);
@@ -245,7 +209,6 @@ async function initializeDatabase() {
 
         console.log('Database initialized/verified successfully with general, warehouse, notification settings, and app_notifications table.');
 
-        // --- Create/Recreate stored procedures ---
         await connection.query(`DROP PROCEDURE IF EXISTS AddProductToStorage;`);
         const createProcedureSQL = `
             CREATE PROCEDURE AddProductToStorage(
@@ -273,7 +236,6 @@ async function initializeDatabase() {
         await connection.query(createProcedureSQL);
         console.log('Stored procedure "AddProductToStorage" checked/created successfully.');
 
-        // Re-enable foreign key checks
         await connection.query('SET FOREIGN_KEY_CHECKS = 1');
         console.log('Foreign key checks re-enabled.');
 
@@ -281,7 +243,7 @@ async function initializeDatabase() {
 
     } catch (err) {
         console.error('CRITICAL DATABASE INITIALIZATION ERROR:');
-        console.error(err); // Log the full error object for more detail
+        console.error(err); 
         if (connection) {
             try {
                 await connection.query('SET FOREIGN_KEY_CHECKS = 1');
@@ -290,7 +252,7 @@ async function initializeDatabase() {
                 console.error('Failed to re-enable foreign key checks:', reEnableErr);
             }
         }
-        // Re-throw to prevent server from starting if DB init fails, and ensure the process exits with an error code
+
         process.exit(1);
     } finally {
         if (connection) {
@@ -299,13 +261,12 @@ async function initializeDatabase() {
     }
 }
 
-// Root route to confirm server is running
+
 app.get('/', (req, res) => {
-    // Changed to send JSON response instead of plain text
+
     res.json({ message: 'Warehouse Management System API is running. Access API endpoints at /api/...' });
 });
 
-// API endpoint to check database connection
 app.get('/api/check-db', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT CURRENT_TIME() AS `current_time`');
@@ -316,29 +277,24 @@ app.get('/api/check-db', async (req, res) => {
     }
 });
 
-// API endpoint for dashboard summary statistics
 app.get('/api/dashboard-stats', async (req, res) => {
     try {
-        // Total SKUs
+
         const [skuRows] = await pool.query('SELECT COUNT(DISTINCT id) AS totalSkus FROM products');
         const totalSkus = skuRows[0]?.totalSkus || 0;
 
-        // Warehouse Zones Count
         const [zoneRows] = await pool.query("SELECT COUNT(*) AS warehouseZonesCount FROM warehouse_zones");
         const warehouseZonesCount = zoneRows[0]?.warehouseZonesCount || 0;
 
-        // Pending Audits Count
         const [auditRows] = await pool.query("SELECT COUNT(*) AS pendingAuditsCount FROM inventory_audits WHERE status = 'Scheduled'");
         const pendingAuditsCount = auditRows[0]?.pendingAuditsCount || 0;
 
-        // Storage Capacity Calculation
         const [productQuantityRows] = await pool.query('SELECT SUM(quantity) AS totalProductQuantity FROM products');
         const totalProductQuantity = productQuantityRows[0]?.totalProductQuantity || 0;
 
         const [zoneCapacityRows] = await pool.query('SELECT SUM(max_capacity) AS totalMaxWarehouseCapacity FROM warehouse_zones');
         const totalMaxWarehouseCapacity = zoneCapacityRows[0]?.totalMaxWarehouseCapacity || 0;
 
-        // Calculate percentage, ensure no division by zero, and format to one decimal place
         const storageCapacityPercentage = totalMaxWarehouseCapacity > 0
             ? parseFloat(((totalProductQuantity / totalMaxWarehouseCapacity) * 100).toFixed(1))
             : 0;
@@ -355,7 +311,6 @@ app.get('/api/dashboard-stats', async (req, res) => {
     }
 });
 
-// --- API Endpoints for Reports Dashboard ---
 app.get('/api/reports/overview', async (req, res) => {
     try {
         const availableReportsCount = 5;
@@ -399,13 +354,13 @@ app.get('/api/reports/types', (req, res) => {
 });
 
 app.get('/api/reports/recent', async (req, res) => {
-    console.log('GET /api/reports/recent: Fetching recent reports from database.'); // Existing log
+    console.log('GET /api/reports/recent: Fetching recent reports from database.'); 
     try {
-        // Modified query to select original field names and full generated_at timestamp
+
         const [rows] = await pool.query(
             'SELECT id, report_name, report_type, generated_at, file_format, file_size_kb, status FROM generated_reports ORDER BY generated_at DESC LIMIT 10' // Fetching 10 as per previous setup
         );
-        // CRUCIAL DEBUG LOG: To see what data is actually being sent
+
         console.log('GET /api/reports/recent: Data being sent to frontend:', JSON.stringify(rows, null, 2));
         res.json(rows);
     } catch (err) {
@@ -438,8 +393,8 @@ app.post('/api/reports/generate', async (req, res) => {
             'financial': 'Financial Overview',
         };
         const generatedReportName = reportNameMap[reportType] || `${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report`;
-        const fileFormat = 'PDF'; // Changed from fileType to fileFormat for consistency
-        // Generate file size in KB as an integer (e.g., 100KB to 3MB)
+        const fileFormat = 'PDF'; 
+ 
         const fileSizeInKB = Math.floor(Math.random() * (3000 - 100 + 1)) + 100;
         const status = 'Completed';
 
@@ -448,7 +403,6 @@ app.post('/api/reports/generate', async (req, res) => {
             [newId, generatedReportName, reportType, fileFormat, fileSizeInKB, status]
         );
         
-        // Fetch the newly created report to ensure generated_at is accurate from DB
         const [newReportRows] = await pool.query('SELECT * FROM generated_reports WHERE id = ?', [newId]);
         const newReportData = newReportRows[0];
 
@@ -460,9 +414,9 @@ app.post('/api/reports/generate', async (req, res) => {
                 id: newReportData.id,
                 report_name: newReportData.report_name,
                 report_type: newReportData.report_type,
-                generated_at: newReportData.generated_at, // Use DB value
+                generated_at: newReportData.generated_at, 
                 file_format: newReportData.file_format,
-                file_size_kb: newReportData.file_size_kb, // Send integer KB
+                file_size_kb: newReportData.file_size_kb, 
                 status: newReportData.status
             }
         });
@@ -475,7 +429,7 @@ app.post('/api/reports/generate', async (req, res) => {
 app.get('/api/reports/download/:reportId', async (req, res) => {
     const { reportId } = req.params;
     try {
-        // Fetch report details including type and name
+
         const [reportRows] = await pool.query('SELECT report_name, report_type FROM generated_reports WHERE id = ?', [reportId]);
         if (reportRows.length === 0) {
             console.log(`GET /api/reports/download/${reportId}: Report with ID "${reportId}" not found in database.`);
@@ -485,26 +439,163 @@ app.get('/api/reports/download/:reportId', async (req, res) => {
         const reportType = reportRows[0].report_type;
 
         if (reportType === 'inventory') {
-            // Generate sample CSV data for an inventory report
-            const csvHeader = "Product ID,Product Name,Quantity,Zone\n";
-            // In a real scenario, you'd fetch this data from your 'products' table
-            const csvData = [
-                ['PROD-001', 'Alpha Widgets', 150, 'ZONE-A'],
-                ['PROD-002', 'Beta Gadgets', 200, 'ZONE-B'],
-                ['PROD-003', 'Gamma Gizmos', 75, 'ZONE-A'],
-                ['PROD-004', 'Delta Devices', 300, 'ZONE-C']
-            ].map(row => row.join(',')).join('\n');
-            const csvContent = csvHeader + csvData;
+            const [products] = await pool.query('SELECT id, name, quantity, zone FROM products ORDER BY id');
 
-            const fileName = `Inventory Report - ${reportId}.csv`;
-            res.setHeader('Content-Type', 'text/csv');
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Inventory Report');
+
+            worksheet.columns = [
+                { header: 'Product ID', key: 'id', width: 20 },
+                { header: 'Product Name', key: 'name', width: 40 }, 
+                { header: 'Quantity', key: 'quantity', width: 15, style: { numFmt: '0' } },
+                { header: 'Zone', key: 'zone', width: 20 }
+            ];
+
+            worksheet.addRows(products);
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+            worksheet.getRow(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FFE0E0E0'} };
+            worksheet.getRow(1).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+
+            const fileName = `Inventory Report - ${reportId} - ${new Date().toISOString().slice(0,10)}.xlsx`;
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-            console.log(`GET /api/reports/download/${reportId}: Sending CSV file: ${fileName} for report: ${reportName}`);
-            res.status(200).send(csvContent);
+            
+            console.log(`GET /api/reports/download/${reportId}: Sending Excel file: ${fileName} for inventory report: ${reportName}`);
+            await workbook.xlsx.write(res);
+            res.end();
+        } else if (reportType === 'audits') {
+
+            const [audits] = await pool.query('SELECT id, zone, DATE_FORMAT(scheduled_date, "%Y-%m-%d") as scheduled_date, auditor, audit_type, status, discrepancies, accuracy, DATE_FORMAT(createdAt, "%Y-%m-%d %H:%i:%s") as createdAt FROM inventory_audits');
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Audit Results Report');
+
+            worksheet.columns = [
+                { header: 'Audit ID', key: 'id', width: 25 },
+                { header: 'Zone', key: 'zone', width: 20 },
+                { header: 'Scheduled Date', key: 'scheduled_date', width: 15 },
+                { header: 'Auditor', key: 'auditor', width: 20 },
+                { header: 'Audit Type', key: 'audit_type', width: 15 },
+                { header: 'Status', key: 'status', width: 15 },
+                { header: 'Discrepancies', key: 'discrepancies', width: 15, style: { numFmt: '0' } },
+                { header: 'Accuracy (%)', key: 'accuracy', width: 15, style: { numFmt: '0.00' } },
+                { header: 'Created At', key: 'createdAt', width: 20 }
+            ];
+
+            worksheet.addRows(audits);
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+            worksheet.getRow(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FFE0E0E0'} };
+            worksheet.getRow(1).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+
+            const fileName = `Audit Results - ${reportId} - ${new Date().toISOString().slice(0,10)}.xlsx`;
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+            
+            const buffer = await workbook.xlsx.writeBuffer();
+            console.log(`GET /api/reports/download/${reportId}: Sending Excel file: ${fileName} for audit report: ${reportName}`);
+            res.status(200).send(buffer);
+        } else if (reportType === 'shipments') {
+
+            const [shipments] = await pool.query('SELECT id, customer, DATE_FORMAT(departure, "%Y-%m-%d %H:%i:%s") as departure, items, value, destination, status, DATE_FORMAT(createdAt, "%Y-%m-%d %H:%i:%s") as createdAt FROM outgoing_shipments');
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Shipments Summary Report');
+
+            worksheet.columns = [
+                { header: 'Shipment ID', key: 'id', width: 25 },
+                { header: 'Customer', key: 'customer', width: 30 },
+                { header: 'Departure Date', key: 'departure', width: 20 },
+                { header: 'Items', key: 'items', width: 10, style: { numFmt: '0' } },
+                { header: 'Value', key: 'value', width: 15, style: { numFmt: '0.00' } },
+                { header: 'Destination', key: 'destination', width: 30 },
+                { header: 'Status', key: 'status', width: 15 },
+                { header: 'Created At', key: 'createdAt', width: 20 }
+            ];
+
+            worksheet.addRows(shipments);
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+            worksheet.getRow(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FFE0E0E0'} };
+            worksheet.getRow(1).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+
+            const fileName = `Shipments Summary - ${reportId} - ${new Date().toISOString().slice(0,10)}.xlsx`;
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+            
+            const buffer = await workbook.xlsx.writeBuffer();
+            console.log(`GET /api/reports/download/${reportId}: Sending Excel file: ${fileName} for shipments report: ${reportName}`);
+            res.status(200).send(buffer);
+        } else if (reportType === 'performance') {
+            
+            const [zonesData] = await pool.query('SELECT id, name, capacity, max_capacity, status, DATE_FORMAT(createdAt, "%Y-%m-%d %H:%i:%s") as createdAt FROM warehouse_zones');
+
+            const processedZonesData = zonesData.map(zone => ({
+                ...zone,
+                utilization: zone.max_capacity > 0 ? ((zone.capacity / zone.max_capacity) * 100).toFixed(2) : 'N/A' // Calculate utilization
+            }));
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Warehouse Performance Report');
+
+            worksheet.columns = [
+                { header: 'Zone ID', key: 'id', width: 25 },
+                { header: 'Name', key: 'name', width: 30 },
+                { header: 'Current Items', key: 'capacity', width: 15, style: { numFmt: '0' } },
+                { header: 'Max Capacity', key: 'max_capacity', width: 15, style: { numFmt: '0' } },
+                { header: 'Utilization (%)', key: 'utilization', width: 15, style: { numFmt: '0.00' } },
+                { header: 'Status', key: 'status', width: 20 },
+                { header: 'Created At', key: 'createdAt', width: 20 }
+            ];
+
+            worksheet.addRows(processedZonesData);
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+            worksheet.getRow(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FFE0E0E0'} };
+            worksheet.getRow(1).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+
+            const fileName = `Warehouse Performance - ${reportId} - ${new Date().toISOString().slice(0,10)}.xlsx`;
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+            
+            const buffer = await workbook.xlsx.writeBuffer();
+            console.log(`GET /api/reports/download/${reportId}: Sending Excel file: ${fileName} for performance report: ${reportName}`);
+            res.status(200).send(buffer);
+        } else if (reportType === 'financial') {
+            const [invValueRows] = await pool.query('SELECT COALESCE(SUM(quantity * unit_value), 0) AS totalInventoryValue FROM products');
+            const [incShipValueRows] = await pool.query('SELECT COALESCE(SUM(value), 0) AS totalIncomingValue FROM incoming_shipments');
+            const [outShipValueRows] = await pool.query('SELECT COALESCE(SUM(value), 0) AS totalOutgoingValue FROM outgoing_shipments');
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Financial Summary');
+            const reportName = reportRows[0].report_name || 'Financial Report'; 
+            worksheet.columns = [
+                { header: 'Metric', key: 'metric', width: 40 },
+                { header: 'Value', key: 'value', width: 20, style: { numFmt: '$#,##0.00' } } 
+            ];
+
+            const totalInventoryValue = parseFloat(invValueRows[0]?.totalInventoryValue ?? 0);
+            const totalIncomingValue = parseFloat(incShipValueRows[0]?.totalIncomingValue ?? 0);
+            const totalOutgoingValue = parseFloat(outShipValueRows[0]?.totalOutgoingValue ?? 0);
+
+            worksheet.addRow({ metric: 'Total Inventory Value', value: totalInventoryValue });
+            worksheet.addRow({ metric: 'Total Value of Incoming Shipments', value: totalIncomingValue });
+            worksheet.addRow({ metric: 'Total Value of Outgoing Shipments', value: totalOutgoingValue });
+
+            console.log(`GET /api/reports/download/${reportId}: Generating Excel for financial report "${reportName}".`);
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename="${reportName}.xlsx"`);
+            await workbook.xlsx.write(res);
+            res.end(); 
         } else {
-            // For other report types, keep the simulated download for now
-            console.log(`GET /api/reports/download/${reportId}: Simulated download for non-inventory report: ${reportName}`);
-            res.status(200).json({ message: `Downloading "${reportName}" (ID: ${reportId})... (Simulated for ${reportType})` });
+
+            console.log(`GET /api/reports/download/${reportId}: Report type "${reportType}" not configured for Excel download.`);
+            res.status(501).json({ message: `Excel download for report type "${reportType}" is not yet implemented.` });
         }
     } catch (err) {
         console.error(`Error downloading report ID ${reportId}:`, err);
@@ -520,7 +611,6 @@ app.post('/api/reports/share', async (req, res) => {
     res.status(200).json({ message: `Report "${reportName}" shared with ${recipient}. (Simulated)` });
 });
 
-// --- API Endpoints for Products ---
 app.post('/api/products', async (req, res) => {
     const { id, name, category, zone, shelf, quantity, minStock, maxStock } = req.body;
     try {
@@ -1253,6 +1343,72 @@ app.delete('/api/orders/:id', async (req, res) => {
     }
 });
 
+// --- API Endpoints for Actual Notifications ---
+
+// GET all notifications (e.g., for the notification bell)
+app.get('/api/notifications', async (req, res) => {
+    try {
+        // Fetch notifications, ordering by creation date (newest first)
+        // You might want to add pagination or limit the number of notifications fetched
+        // Also, consider fetching only unread notifications or a mix based on your requirements
+        const [notifications] = await pool.query('SELECT id, message, type, is_read, created_at, link FROM app_notifications ORDER BY created_at DESC');
+        
+        // The frontend expects 'read' and 'timestamp'
+        const formattedNotifications = notifications.map(n => ({
+            ...n,
+            read: !!n.is_read, // Convert TINYINT/INT to boolean
+            timestamp: n.created_at
+        }));
+        
+        res.json(formattedNotifications);
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        res.status(500).json({ message: 'Failed to fetch notifications', error: error.message });
+    }
+});
+
+// PUT to mark a specific notification as read
+app.put('/api/notifications/:id/mark-read', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [result] = await pool.query('UPDATE app_notifications SET is_read = 1 WHERE id = ?', [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+        res.json({ message: 'Notification marked as read successfully' });
+    } catch (error) {
+        console.error(`Error marking notification ${id} as read:`, error);
+        res.status(500).json({ message: 'Failed to mark notification as read', error: error.message });
+    }
+});
+
+// PUT to mark all notifications as read
+app.put('/api/notifications/mark-all-read', async (req, res) => {
+    try {
+        // This will mark all notifications as read. 
+        // If you have user-specific notifications, you'd add a WHERE clause for user_id.
+        await pool.query('UPDATE app_notifications SET is_read = 1 WHERE is_read = 0');
+        res.json({ message: 'All notifications marked as read successfully' });
+    } catch (error) {
+        console.error('Error marking all notifications as read:', error);
+        res.status(500).json({ message: 'Failed to mark all notifications as read', error: error.message });
+    }
+});
+
+// DELETE all notifications (or clear them)
+app.delete('/api/notifications', async (req, res) => {
+    try {
+        // This deletes all notifications. 
+        // Consider if you want to only delete read notifications or implement soft delete/archiving.
+        // If user-specific, add a WHERE clause for user_id.
+        await pool.query('DELETE FROM app_notifications'); 
+        res.json({ message: 'All notifications cleared successfully' });
+    } catch (error) {
+        console.error('Error clearing notifications:', error);
+        res.status(500).json({ message: 'Failed to clear notifications', error: error.message });
+    }
+});
+
 // --- API Endpoints for Settings ---
 // GET endpoint to fetch all settings
 app.get('/api/settings', async (req, res) => {
@@ -1292,24 +1448,6 @@ app.get('/api/settings/general', async (req, res) => {
     } catch (err) {
         console.error('Error fetching general settings:', err);
         res.status(500).json({ message: 'Error fetching general settings', error: err.message });
-    }
-});
-
-// GET endpoint for a single setting by key
-app.get('/api/settings/:key', async (req, res) => {
-    const { key } = req.params;
-    try {
-        const [rows] = await pool.query('SELECT setting_key, setting_value FROM settings WHERE setting_key = ?', [key]);
-        if (rows.length > 0) {
-            // Return the single setting as an object { key: value }
-            res.json({ [rows[0].setting_key]: rows[0].setting_value }); 
-        } else {
-            console.log(`GET /api/settings/${key}: Setting not found.`);
-            res.status(404).json({ message: `Setting '${key}' not found.` });
-        }
-    } catch (err) {
-        console.error(`Failed to fetch setting ${key}:`, err);
-        res.status(500).json({ message: `Error fetching setting ${key}`, error: err.message });
     }
 });
 
@@ -1355,7 +1493,189 @@ app.put('/api/settings/general', async (req, res) => {
     }
 });
 
-// PUT endpoint to update a specific setting by key
+// --- API Endpoints for Warehouse Configuration Settings ---
+app.get('/api/settings/warehouse', async (req, res) => {
+    try {
+        const keysToFetch = [
+            'default_storage_temperature',
+            'low_stock_threshold',
+            'auto_reorder_point',
+            'audit_frequency'
+        ];
+        const [rows] = await pool.query('SELECT setting_key, setting_value FROM settings WHERE setting_key IN (?)', [keysToFetch]);
+        
+        const warehouseSettings = {};
+        rows.forEach(row => {
+            warehouseSettings[row.setting_key] = row.setting_value;
+        });
+
+        // Ensure all expected keys are present in the response
+        keysToFetch.forEach(key => {
+            if (!(key in warehouseSettings)) {
+                warehouseSettings[key] = null; 
+            }
+        });
+
+        console.log('GET /api/settings/warehouse: Responding with:', warehouseSettings);
+        res.json(warehouseSettings);
+    } catch (error) {
+        console.error('Error fetching warehouse settings:', error);
+        res.status(500).json({ message: 'Failed to fetch warehouse settings', error: error.message });
+    }
+});
+
+app.put('/api/settings/warehouse', async (req, res) => {
+    const { 
+        default_storage_temperature,
+        low_stock_threshold,
+        auto_reorder_point,
+        audit_frequency 
+    } = req.body;
+    console.log('PUT /api/settings/warehouse: Received payload:', req.body);
+
+    const settingsToUpdate = {};
+    if (default_storage_temperature !== undefined) settingsToUpdate.default_storage_temperature = default_storage_temperature;
+    if (low_stock_threshold !== undefined) settingsToUpdate.low_stock_threshold = low_stock_threshold;
+    if (auto_reorder_point !== undefined) settingsToUpdate.auto_reorder_point = auto_reorder_point;
+    if (audit_frequency !== undefined) settingsToUpdate.audit_frequency = audit_frequency;
+
+    if (Object.keys(settingsToUpdate).length === 0) {
+        return res.status(400).json({ message: 'No valid settings provided for update.' });
+    }
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        for (const [key, value] of Object.entries(settingsToUpdate)) {
+            await connection.query(
+                'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
+                [key, String(value)] // Ensure value is stored as string
+            );
+            console.log(`PUT /api/settings/warehouse: Updated ${key} to ${value}`);
+        }
+
+        await connection.commit();
+        res.json({ message: 'Warehouse settings updated successfully!' });
+    } catch (error) {
+        if (connection) await connection.rollback();
+        console.error('Error updating warehouse settings:', error);
+        res.status(500).json({ message: 'Failed to update warehouse settings', error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
+// --- API Endpoints for Notification Preferences Settings ---
+app.get('/api/settings/notifications', async (req, res) => {
+    try {
+        const keysToFetch = [
+            'notification_low_stock_email',
+            'notification_critical_issue_email',
+            'notification_daily_report_email',
+            'notification_shipment_update_email',
+            'notification_low_stock_in_app',
+            'notification_critical_issue_in_app',
+            'notification_shipment_update_in_app'
+        ];
+        const [rows] = await pool.query('SELECT setting_key, setting_value FROM settings WHERE setting_key IN (?)', [keysToFetch]);
+        
+        const notificationSettings = {};
+        rows.forEach(row => {
+            // Convert 'true'/'false' strings to booleans, otherwise keep as string
+            if (row.setting_value === 'true') {
+                notificationSettings[row.setting_key] = true;
+            } else if (row.setting_value === 'false') {
+                notificationSettings[row.setting_key] = false;
+            } else {
+                notificationSettings[row.setting_key] = row.setting_value;
+            }
+        });
+
+        // Ensure all expected keys are present in the response, defaulting to false for booleans
+        keysToFetch.forEach(key => {
+            if (!(key in notificationSettings)) {
+                notificationSettings[key] = false; 
+            }
+        });
+
+        console.log('GET /api/settings/notifications: Responding with:', notificationSettings);
+        res.json(notificationSettings);
+    } catch (error) {
+        console.error('Error fetching notification settings:', error);
+        res.status(500).json({ message: 'Failed to fetch notification settings', error: error.message });
+    }
+});
+
+app.put('/api/settings/notifications', async (req, res) => {
+    const { 
+        notification_low_stock_email,
+        notification_critical_issue_email,
+        notification_daily_report_email,
+        notification_shipment_update_email,
+        notification_low_stock_in_app,
+        notification_critical_issue_in_app,
+        notification_shipment_update_in_app
+    } = req.body;
+    console.log('PUT /api/settings/notifications: Received payload:', req.body);
+
+    const settingsToUpdate = {
+        notification_low_stock_email,
+        notification_critical_issue_email,
+        notification_daily_report_email,
+        notification_shipment_update_email,
+        notification_low_stock_in_app,
+        notification_critical_issue_in_app,
+        notification_shipment_update_in_app
+    };
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        for (const [key, value] of Object.entries(settingsToUpdate)) {
+            if (value !== undefined) { // Only update if a value was provided
+                await connection.query(
+                    'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
+                    [key, String(value)] // Store boolean as 'true'/'false' strings
+                );
+                console.log(`PUT /api/settings/notifications: Updated ${key} to ${value}`);
+            }
+        }
+
+        await connection.commit();
+        res.json({ message: 'Notification preferences updated successfully!' });
+    } catch (error) {
+        if (connection) await connection.rollback();
+        console.error('Error updating notification settings:', error);
+        res.status(500).json({ message: 'Failed to update notification settings', error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
+// --- Generic API Endpoints for Individual Settings (MUST BE DEFINED LAST) ---
+// GET endpoint for a single setting by key
+app.get('/api/settings/:key', async (req, res) => {
+    const { key } = req.params;
+    try {
+        const [rows] = await pool.query('SELECT setting_key, setting_value FROM settings WHERE setting_key = ?', [key]);
+        if (rows.length > 0) {
+            // Return the single setting as an object { key: value }
+            res.json({ [rows[0].setting_key]: rows[0].setting_value }); 
+        } else {
+            console.log(`GET /api/settings/${key}: Setting not found.`);
+            res.status(404).json({ message: `Setting '${key}' not found.` });
+        }
+    } catch (err) {
+        console.error(`Failed to fetch setting ${key}:`, err);
+        res.status(500).json({ message: `Error fetching setting ${key}`, error: err.message });
+    }
+});
+
+// PUT endpoint to update or create a specific setting by key
 app.put('/api/settings/:key', async (req, res) => {
     const { key } = req.params;
     const { value } = req.body;
@@ -1366,106 +1686,24 @@ app.put('/api/settings/:key', async (req, res) => {
 
     try {
         const [result] = await pool.query(
-            'UPDATE settings SET setting_value = ? WHERE setting_key = ?',
-            [value, key]
+            'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
+            [key, String(value)] // Ensure value is stored as string
         );
-
-        if (result.affectedRows === 0) {
-            // If no rows were affected, the setting key might not exist.
-            // You might choose to insert it here or return a 404.
-            return res.status(404).json({ message: `Setting with key '${key}' not found.` });
+        
+        // For ON DUPLICATE KEY UPDATE, affectedRows is 1 for an insert, 2 for an update if the value changed.
+        if (result.affectedRows > 0) {
+            console.log(`PUT /api/settings/${key}: Setting '${key}' processed. Affected rows: ${result.affectedRows}`);
+            res.status(200).json({ message: `Setting '${key}' updated/created successfully.` });
+        } else { // affectedRows is 0 if the value was the same and no update occurred.
+            console.log(`PUT /api/settings/${key}: Setting '${key}' value unchanged. Affected rows: ${result.affectedRows}`);
+            res.status(200).json({ message: `Setting '${key}' value unchanged or already up to date.` });
         }
-
-        res.status(200).json({ message: `Setting '${key}' updated successfully.` });
     } catch (err) {
         console.error(`Error updating setting '${key}':`, err);
         res.status(500).json({ message: `Error updating setting '${key}'`, error: err.message });
     }
 });
 
-// API endpoint to get a single setting by key
-app.get('/api/settings/:key', async (req, res) => {
-    const { key } = req.params;
-    try {
-        const [rows] = await pool.query('SELECT setting_value FROM settings WHERE setting_key = ?', [key]);
-        if (rows.length > 0) {
-            res.json({ setting_key: key, setting_value: rows[0].setting_value });
-        } else {
-            res.status(404).json({ message: 'Setting not found.' });
-        }
-    } catch (err) {
-        console.error(`Failed to fetch setting ${key}:`, err);
-        res.status(500).json({ message: `Error fetching setting ${key}`, error: err.message });
-    }
-});
-
-// --- API Endpoints for General Settings ---
-app.get('/api/settings/general', async (req, res) => {
-    try {
-        const keysToFetch = ['warehouseName', 'timeZone', 'defaultCurrency'];
-        const [rows] = await pool.query('SELECT setting_key, setting_value FROM settings WHERE setting_key IN (?)', [keysToFetch]);
-        
-        const settings = rows.reduce((acc, row) => {
-            acc[row.setting_key] = row.setting_value;
-            return acc;
-        }, {});
-
-        // Ensure all keys are present, even if with null or default values from DB potentially
-        keysToFetch.forEach(key => {
-            if (!settings.hasOwnProperty(key)) {
-                settings[key] = null; // Or some default if not found
-            }
-        });
-
-        console.log('GET /api/settings/general: Fetched settings:', settings);
-        res.json(settings);
-    } catch (err) {
-        console.error('Error fetching general settings:', err);
-        res.status(500).json({ message: 'Error fetching general settings', error: err.message });
-    }
-});
-
-app.put('/api/settings/general', async (req, res) => {
-    const { warehouseName, timeZone, defaultCurrency } = req.body;
-    console.log('PUT /api/settings/general: Received data:', req.body);
-
-    if (warehouseName === undefined || timeZone === undefined || defaultCurrency === undefined) {
-        return res.status(400).json({ message: 'Missing required settings fields (warehouseName, timeZone, defaultCurrency).' });
-    }
-
-    try {
-        const settingsToUpdate = [
-            { key: 'warehouseName', value: warehouseName },
-            { key: 'timeZone', value: timeZone },
-            { key: 'defaultCurrency', value: defaultCurrency }
-        ];
-
-        // Using a transaction to ensure all settings are updated or none are
-        const connection = await pool.getConnection();
-        await connection.beginTransaction();
-
-        try {
-            for (const setting of settingsToUpdate) {
-                await connection.query(
-                    'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
-                    [setting.key, setting.value]
-                );
-            }
-            await connection.commit();
-            console.log('PUT /api/settings/general: Settings updated successfully.');
-            res.status(200).json({ message: 'General settings updated successfully!' });
-        } catch (err) {
-            await connection.rollback();
-            console.error('Error updating general settings during transaction:', err);
-            throw err; // Re-throw to be caught by outer catch block
-        } finally {
-            connection.release();
-        }
-    } catch (err) {
-        console.error('Error updating general settings:', err);
-        res.status(500).json({ message: 'Error updating general settings', error: err.message });
-    }
-});
 
 // --- API Endpoints for Users ---
 // GET all users

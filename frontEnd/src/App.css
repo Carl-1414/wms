@@ -5,7 +5,7 @@
 #root {
   width: 100%; /* take full width */
   margin: 0; /* remove centering */
-  padding: 2rem;
+  padding: 1rem 2rem 2rem 2rem; /* Increased top padding to 1rem for more space */
   text-align: left; /* left-align text */
 }
 
@@ -58,17 +58,19 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
   transition: margin-left 0.3s ease;
-  padding: 20px;
+  padding: 0px 20px 20px 20px; /* Minimized top padding to 0px */
   overflow-y: auto; /* Allows content to scroll if it exceeds viewport height */
   position: relative; /* Added for positioning context if needed by children */
 }
 
 .main-content-header-utils {
-  display: flex;
-  justify-content: flex-end; /* Aligns items to the right */
-  padding-bottom: 10px; /* Optional: some space below the bell */
-  margin-bottom: 10px; /* Optional: space before main page content starts */
-  /* border-bottom: 1px solid #eee; */ /* Optional: a separator line */
+  position: absolute;
+  top: 1.5rem; /* Align with .page-header's starting point (after its margin-top) */
+  right: 20px; /* Align with main-content's right padding */
+  z-index: 10; /* Ensure it's visible above other elements */
+  /* Note: This CSS-only approach can be fragile.
+     A more robust solution involves restructuring the JSX
+     to include the notification bell within the .page-header element. */
 }
 
 .main-content.sidebar-open {
@@ -84,6 +86,22 @@
   .main-content.sidebar-closed {
     margin-left: 0;
   }
+}
+
+/* General Page Header for main content titles */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem; /* Added space above page titles */
+  margin-bottom: 2rem; /* Consistent space below page titles */
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #1a202c; /* Consistent with WarehouseZones.css */
+  font-size: 2rem;   /* Consistent with WarehouseZones.css */
+  font-weight: 700; /* Consistent with WarehouseZones.css */
 }
 
 /* ==========================================

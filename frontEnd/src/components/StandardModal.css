@@ -1,6 +1,3 @@
-/* StandardModal.css */
-
-/* Modal Overlay */
 .standard-modal-overlay {
   position: fixed;
   top: 0;
@@ -15,7 +12,6 @@
   animation: standardModalFadeIn 0.3s ease-out forwards;
 }
 
-/* Modal Content Box */
 .standard-modal-content {
   background: #ffffff;
   border-radius: 8px;
@@ -25,11 +21,10 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Important for border-radius and containing children */
+  overflow: hidden;
   animation: standardModalScaleUp 0.3s ease-out forwards;
 }
 
-/* Modal Header */
 .standard-modal-header {
   display: flex;
   justify-content: space-between;
@@ -45,7 +40,6 @@
   font-weight: 600;
 }
 
-/* Close Button (X icon) */
 .standard-modal-close-button {
   background: transparent;
   border: none;
@@ -60,15 +54,13 @@
   color: #333;
 }
 
-/* Form Container within Modal */
 .standard-modal-content form {
   padding: 20px;
   overflow-y: auto;
   flex-grow: 1;
-  min-height: 0; /* Essential for flex children that need to scroll */
+  min-height: 0;
 }
 
-/* Form Group (Label + Input/Select) */
 .standard-form-group {
   display: flex;
   align-items: center;
@@ -76,9 +68,9 @@
 }
 
 .standard-form-group label {
-  flex-basis: 130px; /* Adjust as needed */
+  flex-basis: 130px;
   margin-right: 15px;
-  font-weight: bold; /* Make labels bold */
+  font-weight: bold;
   color: #495057;
   font-size: 0.9em;
   text-align: left;
@@ -113,7 +105,6 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Modal Actions (Buttons) */
 .standard-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -153,8 +144,6 @@
   border-color: #545b62;
 }
 
-
-/* Animations */
 @keyframes standardModalFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

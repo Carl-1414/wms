@@ -200,15 +200,15 @@
 }
 
 .action-btn.danger {
-  background-color: #fee2e2; /* Light red background */
-  color: #e53e3e;             /* Red text */
-  border: 1px solid #fecaca;  /* Light red border */
+  background-color: #fee2e2;
+  color: #e53e3e;
+  border: 1px solid #fecaca;
 }
 
 .action-btn.danger:hover,
 .action-btn.danger:focus {
-  background-color: #e53e3e; /* Red background on hover */
-  color: white;               /* White text on hover */
+  background-color: #e53e3e;
+  color: white;
   border-color: #e53e3e;
 }
 
@@ -309,142 +309,138 @@
   color: white;
 }
 
-/* InventoryAudits.css */
-
 .audits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
-    gap: 20px; /* Space between cards */
-    padding: 20px;
-    background-color: #f0f2f5; /* Light background similar to image */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-    margin-top: 20px; /* Space from overview cards */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: #f0f2f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
 }
 
 .no-audits-message {
-    grid-column: 1 / -1; /* Make the message span across all columns */
-    text-align: center;
-    padding: 40px 20px;
-    font-size: 1.1em;
-    color: #666;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1em;
+  color: #666;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .audit-card {
-    background-color: #ffffff; /* White background for each card */
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* More prominent shadow for cards */
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Pushes buttons/footer to bottom if present */
-    border: 1px solid #e0e0e0; /* Light border */
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .audit-card:hover {
-    transform: translateY(-5px); /* Slight lift effect on hover */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
 }
 
 .audit-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0; /* Separator for header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .audit-header h3 {
-    margin: 0;
-    color: #333;
-    font-size: 1.2em;
-    font-weight: 600;
+  margin: 0;
+  color: #333;
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
 .audit-status {
-    padding: 5px 10px;
-    border-radius: 20px; /* Pill shape for status */
-    color: #fff;
-    font-size: 0.85em;
-    font-weight: bold;
-    text-transform: uppercase;
-    white-space: nowrap; /* Prevent text wrapping */
+  padding: 5px 10px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .audit-card p {
-    margin: 8px 0; /* Spacing for paragraphs */
-    color: #555;
-    font-size: 0.95em;
-    line-height: 1.4;
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95em;
+  line-height: 1.4;
 }
 
 .audit-card p strong {
-    color: #333;
-    font-weight: 500;
-    min-width: 120px; /* Align content slightly */
-    display: inline-block; /* Allow min-width to work */
+  color: #333;
+  font-weight: 500;
+  min-width: 120px;
+  display: inline-block;
 }
 
-/* Optional: Add styles for buttons if you plan to add 'View Report'/'Download' */
 .audit-actions {
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px solid #f0f0f0;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end; /* Align buttons to the right */
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .audit-actions button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .audit-actions .view-report-btn {
-    background-color: #007bff; /* Primary blue */
-    color: white;
+  background-color: #007bff;
+  color: white;
 }
 
 .audit-actions .view-report-btn:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 .audit-actions .download-btn {
-    background-color: #6c757d; /* Gray */
-    color: white;
+  background-color: #6c757d;
+  color: white;
 }
 
 .audit-actions .download-btn:hover {
-    background-color: #5a6268;
+  background-color: #5a6268;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-    .audits-grid {
-        grid-template-columns: 1fr; /* Stack cards on smaller screens */
-        padding: 15px;
-    }
+  .audits-grid {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
 
-    .audit-card {
-        padding: 18px;
-    }
+  .audit-card {
+    padding: 18px;
+  }
 
-    .audit-header h3 {
-        font-size: 1.1em;
-    }
+  .audit-header h3 {
+    font-size: 1.1em;
+  }
 
-    .audit-status {
-        font-size: 0.8em;
-        padding: 4px 8px;
-    }
+  .audit-status {
+    font-size: 0.8em;
+    padding: 4px 8px;
+  }
 }

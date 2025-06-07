@@ -1,15 +1,12 @@
-/* Orders.css */
-
 .orders {
   padding: 2rem;
-  /* Updated background and added shadow/border for the main orders container */
-  background: #ffffff; /* White background for the Orders Management section*/
+  background: #ffffff;
   min-height: 100vh;
-  border-radius: 12px; /* Rounded corners for the container*/
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow*/
-  margin: 20px; /* Margin to create space from the global body background/sidebar*/
-  min-height: calc(100vh - 40px); /* Adjust min-height to account for margin */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 20px;
+  min-height: calc(100vh - 40px);
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -76,7 +73,7 @@
   border-radius: 12px;
   margin-bottom: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0; /* Added border for consistency with overview cards */
+  border: 1px solid #e2e8f0;
 }
 
 .filters {
@@ -97,23 +94,13 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0; /* Added border for consistency */
+  border: 1px solid #e2e8f0;
 }
-
-/* Removed redundant flex-direction and gap for orders-table as it's a grid container */
-/* .orders-table {
-  display: flex;
-  flex-direction: column;
-  gap: 10;
-} */
 
 .table-header,
 .table-row {
   display: grid;
-  /* Adjusted grid-template-columns for better visual spacing based on images*/
   grid-template-columns: minmax(80px, 0.75fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(90px, 0.75fr) minmax(60px, 0.5fr) minmax(100px, 0.75fr) minmax(100px, 0.75fr) minmax(120px, 1fr);
-  /* Removed large column-gap; it's better to manage column widths */
-  /* column-gap: 13rem; */
   align-items: center;
   padding: 0.75rem 1rem;
 }
@@ -127,7 +114,7 @@
   font-weight: bold;
   background-color: #f5f7fa;
   border-bottom: 1px solid #e0e0e0;
-  color: #2d3748; /* Ensuring header text color */
+  color: #2d3748;
 }
 
 .table-row {
@@ -190,15 +177,14 @@
 }
 
 .priority {
-  padding: 0.15rem 0.3rem; /* Reduced padding for a smaller badge */
-  border-radius: 4px; /* Adjusted border-radius to be consistent with status */
-  font-size: 0.75rem; /* Adjusted font-size to be consistent with status */
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  display: inline-flex;   /* Use inline-flex for alignment capabilities */
-  align-items: center;    /* Vertically center text/content */
-  justify-content: center;/* Horizontally center text/content */
-  /* Removed max-width, overflow, white-space, text-overflow unless needed for specific truncation */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .priority.high {
@@ -231,7 +217,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.5rem; /* Increased gap for better button separation */
+  gap: 0.5rem;
 }
 
 .action-btn {
@@ -263,59 +249,57 @@
   background: #e2e8f0;
 }
 
-/* Modal specific styles */
-
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1rem; /* Space below header elements */
-  margin-bottom: 1.5rem; /* Space between header and form content */
-  border-bottom: 1px solid #e9ecef; /* Subtle separator line */
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .modal-header h2 {
-  margin: 0; /* Remove default h2 margins */
-  font-size: 1.5rem; /* Adjust font size for modal title */
-  color: #212529; /* Darker title color */
+  margin: 0;
+  font-size: 1.5rem;
+  color: #212529;
 }
 
 .modal-header .close-button {
   background: transparent;
   border: none;
-  font-size: 1.5rem; /* Adjust size of close icon */
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #6c757d; /* Muted color for close icon */
+  color: #6c757d;
   cursor: pointer;
-  padding: 0.25rem 0.5rem; /* Add some padding for easier clicking */
+  padding: 0.25rem 0.5rem;
   line-height: 1;
 }
 
 .modal-header .close-button:hover {
-  color: #343a40; /* Darken close icon on hover */
+  color: #343a40;
 }
+
 .modal-overlay {
-  position: fixed; /* Positions the overlay relative to the viewport */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background for the overlay*/
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center; /* Centers the modal horizontally */
-  align-items: center; /* Centers the modal vertically */
-  z-index: 1000; /* Ensures the modal is on top of other content */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
-  background: white; /* White background for the modal itself*/
-  padding: 2rem; /* Padding inside the modal */
-  border-radius: 12px; /* Rounded corners for the modal*/
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Soft shadow for depth*/
-  width: 90%; /* Take up 90% of the overlay width */
-  max-width: 500px; /* Maximum width for the modal */
-  animation: fadeIn 0.3s ease-out; /* Optional: add a fade-in animation */
-  box-sizing: border-box; /* Include padding in the width calculation */
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  animation: fadeIn 0.3s ease-out;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -333,30 +317,28 @@
   margin-top: 0;
   margin-bottom: 1.5rem;
   color: #1a202c;
-  font-size: 1.75rem; /* Slightly larger heading for the modal*/
-  text-align: center; /* Center the title */
+  font-size: 1.75rem;
+  text-align: center;
 }
 
 .modal-content form {
   display: flex;
   flex-direction: column;
-  /* align-items: center; /* Removed to allow form groups to span width for side-by-side layout */
 }
 
 .form-group {
   display: flex;
-  align-items: center; /* Vertically align label and input */
-  margin-bottom: 1.25rem; /* Slightly increased space between form groups */
-  width: 100%; /* Form groups now take full width of the form area */
+  align-items: center;
+  margin-bottom: 1.25rem;
+  width: 100%;
 }
 
 .form-group label {
-  flex: 0 0 120px; /* Fixed width for labels, adjust as needed */
-  /* display: block; is no longer needed due to flex layout */
-  margin-bottom: 0; /* No bottom margin as label is side-by-side with input */
-  padding-right: 1rem; /* Space between label text and input field */
-  text-align: right; /* Align label text to the right */
-  color: #495057; /* Updated label color */
+  flex: 0 0 120px;
+  margin-bottom: 0;
+  padding-right: 1rem;
+  text-align: right;
+  color: #495057;
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -365,16 +347,15 @@
 .form-group input[type="number"],
 .form-group input[type="date"],
 .form-group select {
-  flex-grow: 1; /* Allow input/select to take the remaining space in the flex group */
+  flex-grow: 1;
   padding: 0.75rem 1rem;
-  border: 1px solid #ced4da; /* Slightly darker border for better definition */
+  border: 1px solid #ced4da;
   border-radius: 6px;
   font-size: 1rem;
-  color: #495057; /* Updated text color */
+  color: #495057;
   box-sizing: border-box;
-  background-color: #f8f9fa; /* Subtle background color for inputs */
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; /* Smooth transitions */
-  /* width: 100%; is effectively handled by flex-grow: 1; */
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
 .form-group input[type="text"]:focus,
@@ -382,16 +363,16 @@
 .form-group input[type="date"]:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #80bdff; /* Lighter blue border on focus, common with Bootstrap */
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Standard Bootstrap-like focus shadow */
-  background-color: #fff; /* Ensure background is white on focus */
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  background-color: #fff;
 }
 
 .modal-actions {
   display: flex;
-  justify-content: flex-end; /* Align buttons to the right*/
-  gap: 1rem; /* Space between buttons */
-  margin-top: 2rem; /* Space above buttons */
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .btn {
@@ -404,7 +385,7 @@
 }
 
 .btn-primary {
-  background: #4299e1; /* Blue background for primary button*/
+  background: #4299e1;
   color: white;
 }
 
@@ -413,7 +394,7 @@
 }
 
 .btn-secondary {
-  background: #edf2f7; /* Light gray background for secondary button*/
+  background: #edf2f7;
   color: #4a5568;
   border: 1px solid #e2e8f0;
 }
@@ -451,7 +432,8 @@
   .table-row {
     grid-template-columns: 1fr;
   }
-  .table-header div, .table-row div {
+  .table-header div,
+  .table-row div {
     text-align: left;
     padding: 0.25rem 0;
   }
@@ -461,43 +443,49 @@
   }
 }
 
-
-
-/* --- New Modal Styles for Orders --- */
-
 .orders-modal-overlay-new {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1050; /* Ensure it's above other content */
+  z-index: 1050;
   animation: ordersModalFadeInNew 0.3s ease-out;
 }
 
 @keyframes ordersModalFadeInNew {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .orders-modal-content-new {
   background: #ffffff;
-  padding: 0; /* Remove padding, header/footer will have their own */
+  padding: 0;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 90%;
-  max-width: 550px; /* Slightly wider max-width */
+  max-width: 550px;
   animation: ordersModalSlideInNew 0.3s ease-out;
-  overflow: hidden; /* To contain rounded corners with header/footer */
+  overflow: hidden;
 }
 
 @keyframes ordersModalSlideInNew {
-  from { transform: translateY(-30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .orders-modal-header-new {
@@ -505,7 +493,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  background-color: #f8f9fa; /* Light gray header background */
+  background-color: #f8f9fa;
   border-bottom: 1px solid #dee2e6;
 }
 
@@ -532,8 +520,8 @@
 }
 
 .orders-modal-form-new {
-  padding: 1.5rem; /* Padding for the form content area */
-  max-height: 60vh; /* Limit form height and enable scrolling if needed */
+  padding: 1.5rem;
+  max-height: 60vh;
   overflow-y: auto;
 }
 
@@ -544,22 +532,22 @@
 }
 
 .orders-form-label-new {
-  flex: 0 0 130px; /* Fixed width for labels */
+  flex: 0 0 130px;
   padding-right: 1rem;
-  text-align: left; /* Changed from right to left */
+  text-align: left;
   color: #495057;
-  font-weight: bold; /* Changed from 500 to bold */
+  font-weight: bold;
   font-size: 0.95rem;
 }
 
 .orders-form-input-new {
   flex-grow: 1;
-  padding: 0.65rem 0.9rem; /* Adjusted padding */
+  padding: 0.65rem 0.9rem;
   border: 1px solid #ced4da;
   border-radius: 5px;
   font-size: 0.95rem;
   color: #495057;
-  background-color: #fff; /* White background for inputs */
+  background-color: #fff;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
@@ -574,7 +562,7 @@
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  background-color: #f8f9fa; /* Light gray footer background */
+  background-color: #f8f9fa;
   border-top: 1px solid #dee2e6;
 }
 
@@ -589,21 +577,9 @@
   border: 1px solid transparent;
 }
 
-.orders-btn-primary-new {
-  background-color: #0d6efd; /* Bootstrap primary blue */
-  color: white;
-  border-color: #0d6efd;
-}
-
 .orders-btn-primary-new:hover {
   background-color: #0b5ed7;
   border-color: #0a58ca;
-}
-
-.orders-btn-secondary-new {
-  background-color: #6c757d; /* Bootstrap secondary gray */
-  color: white;
-  border-color: #6c757d;
 }
 
 .orders-btn-secondary-new:hover {
@@ -615,8 +591,8 @@
   background-color: #f8d7da;
   color: #721c24;
   padding: 0.75rem 1.25rem;
-  margin: 0 1.5rem 1rem 1.5rem; /* Display below header, inside form area if error occurs */
+  margin: 0 1.5rem 1rem 1.5rem;
   border: 1px solid #f5c6cb;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   font-size: 0.9rem;
 }

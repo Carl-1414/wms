@@ -85,13 +85,13 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  width: 100%; /* Ensure table takes full width */
-  min-width: 900px; /* Diagnostic: ensure enough space for columns */
+  width: 100%;
+  min-width: 900px;
 }
 
 .table-header {
   display: grid;
-  grid-template-columns: minmax(80px, 0.75fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(80px, 0.75fr) minmax(120px, 1fr) minmax(80px, 0.5fr); /* Adjusted for single line */
+  grid-template-columns: minmax(80px, 0.75fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(80px, 0.75fr) minmax(120px, 1fr) minmax(80px, 0.5fr);
   background: #f8fafc;
   padding: 1rem;
   font-weight: 600;
@@ -205,14 +205,14 @@
 .product-action-cell {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Align button to the right */
+  justify-content: flex-end;
 }
 
 .delete-product-btn {
   background-color: transparent;
   border: none;
-  color: #718096; /* Mid-grey icon */
-  padding: 0.4rem; /* Adjust as needed */
+  color: #718096;
+  padding: 0.4rem;
   border-radius: 50%;
   cursor: pointer;
   display: inline-flex;
@@ -222,18 +222,18 @@
 }
 
 .delete-product-btn svg {
-  width: 1rem; /* Adjust icon size */
-  height: 1rem; /* Adjust icon size */
+  width: 1rem;
+  height: 1rem;
 }
 
 .delete-product-btn:hover {
-  background-color: #e53e3e; /* Solid red background on hover */
-  color: #ffffff; /* White icon on hover for contrast */
+  background-color: #e53e3e;
+  color: #ffffff;
 }
 
 .delete-product-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.4); /* Red focus ring, similar to zone delete */
+  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.4);
 }
 
 .stock-fill.high {
@@ -246,10 +246,9 @@
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
   text-align: center;
-  display: inline-block; /* <-- Add this */
-  width: fit-content;    /* <-- Add this */
+  display: inline-block;
+  width: fit-content;
 }
-
 
 .status.low {
   background: #fed7d7;
@@ -277,44 +276,39 @@
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
-  
+
   .filters {
     flex-direction: column;
   }
 }
 
-
-/* ProductStorage.css (or Modal.css if created) */
-
-/* Modal Overlay - Enhanced for Interactivity */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(3px); /* Optional: adds a blur effect to background */
+  backdrop-filter: blur(3px);
   animation: modalFadeIn 0.3s ease-out forwards;
 }
 
-/* Modal Content Box */
 .modal-content {
-  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%); /* Subtle gradient background */
-  border-radius: 12px; /* Softer corners */
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); /* More diffused shadow */
-  padding: 0; /* Remove padding, will be handled by header/form sections */
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: 0;
   width: 90%;
-  max-width: 580px; /* Slightly wider for comfort */
-  max-height: 90vh; /* Max height for scrollability */
+  max-width: 580px;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   animation: modalScaleUp 0.35s ease-out forwards;
-  overflow: hidden; /* Crucial for containing children and border-radius */
+  overflow: hidden;
 }
 
 .modal-header {
@@ -322,18 +316,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 25px;
-  background-color: #f1f3f5; /* Light distinct background for header */
+  background-color: #f1f3f5;
   border-bottom: 1px solid #dee2e6;
 }
 
 .modal-header h2 {
-  font-size: 1.5em; /* Adjusted size */
-  color: #212529; /* Darker, more modern color */
+  font-size: 1.5em;
+  color: #212529;
   margin: 0;
   font-weight: 600;
 }
 
-/* Close Button (X icon) */
 .close-button {
   background: transparent;
   border: none;
@@ -352,36 +345,33 @@
   transform: rotate(90deg);
 }
 
-/* Form Container within Modal */
 .modal-content form {
   padding: 25px;
-  overflow-y: auto; /* Enable scrolling for form content */
-  flex-grow: 1; /* Allows form to take available space */
-  /* Adding min-height to ensure it doesn't collapse if content is small but parent has space */
-  min-height: 0; /* Important for flex children that need to scroll */ 
+  overflow-y: auto;
+  flex-grow: 1;
+  min-height: 0;
 }
 
-/* Form Group (Label + Input/Select) */
 .form-group {
   display: flex;
   align-items: center;
-  margin-bottom: 15px; /* Adjusted for side-by-side layout */
+  margin-bottom: 15px;
 }
 
 .form-group label {
-  flex-basis: 120px; /* Adjust as needed for label width */
-  margin-right: 15px; /* Space between label and input */
+  flex-basis: 120px;
+  margin-right: 15px;
   font-weight: 500;
   color: #495057;
   font-size: 0.95em;
-  text-align: left; /* Align label text to the left */
-  margin-bottom: 0; /* Vertical alignment handled by flex */
+  text-align: left;
+  margin-bottom: 0;
 }
 
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group select {
-  flex-grow: 1; /* Input takes remaining space */
+  flex-grow: 1;
   padding: 10px 15px;
   border: 1px solid #ced4da;
   border-radius: 6px;
@@ -390,7 +380,7 @@
   background-color: #fff;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  text-align: left; /* Align text inside input to the left */
+  text-align: left;
 }
 
 .form-group input[type="text"]::placeholder,
@@ -407,14 +397,13 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Modal Actions (Buttons) */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   padding: 20px 25px;
   border-top: 1px solid #dee2e6;
-  background-color: #f8f9fa; /* Light background for actions footer */
+  background-color: #f8f9fa;
 }
 
 .modal-actions button {
@@ -467,7 +456,6 @@
   box-shadow: none;
 }
 
-/* Animations for modal appearance */
 @keyframes modalFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -484,7 +472,6 @@
   }
 }
 
-/* Responsive adjustments */
 @media (max-width: 600px) {
   .modal-content {
     width: 95%;

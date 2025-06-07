@@ -1,64 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useSettings } from '../contexts/SettingsContext'; // Corrected import path
-// You might need to install these if you haven't: npm install react-chartjs-2 chart.js
-// import { Doughnut, Line, Bar } from 'react-chartjs-2';
-// import {
-//     Chart as ChartJS,
-//     ArcElement,
-//     Tooltip,
-//     Legend,
-//     CategoryScale,
-//     LinearScale,
-//     PointElement,
-//     LineElement,
-//     Title,
-//     BarElement,
-// } from 'chart.js';
+import { useSettings } from '../contexts/SettingsContext';
 import './Dashboard.css';
 
-// If you're using FontAwesome, ensure you have these installed:
-// npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTruckLoading, faBoxes, faClipboardCheck, faTruckMoving } from '@fortawesome/free-solid-svg-icons';
-// import Sidebar from '../components/Sidebar'; // Assuming you have a Sidebar component
-
-// Register Chart.js components (if you use them, otherwise remove this block)
-// ChartJS.register(
-//     ArcElement,
-//     Tooltip,
-//     Legend,
-//     CategoryScale,
-//     LinearScale,
-//     PointElement,
-//     LineElement,
-//     Title,
-//     BarElement
-// );
-
 const Dashboard = () => {
-    const { settings, loadingSettings, errorSettings } = useSettings(); 
+    const { settings, loadingSettings, errorSettings } = useSettings();
 
-    // State for Incoming Shipments - DYNAMICALLY LOADED
     const [incomingShipments, setIncomingShipments] = useState([]);
-    const [loadingIncomingShipments, setLoadingIncomingShipments] = useState(true); // Renamed for clarity
-    const [errorIncomingShipments, setErrorIncomingShipments] = useState(null);     // Renamed for clarity
+    const [loadingIncomingShipments, setLoadingIncomingShipments] = useState(true);
+    const [errorIncomingShipments, setErrorIncomingShipments] = useState(null);
 
-    // State for Warehouse Zones - DYNAMICALLY LOADED
     const [warehouseZones, setWarehouseZones] = useState([]);
-    const [loadingWarehouseZones, setLoadingWarehouseZones] = useState(true);   // Renamed for clarity
-    const [errorWarehouseZones, setErrorWarehouseZones] = useState(null);       // Renamed for clarity
+    const [loadingWarehouseZones, setLoadingWarehouseZones] = useState(true);
+    const [errorWarehouseZones, setErrorWarehouseZones] = useState(null);
 
-    // NEW: State for Outgoing Shipments - DYNAMICALLY LOADED (changed from hardcoded)
     const [outgoingShipments, setOutgoingShipments] = useState([]);
     const [loadingOutgoingShipments, setLoadingOutgoingShipments] = useState(true);
     const [errorOutgoingShipments, setErrorOutgoingShipments] = useState(null);
 
-    // NEW: State for Recent Audits - DYNAMICALLY LOADED (changed from hardcoded)
     const [recentAudits, setRecentAudits] = useState([]);
     const [loadingRecentAudits, setLoadingRecentAudits] = useState(true);
     const [errorRecentAudits, setErrorRecentAudits] = useState(null);
 
-    // NEW: State for Dashboard Stats - DYNAMICALLY LOADED
     const [dashboardStats, setDashboardStats] = useState({
         totalSkus: 0,
         warehouseZonesCount: 0,
@@ -68,13 +30,12 @@ const Dashboard = () => {
     const [loadingDashboardStats, setLoadingDashboardStats] = useState(true);
     const [errorDashboardStats, setErrorDashboardStats] = useState(null);
 
-    // Helper to format date/time for display
     const formatDateTime = (dateTimeString, type = 'date') => {
         if (!dateTimeString) return 'N/A';
         try {
             const date = new Date(dateTimeString);
-            if (isNaN(date.getTime())) { // Check for invalid date
-                return dateTimeString; // Return original if invalid
+            if (isNaN(date.getTime())) {
+                return dateTimeString;
             }
             if (type === 'date') {
                 const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -82,25 +43,23 @@ const Dashboard = () => {
             } else if (type === 'time') {
                 return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             }
-            return dateTimeString; // Fallback
+            return dateTimeString;
         } catch (e) {
             console.error("Error formatting date/time:", e, dateTimeString);
-            return dateTimeString; // Fallback
+            return dateTimeString;
         }
     };
 
-    // Function to fetch incoming shipments from the backend
     const fetchIncomingShipments = async () => {
         setLoadingIncomingShipments(true);
         setErrorIncomingShipments(null);
         try {
-            // CRITICAL FIX: Changed URL to match server.js
             const response = await fetch('http://localhost:3000/api/incoming-shipments');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            setIncomingShipments(data); // No need for manual ETA formatting here, use helper in JSX
+            setIncomingShipments(data);
         } catch (error) {
             console.error('Error fetching incoming shipments:', error);
             setErrorIncomingShipments('Failed to load incoming shipments. Please check server connection.');
@@ -109,7 +68,6 @@ const Dashboard = () => {
         }
     };
 
-    // Function to fetch warehouse zones from the backend
     const fetchWarehouseZones = async () => {
         setLoadingWarehouseZones(true);
         setErrorWarehouseZones(null);
@@ -128,7 +86,6 @@ const Dashboard = () => {
         }
     };
 
-    // NEW: Function to fetch outgoing shipments from the backend
     const fetchOutgoingShipments = async () => {
         setLoadingOutgoingShipments(true);
         setErrorOutgoingShipments(null);
@@ -147,13 +104,10 @@ const Dashboard = () => {
         }
     };
 
-    // NEW: Function to fetch recent audits from the backend
     const fetchRecentAudits = async () => {
         setLoadingRecentAudits(true);
         setErrorRecentAudits(null);
         try {
-            // CRITICAL FIX: Changed URL to match server.js
-            // CORRECTED: Changed URL to the existing '/api/inventory-audits' endpoint and added a limit
             const response = await fetch('http://localhost:3000/api/inventory-audits?limit=5');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -168,7 +122,6 @@ const Dashboard = () => {
         }
     };
 
-    // NEW: Function to fetch dashboard summary statistics
     const fetchDashboardStats = async () => {
         setLoadingDashboardStats(true);
         setErrorDashboardStats(null);
@@ -187,16 +140,14 @@ const Dashboard = () => {
         }
     };
 
-    // useEffect hook to fetch data when the component mounts
     useEffect(() => {
         fetchIncomingShipments();
         fetchWarehouseZones();
-        fetchOutgoingShipments(); // Fetch outgoing shipments
-        fetchRecentAudits();     // Fetch recent audits
-        fetchDashboardStats();   // Fetch dashboard summary stats
+        fetchOutgoingShipments();
+        fetchRecentAudits();
+        fetchDashboardStats();
     }, []);
 
-    // Function to simulate adding a new incoming shipment (for demonstration purposes)
     const addSampleIncomingShipment = async () => {
         const newShipmentData = {
             supplier: `Supplier ${Math.floor(Math.random() * 100)}`,
@@ -208,7 +159,7 @@ const Dashboard = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/incoming-shipments', { // Match updated URL
+            const response = await fetch('http://localhost:3000/api/incoming-shipments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -230,17 +181,13 @@ const Dashboard = () => {
         }
     };
 
-    // Function to simulate adding a new warehouse zone (for demonstration purposes)
     const addSampleWarehouseZone = async () => {
         const newZoneData = {
-            // Note: Your backend expects 'id', 'name', 'maxCapacity', 'temperature', 'humidity' for POST
-            // Adjust this data to match your backend's POST /api/warehouse-zones endpoint
             id: `ZONE-${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 9) + 1}`,
             name: `Zone ${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 9) + 1}`,
-            maxCapacity: Math.floor(Math.random() * 1000) + 100, // Example max capacity
+            maxCapacity: Math.floor(Math.random() * 1000) + 100,
             temperature: Math.floor(Math.random() * 30) + 5,
             humidity: Math.floor(Math.random() * 50) + 30,
-            // capacity and status are set by backend on insert
         };
 
         try {
@@ -266,12 +213,10 @@ const Dashboard = () => {
         }
     };
 
-    // NEW: Function to simulate adding a new outgoing shipment
     const addSampleOutgoingShipment = async () => {
         const newShipmentData = {
-            // Note: Your backend expects 'customer', 'departure', 'items', 'value', 'destination' for POST
             customer: `Customer ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
-            departure: new Date(Date.now() + Math.random() * 3600000 * 3).toISOString().slice(0, 19).replace('T', ' '), // Random departure within next 3 hours
+            departure: new Date(Date.now() + Math.random() * 3600000 * 3).toISOString().slice(0, 19).replace('T', ' '),
             items: Math.floor(Math.random() * 30) + 1,
             value: (Math.random() * 500 + 50).toFixed(2),
             destination: `City ${String.fromCharCode(65 + Math.floor(Math.random() * 10))}`,
@@ -301,19 +246,16 @@ const Dashboard = () => {
         }
     };
 
-    // NEW: Function to simulate adding a new recent audit
     const addSampleRecentAudit = async () => {
         const newAuditData = {
-            // Note: Your backend expects 'zone', 'scheduledDate', 'auditor', 'auditType' for POST
-            zone: `ZONE-${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 9) + 1}`, // Must be an existing zone ID
-            scheduledDate: new Date().toISOString().slice(0, 10), // Current date
+            zone: `ZONE-${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 9) + 1}`,
+            scheduledDate: new Date().toISOString().slice(0, 10),
             auditor: `Auditor ${String.fromCharCode(65 + Math.floor(Math.random() * 10))}`,
             auditType: ['Full', 'Spot', 'Cycle'][Math.floor(Math.random() * 3)],
-            // status, discrepancies, accuracy are set by backend on insert
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/recent-audits', { // Match updated URL
+            const response = await fetch('http://localhost:3000/api/recent-audits', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -335,8 +277,7 @@ const Dashboard = () => {
         }
     };
 
-    // Determine the title for the dashboard
-    let dashboardTitle = "Warehouse Management Dashboard"; // Default title
+    let dashboardTitle = "Warehouse Management Dashboard";
     if (loadingSettings) {
         dashboardTitle = "Loading Warehouse Name...";
     } else if (errorSettings) {
@@ -349,7 +290,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard">
             <div className="dashboard-header">
-                <h1>{dashboardTitle}</h1> 
+                <h1>{dashboardTitle}</h1>
                 <div className="date">{new Date().toLocaleDateString()}</div>
             </div>
 
@@ -365,72 +306,62 @@ const Dashboard = () => {
                             <div className="metric-value">
                                 {dashboardStats.totalSkus !== undefined ? dashboardStats.totalSkus.toLocaleString() : 'N/A'} <span className="unit">products</span>
                             </div>
-                            <div className="metric-trend">{/* Placeholder: e.g., +12.5% */}</div>
                         </div>
                         <div className="metric-card">
                             <h3>Warehouse Zones</h3>
                             <div className="metric-value">
                                 {dashboardStats.warehouseZonesCount !== undefined ? dashboardStats.warehouseZonesCount.toLocaleString() : 'N/A'} <span className="unit">active</span>
                             </div>
-                            <div className="metric-trend">{/* Placeholder: e.g., +0% */}</div>
                         </div>
                         <div className="metric-card">
                             <h3>Pending Audits</h3>
                             <div className="metric-value">
                                 {dashboardStats.pendingAuditsCount !== undefined ? dashboardStats.pendingAuditsCount.toLocaleString() : 'N/A'} <span className="unit">zones</span>
                             </div>
-                            <div className="metric-trend">{/* Placeholder: e.g., -25% */}</div>
                         </div>
                         <div className="metric-card">
                             <h3>Storage Capacity</h3>
                             <div className="metric-value">
                                 {dashboardStats.storageCapacityPercentage !== undefined ? `${dashboardStats.storageCapacityPercentage}%` : 'N/A'} <span className="unit">utilized</span>
                             </div>
-                            <div className="metric-trend">{/* Placeholder: e.g., +5.2% */}</div>
                         </div>
                     </>
                 )}
             </div>
 
             <div className="horizontal-widgets">
-                {/* Incoming Shipments Widget - Dynamic */}
                 <div className="widget">
-                    <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                         <h3>Incoming Shipments</h3>
-                        {/* Uncomment this button to test adding incoming shipments */}
                         {/* <button onClick={addSampleIncomingShipment} style={{ padding: '8px 12px', cursor: 'pointer' }}>Add Sample Incoming Shipment</button> */}
                     </div>
-                    <div className="list incoming-shipments-table">
+                    <div className="list horizontal-list">
                         {loadingIncomingShipments ? (
-                            <div className="loading-message">Loading incoming shipments...</div>
+                            <div style={{ textAlign: 'center', padding: '20px', color: '#777' }}>Loading incoming shipments...</div>
                         ) : errorIncomingShipments ? (
-                            <div className="error-message">{errorIncomingShipments}</div>
+                            <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>{errorIncomingShipments}</div>
                         ) : incomingShipments.length === 0 ? (
-                            <div className="empty-list-message">
+                            <div style={{ textAlign: 'center', padding: '20px', color: '#777' }}>
                                 No incoming shipments yet. Add one to see it appear here!
                             </div>
                         ) : (
                             incomingShipments.map((shipment) => (
-                                <div key={shipment.id} className="shipment-row">
-                                    <div className="shipment-col-id">{shipment.id}</div>
-                                    <div className="shipment-col-supplier">{shipment.supplier}</div>
-                                    <div className="shipment-col-status">
-                                        <span className={`status-badge ${shipment.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                                            {shipment.status}
-                                        </span>
+                                <div key={shipment.id} className="shipment-item">
+                                    <div className="shipment-id">{shipment.id}</div>
+                                    <div className="shipment-supplier">{shipment.supplier}</div>
+                                    <div className={`shipment-status ${shipment.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                                        {shipment.status}
                                     </div>
-                                    <div className="shipment-col-eta">{formatDateTime(shipment.eta, 'time')}</div>
+                                    <div className="shipment-eta">{formatDateTime(shipment.eta, 'time')}</div>
                                 </div>
                             ))
                         )}
                     </div>
                 </div>
 
-                {/* Outgoing Shipments Widget - Now Dynamic */}
                 <div className="widget">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                         <h3>Outgoing Shipments</h3>
-                        {/* Uncomment this button to test adding outgoing shipments */}
                         {/* <button onClick={addSampleOutgoingShipment} style={{ padding: '8px 12px', cursor: 'pointer' }}>Add Sample Outgoing Shipment</button> */}
                     </div>
                     <div className="list horizontal-list">
@@ -457,11 +388,9 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Warehouse Zones Status Widget - Dynamic */}
                 <div className="widget">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                         <h3>Warehouse Zones Status</h3>
-                        {/* Uncomment this button to test adding warehouse zones */}
                         {/* <button onClick={addSampleWarehouseZone} style={{ padding: '8px 12px', cursor: 'pointer' }}>Add Sample Zone</button> */}
                     </div>
                     <div className="list horizontal-list">
@@ -476,8 +405,8 @@ const Dashboard = () => {
                         ) : (
                             warehouseZones.map((zone) => (
                                 <div key={zone.id} className="zone-item">
-                                    <div className="zone-name">{zone.name}</div> {/* Use zone.name */}
-                                    <div className="zone-capacity">{zone.capacity}%</div> {/* Display as percentage */}
+                                    <div className="zone-name">{zone.name}</div>
+                                    <div className="zone-capacity">{zone.capacity}%</div>
                                     <div className="zone-temp">{zone.temperature}°C</div>
                                     <div className={`zone-status ${zone.status.toLowerCase()}`}>
                                         {zone.status}
@@ -488,11 +417,9 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Recent Audits Widget - Now Dynamic */}
                 <div className="widget">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                         <h3>Recent Audits</h3>
-                        {/* Uncomment this button to test adding recent audits */}
                         {/* <button onClick={addSampleRecentAudit} style={{ padding: '8px 12px', cursor: 'pointer' }}>Add Sample Audit</button> */}
                     </div>
                     <div className="list horizontal-list">
